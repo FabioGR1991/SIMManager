@@ -48,7 +48,7 @@ router.get('/', authenticateToken, (req, res) => {
 
 // POST /api/simcards
 router.post('/', authenticateToken, (req, res) => {
-  const { phone_number, status, campaign, assigned_user_id, team } = req.body;
+  const { phone_number, status, campaign, assigned_user_id, team, wa_type, wa_link } = req.body;
   
   const currentUser = db.prepare('SELECT campaign, team FROM users WHERE id = ?').get(req.user.id);
   const userId = assigned_user_id || req.user.id; 
@@ -57,9 +57,17 @@ router.post('/', authenticateToken, (req, res) => {
 
   try {
     const result = db.prepare(`
-      INSERT INTO simcards (phone_number, status, user_id, campaign, team)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(phone_number, status || 'En stock/Sin uso', userId, simCampaign, simTeam);
+      INSERT INTO simcards (phone_number, status, user_id, campaign, team, wa_type, wa_link)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      phone_number, 
+      status || 'En stock/Sin uso', 
+      userId, 
+      simCampaign, 
+      simTeam, 
+      wa_type || null, 
+      wa_link || null
+    );
 
     res.json({ id: result.lastInsertRowid, message: 'SIMCard registrada con éxito' });
   } catch (err) {
@@ -70,15 +78,21 @@ router.post('/', authenticateToken, (req, res) => {
 // PUT /api/simcards/edit/:id
 router.put('/edit/:id', authenticateToken, (req, res) => {
   const { id } = req.params;
-  const { phone_number, campaign, team } = req.body;
+  const { phone_number, campaign, team, wa_type, wa_link } = req.body;
 
   try {
     if (team) {
-      db.prepare('UPDATE simcards SET phone_number = ?, campaign = ?, team = ? WHERE id = ?')
-        .run(phone_number, campaign, team, id);
+      db.prepare(`
+        UPDATE simcards 
+        SET phone_number = ?, campaign = ?, team = ?, wa_type = ?, wa_link = ? 
+        WHERE id = ?
+      `).run(phone_number, campaign, team, wa_type || null, wa_link || null, id);
     } else {
-      db.prepare('UPDATE simcards SET phone_number = ?, campaign = ? WHERE id = ?')
-        .run(phone_number, campaign, id);
+      db.prepare(`
+        UPDATE simcards 
+        SET phone_number = ?, campaign = ?, wa_type = ?, wa_link = ? 
+        WHERE id = ?
+      `).run(phone_number, campaign, wa_type || null, wa_link || null, id);
     }
 
     res.json({ message: 'Línea actualizada con éxito' });

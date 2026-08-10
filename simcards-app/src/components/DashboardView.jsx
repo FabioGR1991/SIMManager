@@ -1,5 +1,17 @@
 import { useState } from 'react';
-import { Smartphone, CheckCircle, AlertTriangle, ShieldAlert, Plus, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { 
+  Smartphone, 
+  CheckCircle, 
+  AlertTriangle, 
+  ShieldAlert, 
+  Plus, 
+  ChevronLeft, 
+  ChevronRight, 
+  Search, 
+  X, 
+  MessageCircle, 
+  ExternalLink 
+} from 'lucide-react';
 
 export default function DashboardView({
   simcards,
@@ -50,7 +62,7 @@ export default function DashboardView({
     setNewCampaign('');
   };
 
-  // LÓGICA DE BÚSQUEDA Y FILTRADO
+  // LÓGICA DE BÚSQUEDA Y FILTRADO (incluye campos de WhatsApp)
   const cleanSearch = searchTerm.replace(/\D/g, ''); 
   const rawSearchText = searchTerm.toLowerCase().trim();
 
@@ -63,8 +75,10 @@ export default function DashboardView({
     const matchesCampaign = (sim.campaign || '').toLowerCase().includes(rawSearchText);
     const matchesUser = (sim.user_name || '').toLowerCase().includes(rawSearchText);
     const matchesTeam = (sim.team || '').toLowerCase().includes(rawSearchText);
+    const matchesWaType = (sim.wa_type || '').toLowerCase().includes(rawSearchText);
+    const matchesWaLink = (sim.wa_link || '').toLowerCase().includes(rawSearchText);
 
-    return matchesPhone || matchesCampaign || matchesUser || matchesTeam;
+    return matchesPhone || matchesCampaign || matchesUser || matchesTeam || matchesWaType || matchesWaLink;
   });
 
   const handleSearchChange = (e) => {
@@ -160,7 +174,7 @@ export default function DashboardView({
           <input
             type="text"
             className="form-control"
-            placeholder="Buscar por número, campaña o equipo..."
+            placeholder="Buscar por número, campaña, equipo o WhatsApp..."
             value={searchTerm}
             onChange={handleSearchChange}
             style={{
@@ -266,6 +280,7 @@ export default function DashboardView({
             <tr>
               <th># ID</th>
               <th>Número de Línea</th>
+              <th>WhatsApp</th>
               <th>Campaña</th>
               {user?.role === 'admin' && <th>Equipo / Sede</th>}
               <th>Estado Actual</th>
@@ -275,7 +290,7 @@ export default function DashboardView({
           <tbody>
             {currentSimcards.length === 0 ? (
               <tr>
-                <td colSpan={user?.role === 'admin' ? 6 : 5} style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
+                <td colSpan={user?.role === 'admin' ? 7 : 6} style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
                   {searchTerm ? 'No se encontraron líneas que coincidan con la búsqueda.' : 'No hay SIMCards registradas aún.'}
                 </td>
               </tr>
@@ -308,6 +323,39 @@ export default function DashboardView({
                           </button>
                         )}
                       </div>
+                    </td>
+                    <td>
+                      {sim.wa_type ? (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            padding: '2px 8px',
+                            borderRadius: '12px',
+                            backgroundColor: sim.wa_type === 'WA Business' ? '#dcfce7' : '#e0f2fe',
+                            color: sim.wa_type === 'WA Business' ? '#15803d' : '#0369a1',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}>
+                            <MessageCircle size={12} />
+                            {sim.wa_type}
+                          </span>
+                          {sim.wa_link && (
+                            <a
+                              href={sim.wa_link.startsWith('http') ? sim.wa_link : `https://${sim.wa_link}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Abrir chat de WhatsApp"
+                              style={{ color: '#16a34a', display: 'inline-flex', alignItems: 'center' }}
+                            >
+                              <ExternalLink size={14} />
+                            </a>
+                          )}
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>-</span>
+                      )}
                     </td>
                     <td>{sim.campaign || 'N/A'}</td>
                     {user?.role === 'admin' && <td>{sim.team || 'Sin Equipo'}</td>}
@@ -350,7 +398,7 @@ export default function DashboardView({
         {!isAll && totalPages > 1 && (
           <div style={{
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
             marginTop: '15px',
             paddingTop: '10px',

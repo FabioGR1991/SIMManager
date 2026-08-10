@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { LogOut, Users, LayoutDashboard, RefreshCw, Smartphone, MapPin } from 'lucide-react';
+import { LogOut, Users, LayoutDashboard, RefreshCw, Smartphone, MapPin, UserCheck } from 'lucide-react';
 
 import LoginView from './components/LoginView';
 import DashboardView from './components/DashboardView';
@@ -8,6 +8,7 @@ import DevicesView from './components/DevicesView';
 import UsersView from './components/UsersView';
 import SyncView from './components/SyncView';
 import TeamsView from './components/TeamsView';
+import OperatorsView from './components/OperatorsView';
 import UserEditModal from './components/UserEditModal';
 import HistoryModal from './components/HistoryModal';
 import SimEditModal from './components/SimEditModal';
@@ -178,11 +179,16 @@ export default function App() {
     }
   };
 
-  const handleCreateSim = async (newPhone, newCampaign) => {
+  const handleCreateSim = async (newPhone, newCampaign, waType = '', waLink = '') => {
     try {
       await axios.post(
         `${API_URL}/simcards`,
-        { phone_number: newPhone, campaign: newCampaign || user?.campaign || 'General' },
+        { 
+          phone_number: newPhone, 
+          campaign: newCampaign || user?.campaign || 'General',
+          wa_type: waType,
+          wa_link: waLink
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchSimcards();
@@ -195,11 +201,16 @@ export default function App() {
     setEditingSim(sim);
   };
 
-  const handleSaveSimEdit = async (simId, newPhoneNumber, newCampaign) => {
+  const handleSaveSimEdit = async (simId, newPhoneNumber, newCampaign, waType, waLink) => {
     try {
       await axios.put(
         `${API_URL}/simcards/edit/${simId}`,
-        { phone_number: newPhoneNumber, campaign: newCampaign },
+        { 
+          phone_number: newPhoneNumber, 
+          campaign: newCampaign,
+          wa_type: waType,
+          wa_link: waLink
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchSimcards();
@@ -291,7 +302,7 @@ export default function App() {
         color: '#fff',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justify: 'space-between',
         padding: '20px',
         height: '100vh',
         boxSizing: 'border-box'
@@ -331,6 +342,19 @@ export default function App() {
               }}
             >
               <Smartphone size={18} /> Dispositivos
+            </button>
+
+            {/* BOTÓN OPERADORES */}
+            <button
+              onClick={() => setActiveTab('operators')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+                borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
+                backgroundColor: activeTab === 'operators' ? '#0284c7' : 'transparent',
+                color: activeTab === 'operators' ? '#fff' : '#cbd5e1', fontWeight: '500'
+              }}
+            >
+              <UserCheck size={18} /> Operadores
             </button>
 
             {/* BOTÓN EXCLUSIVO ADMIN: EQUIPOS */}
@@ -396,7 +420,7 @@ export default function App() {
               backgroundColor: '#ef4444',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              justify: 'center',
               gap: '8px',
               padding: '8px'
             }}
@@ -430,6 +454,15 @@ export default function App() {
             simcards={simcards}
             fetchSimcards={fetchSimcards}
             targetDeviceId={targetDeviceId}
+          />
+        )}
+
+        {/* VISTA DE OPERADORES */}
+        {activeTab === 'operators' && (
+          <OperatorsView
+            API_URL={API_URL}
+            token={token}
+            user={user}
           />
         )}
 

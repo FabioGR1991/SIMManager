@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 
+// Importamos el router de autenticación y el middleware desde ./routes/auth
+const { router: authRouter, authenticateToken } = require('./routes/auth');
+
 const app = express();
 const PORT = 3001;
 
@@ -19,11 +22,12 @@ try {
 // =========================================================================
 // RUTAS MODULARES DE LA APLICACIÓN
 // =========================================================================
-app.use('/api', require('./routes/auth'));
+app.use('/api', authRouter);
 app.use('/api/simcards', require('./routes/simcards'));
 app.use('/api', require('./routes/users'));
 app.use('/api/admin', require('./routes/reconciliation'));
 app.use('/api/devices', require('./routes/devices'));
+app.use('/api/operators', authenticateToken, require('./routes/operators'));
 
 // =========================================================================
 // INICIAR SERVIDOR

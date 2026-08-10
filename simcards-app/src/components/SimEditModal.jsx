@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import { X, Save, MessageCircle } from 'lucide-react';
 
 export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimEdit, teamsList = [] }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [campaign, setCampaign] = useState('');
   const [team, setTeam] = useState('');
+  const [waType, setWaType] = useState('');
+  const [waLink, setWaLink] = useState('');
 
   useEffect(() => {
     if (editingSim) {
       setPhoneNumber(editingSim.phone_number || '');
       setCampaign(editingSim.campaign || '');
       setTeam(editingSim.team || '');
+      setWaType(editingSim.wa_type || '');
+      setWaLink(editingSim.wa_link || '');
     }
   }, [editingSim]);
 
@@ -31,7 +35,7 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
 
   const onSubmit = (e) => {
     e.preventDefault();
-    handleSaveSimEdit(editingSim.id, phoneNumber, campaign, team);
+    handleSaveSimEdit(editingSim.id, phoneNumber, campaign, team, waType, waLink);
     setEditingSim(null);
   };
 
@@ -120,6 +124,44 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
               </select>
             </div>
           )}
+
+          {/* Configuración de WhatsApp */}
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '12px', marginTop: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px', color: '#16a34a', fontWeight: '600', fontSize: '14px' }}>
+              <MessageCircle size={18} />
+              <span>Ajustes de WhatsApp</span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
+                  Tipo de WhatsApp
+                </label>
+                <select
+                  className="form-control"
+                  value={waType}
+                  onChange={(e) => setWaType(e.target.value)}
+                >
+                  <option value="">Sin WhatsApp</option>
+                  <option value="WA Normal">WA Normal</option>
+                  <option value="WA Business">WA Business</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
+                  Link Directo de WhatsApp
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={waLink}
+                  onChange={(e) => setWaLink(e.target.value)}
+                  placeholder="https://wa.me/54911..."
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Botones de acción */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
