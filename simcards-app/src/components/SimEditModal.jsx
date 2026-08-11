@@ -64,7 +64,14 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
 
   const onSubmit = (e) => {
     e.preventDefault();
-    handleSaveSimEdit(editingSim.id, phoneNumber, campaign, team, waType, waLink);
+    handleSaveSimEdit({
+      id: editingSim.id,
+      phoneNumber,
+      campaign,
+      team,
+      waType,
+      waLink,
+    });
     setEditingSim(null);
   };
 

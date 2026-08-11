@@ -201,21 +201,23 @@ export default function App() {
     setEditingSim(sim);
   };
 
-  const handleSaveSimEdit = async (simId, newPhoneNumber, newCampaign, waType, waLink) => {
+  // ACTUALIZADO: Recibe un único objeto con los datos de la SIM
+  const handleSaveSimEdit = async (simData) => {
     try {
       await axios.put(
-        `${API_URL}/simcards/edit/${simId}`,
+        `${API_URL}/simcards/edit/${simData.id}`,
         { 
-          phone_number: newPhoneNumber, 
-          campaign: newCampaign,
-          wa_type: waType,
-          wa_link: waLink
+          phone_number: simData.phoneNumber, 
+          campaign: simData.campaign,
+          team: simData.team,
+          wa_type: simData.waType,
+          wa_link: simData.waLink
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchSimcards();
     } catch (err) {
-      alert('Error al actualizar la SIMCard.');
+      alert(err.response?.data?.error || 'Error al actualizar la SIMCard.');
     }
   };
 
@@ -302,7 +304,7 @@ export default function App() {
         color: '#fff',
         display: 'flex',
         flexDirection: 'column',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         padding: '20px',
         height: '100vh',
         boxSizing: 'border-box'
@@ -420,7 +422,7 @@ export default function App() {
               backgroundColor: '#ef4444',
               display: 'flex',
               alignItems: 'center',
-              justify: 'center',
+              justifyContent: 'center',
               gap: '8px',
               padding: '8px'
             }}
