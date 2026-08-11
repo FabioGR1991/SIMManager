@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const { authenticateToken } = require('../utils/helpers');
+const { authenticateToken, cleanDigits } = require('../utils/helpers');
 
 // GET /api/simcards
 router.get('/', authenticateToken, (req, res) => {
@@ -49,13 +49,30 @@ router.get('/', authenticateToken, (req, res) => {
 // POST /api/simcards
 router.post('/', authenticateToken, (req, res) => {
   const { phone_number, status, campaign, assigned_user_id, team, wa_type, wa_link } = req.body;
-  
-  const currentUser = db.prepare('SELECT campaign, team FROM users WHERE id = ?').get(req.user.id);
-  const userId = assigned_user_id || req.user.id; 
-  const simCampaign = campaign || currentUser?.campaign || req.user.campaign || 'General';
-  const simTeam = team || currentUser?.team || req.user.team;
+
+  const cleanIncoming = cleanDigits(phone_number);
+  if (!cleanIncoming) {
+    return res.status(400).json({ error: 'El número de teléfono ingresado no es válido.' });
+  }
 
   try {
+    // Validar si ya existe una SIMCard con el mismo número de dígitos sin importar espacios o guiones
+    const existingSim = db.prepare(`
+      SELECT id, phone_number FROM simcards 
+      WHERE REPLACE(REPLACE(REPLACE(REPLACE(phone_number, ' ', ''), '-', ''), '(', ''), ')', '') = ?
+    `).get(cleanIncoming);
+
+    if (existingSim) {
+      return res.status(400).json({ 
+        error: `Ya existe una SIMCard registrada con el número ${existingSim.phone_number}.` 
+      });
+    }
+
+    const currentUser = db.prepare('SELECT campaign, team FROM users WHERE id = ?').get(req.user.id);
+    const userId = assigned_user_id || req.user.id; 
+    const simCampaign = campaign || currentUser?.campaign || req.user.campaign || 'General';
+    const simTeam = team || currentUser?.team || req.user.team;
+
     const result = db.prepare(`
       INSERT INTO simcards (phone_number, status, user_id, campaign, team, wa_type, wa_link)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -80,7 +97,25 @@ router.put('/edit/:id', authenticateToken, (req, res) => {
   const { id } = req.params;
   const { phone_number, campaign, team, wa_type, wa_link } = req.body;
 
+  const cleanIncoming = cleanDigits(phone_number);
+  if (!cleanIncoming) {
+    return res.status(400).json({ error: 'El número de teléfono ingresado no es válido.' });
+  }
+
   try {
+    // Validar duplicados al editar (excluyendo el id actual)
+    const existingSim = db.prepare(`
+      SELECT id, phone_number FROM simcards 
+      WHERE REPLACE(REPLACE(REPLACE(REPLACE(phone_number, ' ', ''), '-', ''), '(', ''), ')', '') = ?
+        AND id != ?
+    `).get(cleanIncoming, id);
+
+    if (existingSim) {
+      return res.status(400).json({ 
+        error: `Ya existe otra SIMCard registrada con el número ${existingSim.phone_number}.` 
+      });
+    }
+
     if (team) {
       db.prepare(`
         UPDATE simcards 

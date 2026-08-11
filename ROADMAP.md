@@ -1,3 +1,5 @@
+aaaah me parecia, bueno, entonces pasame mi ROADMAP.md actualizado para pegar en mi archivo tachando lo que ya esta hecho:
+
 # 🗺️ ROADMAP DE FUNCIONALIDADES - SIMCARDS APP
 
 ---
@@ -24,40 +26,39 @@
 
 ---
 
-## 🔵 Módulo 2: Edición Ampliada de Dispositivos (Celulares)
-**Estado:** [ ] Pendiente | [x] En Progreso | [ ] Completado
+## ~~🔵 Módulo 2: Edición Ampliada de Dispositivos (Celulares)~~
+**Estado:** [ ] Pendiente | [ ] En Progreso | [x] Completado
 
-### 1. Base de Datos (`simcards.db`)
-- Modificar tabla `devices` para incluir:
-  - `internal_name` (`TEXT`): Nombre interno para comunicación del equipo.
-  - `entity` (`TEXT`): Entidad/Área asignada (campo indexado para búsquedas rápidas).
-  - `assigned_operator_id` (`INTEGER`): ID de la tabla `operators` (llave foránea).
-  - *(Opcional)* `sim1_is_official` y `sim2_is_official` (`INTEGER/BOOLEAN`): Indicador de casilla "Oficial".
+### ~~1. Base de Datos (`simcards.db`)~~
+- ~~Modificar tabla `devices` para incluir:~~
+  - ~~`internal_name` (`TEXT`): Nombre interno para comunicación del equipo.~~
+  - ~~`entity` (`TEXT`): Entidad/Área asignada.~~
+  - ~~`assigned_operator_id` (`INTEGER`): ID del operador asignado a SIM 1.~~
+  - ~~`assigned_operator2_id` (`INTEGER`): ID del operador asignado a SIM 2.~~
+  - ~~`sim1_is_official` y `sim2_is_official` (`INTEGER/BOOLEAN`): Indicador de casilla "Oficial".~~
 
-### 2. Backend (`routes/devices.js`)
-- Modificar `GET /api/devices`:
-  - Hacer `LEFT JOIN` con la tabla `simcards` para traer los datos de las SIMs asignadas (incluyendo `wa_type` y `wa_link`).
-  - Hacer `LEFT JOIN` con la tabla `operators` para traer el nombre del operador asignado.
-- Modificar `PUT /api/devices/:id`:
-  - Guardar `internal_name`, `entity`, `assigned_operator_id`, `status`, `sim1_id`, `sim2_id`.
+### ~~2. Backend (`routes/devices.js`)~~
+- ~~Modificar `GET /api/devices`:~~
+  - ~~Hacer `LEFT JOIN` con la tabla `simcards` para traer los datos de las SIMs asignadas (incluyendo `wa_type` y `wa_link`).~~
+  - ~~Hacer `LEFT JOIN` con la tabla `operators` para traer los nombres de los operadores asignados a SIM 1 y SIM 2.~~
+- ~~Modificar `PUT /api/devices/:id` y `POST /api/devices`:~~
+  - ~~Guardar `internal_name`, `entity`, `assigned_operator_id`, `assigned_operator2_id`, `status`, `sim1_id`, `sim2_id`, `sim1_is_official`, `sim2_is_official`.~~
 
-### 3. Frontend (`DeviceEditModal.jsx`)
-- **Rediseño visual a 2 columnas:**
-  - **Columna Izquierda:**
-    - Modelo / Nombre (`input`)
-    - Entidad (`input`)
-    - Sim 1 (`Select/Searchable`) + Checkbox "Oficial"
-      - *Sección dinámica:* Si la SIM elegida tiene `wa_link`, mostrar la URL y el botón de copiar en un clic (`clipboard`).
-    - Sim 2 (`Select/Searchable`) + Checkbox "Oficial"
-      - *Sección dinámica:* Muestra link de WA + botón de copiar.
-  - **Columna Derecha:**
-    - Nombre interno (`input`)
-    - Estado del dispositivo (`dropdown`: ACTIVO, INACTIVO, EN REPARACION, etc.)
-    - Operador asignado (`Select/Searchable` alimentado de la base de operadores).
+### ~~3. Frontend (`DeviceEditModal.jsx`)~~
+- ~~**Rediseño visual a 2 columnas:**~~
+  - ~~**Columna Izquierda:**~~
+    - ~~Modelo / Nombre (`input`)~~
+    - ~~Entidad (`input`)~~
+    - ~~SIM 1 (`Select`) + Checkbox "Oficial" + tarjeta de enlace WA dinámico con botón de copiar.~~
+    - ~~SIM 2 (`Select`) + Checkbox "Oficial" + tarjeta de enlace WA dinámico con botón de copiar.~~
+  - ~~**Columna Derecha:**~~
+    - ~~Nombre interno (`input`)~~
+    - ~~Estado del dispositivo (`dropdown`: ACTIVO, INACTIVO/REPUESTO, EN REPARACION, EN RESERVA)~~
+    - ~~Operador Asignado (SIM 1) (`Select` de operadores)~~
+    - ~~Operador Asignado (SIM 2) (`Select` de operadores)~~
 
-### 4. Dependencias e Impacto
-- **Dependencia previa:** Requiere la creación de la tabla/módulo de **Operadores** (Módulo 4) para poblar el dropdown.
-- **Buscador en Inventario:** El campo `entity` y `internal_name` servirán como índices para el motor de búsqueda de la tabla de dispositivos.
+### ~~4. Dependencias e Impacto~~
+- ~~**Integración:** Conectado exitosamente con la lista de Operadores y SIMs para auto-completar desplegables y acciones de un clic.~~
 
 ---
 
@@ -66,13 +67,13 @@
 
 ### 1. Base de Datos (`simcards.db`)
 - Crear índices en la tabla `devices` para optimizar consultas de texto:
-  - Índice en `model`, `internal_name` y `entity`.
+  - Índice en `model`, `internal_name` y `entity`.
 
 ### 2. Backend (`routes/devices.js`)
 - Actualizar `GET /api/devices` para aceptar parámetros de búsqueda vía query params:
-  - `?q=texto`: Filtra en `model`, `internal_name`, `entity`, líneas de `sim1`/`sim2` y nombre de `operator`.
-  - `?status=ACTIVO`: Filtro por estado.
-  - `?entity=Ventas`: Filtro específico por entidad.
+  - `?q=texto`: Filtra en `model`, `internal_name`, `entity`, líneas de `sim1`/`sim2` y nombre de `operator`.
+  - `?status=ACTIVO`: Filtro por estado.
+  - `?entity=Ventas`: Filtro específico por entidad.
 
 ### 3. Frontend (`DevicesView.jsx`)
 - Agregar barra de búsqueda rápida con icono de lupa e `input` de filtrado dinámico.
@@ -89,26 +90,26 @@
 **Estado:** [ ] Pendiente | [ ] En Progreso | [ ] Completado
 
 ### 1. Base de Datos (`simcards.db`)
-- *(Utiliza los campos creados en los Módulos 1 y 2: `internal_name`, `entity`, `assigned_operator_id`, `wa_link`)*.
+- *(Utiliza los campos creados en los Módulos 1 y 2: `internal_name`, `entity`, `assigned_operator_id`, `assigned_operator2_id`, `wa_link`)*.
 
 ### 2. Backend (`routes/devices.js`)
 - Asegurar que la respuesta del endpoint `GET /api/devices/:id` (o el listado) devuelva el objeto completo del dispositivo incluyendo:
-  - Datos de SIM 1 y SIM 2 con sus enlaces de WhatsApp.
-  - Datos de Operador(es) asignado(s).
+  - Datos de SIM 1 y SIM 2 con sus enlaces de WhatsApp.
+  - Datos de Operador(es) asignado(s).
 
 ### 3. Frontend (`DevicesView.jsx` / `DeviceInfoModal.jsx`)
 - **Ficha Destacada Superior (Card del Dispositivo seleccionado):**
-  - **Visualización inteligente de Operadores:**
-    - *Si ambas SIMs tienen el mismo operador (o el dispositivo tiene 1 solo operador asignado):* Mostrar una tarjeta/avatar unificado más destacado con el nombre del operador.
-    - *Si las SIMs tienen operadores distintos:* Mostrar un icono compacto con el nombre al lado de cada SIM (SIM 1 y SIM 2).
-  - **Botón `+ Info`:** Ubicado en la esquina inferior derecha de la tarjeta superior (estilo botón primario/secundario).
+  - **Visualización inteligente de Operadores:**
+    - *Si ambas SIMs tienen el mismo operador (o el dispositivo tiene 1 solo operador asignado):* Mostrar una tarjeta/avatar unificado más destacado con el nombre del operador.
+    - *Si las SIMs tienen operadores distintos:* Mostrar un icono compacto con el nombre al lado de cada SIM (SIM 1 y SIM 2).
+  - **Botón `+ Info`:** Ubicado en la esquina inferior derecha de la tarjeta superior (estilo botón primario/secundario).
 - **Modal de Vista Rápida (`DeviceInfoModal.jsx`):**
-  - **Estructura a 2 columnas (Idéntica a la maqueta de "Información de Dispositivo"):**
-    - Columna 1: Modelo/Nombre, Entidad, SIM 1 (con link de WA), SIM 2 (con link de WA).
-    - Columna 2: Nombre Interno, Estado del dispositivo, Operador(es) asignado(s).
-  - **Comportamiento Solo Lectura:**
-    - Todos los campos se muestran como texto plano o badges, sin inputs editables.
-    - **Única interacción permitida:** Botón de copiar (`clipboard`) para los links de WhatsApp de la SIM 1 y SIM 2.
+  - **Estructura a 2 columnas (Idéntica a la maqueta de "Información de Dispositivo"):**
+    - Columna 1: Modelo/Nombre, Entidad, SIM 1 (con link de WA), SIM 2 (con link de WA).
+    - Columna 2: Nombre Interno, Estado del dispositivo, Operador(es) asignado(s).
+  - **Comportamiento Solo Lectura:**
+    - Todos los campos se muestran como texto plano o badges, sin inputs editables.
+    - **Única interacción permitida:** Botón de copiar (`clipboard`) para los links de WhatsApp de la SIM 1 y SIM 2.
 
 ### 4. Impacto / UX
 - Permite a los TL obtener la "Hoja de Vida" completa de un equipo y copiar enlaces de WhatsApp en 1 clic sin riesgo de modificar o borrar información accidentalmente.
@@ -125,12 +126,12 @@
 
 ### ~~2. Base de Datos (`simcards.db`)~~
 - ~~Crear la tabla `operators`:~~
-  - ~~`id` (`INTEGER PRIMARY KEY AUTOINCREMENT`)~~
-  - ~~`full_name` (`TEXT`): Nombre y Apellido.~~
-  - ~~`shift` (`TEXT`): Turno (Mañana / Tarde / Noche).~~
-  - ~~`campaign` (`TEXT`): Campaña/s asignadas.~~
-  - ~~`team` (`TEXT`): Nombre del equipo al que pertenece (aislado por TL).~~
-  - ~~`status` (`TEXT`): Estado (`ACTIVO` / `INACTIVO`).~~
+  - ~~`id` (`INTEGER PRIMARY KEY AUTOINCREMENT`)~~
+  - ~~`full_name` (`TEXT`): Nombre y Apellido.~~
+  - ~~`shift` (`TEXT`): Turno (Mañana / Tarde / Noche).~~
+  - ~~`campaign` (`TEXT`): Campaña/s asignadas.~~
+  - ~~`team` (`TEXT`): Nombre del equipo al que pertenece (aislado por TL).~~
+  - ~~`status` (`TEXT`): Estado (`ACTIVO` / `INACTIVO`).~~
 
 ### ~~3. Backend (`routes/operators.js`)~~
 - ~~`GET /api/operators`: Trae los operadores del equipo del TL autenticado, incluyendo mediante un `LEFT JOIN` la lista de dispositivos que lo tienen seleccionado como `assigned_operator_id`.~~
@@ -141,18 +142,13 @@
 ### ~~4. Frontend (`Sidebar.jsx` & `OperatorsView.jsx`)~~
 - ~~**Navegación:** Agregar la opción **"Operadores"** en la barra lateral izquierda (`Sidebar.jsx`).~~
 - ~~**Ficha Destacada Superior (Card Seleccionada):**~~
-  - ~~Foto de perfil estándar (Avatar placeholder estético).~~
-  - ~~Nombre del Operador seleccionado.~~
-  - ~~Lista/Badges de dispositivos que tiene actualmente asignados (si no tiene ninguno, mostrar *"Sin dispositivos vinculados"*).~~
+  - ~~Foto de perfil estándar (Avatar placeholder estético).~~
+  - ~~Nombre del Operador seleccionado.~~
+  - ~~Lista/Badges de dispositivos que tiene actualmente asignados.~~
 - ~~**Listado / Tabla Inferior:**~~
-  - ~~**Columnas:**~~
-    1. ~~Operador (Nombre y Apellido)~~
-    2. ~~Turno (Mañana / Tarde / Noche)~~
-    3. ~~Campaña/s~~
-    4. ~~Dispositivos asignados (Badges redondeados visuales, NO dropdowns)~~
-    5. ~~Acciones (Editar / Eliminar)~~
+  - ~~**Columnas:** Operador, Turno, Campaña/s, Dispositivos asignados, Acciones.~~
 - ~~**Modal `+ Nuevo Operador` / `Editar Operador`**:~~
-  - ~~Formulario liviano con: Nombre y Apellido, Turno y Campaña (y selección de equipo para administradores).~~
+  - ~~Formulario liviano: Nombre y Apellido, Turno y Campaña.~~
 
 ### ~~5. Impacto / Integraciones~~
-- ~~Al cargar operadores en este módulo, se pueblan automáticamente los desplegables de **"Operador Asignado"** en la vista y modal de **Dispositivos** (Módulos 2, 3 y 3.5).~~
+- ~~Al cargar operadores en este módulo, se pueblan automáticamente los desplegables de **"Operador Asignado (SIM 1)"** y **"Operador Asignado (SIM 2)"** en la vista y modal de **Dispositivos**.~~ 

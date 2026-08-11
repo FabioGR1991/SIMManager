@@ -89,6 +89,8 @@ db.exec(`
     model TEXT NOT NULL,
     internal_name TEXT,
     entity TEXT,
+    sim1_phone TEXT,
+    sim2_phone TEXT,
     sim1_id INTEGER,
     sim2_id INTEGER,
     sim1_is_official INTEGER DEFAULT 0,
@@ -97,21 +99,31 @@ db.exec(`
     user_id INTEGER,
     team TEXT,
     assigned_operator_id INTEGER,
+    assigned_operator2_id INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (assigned_operator_id) REFERENCES operators(id) ON DELETE SET NULL,
+    FOREIGN KEY (assigned_operator2_id) REFERENCES operators(id) ON DELETE SET NULL,
     FOREIGN KEY (sim1_id) REFERENCES simcards(id) ON DELETE SET NULL,
     FOREIGN KEY (sim2_id) REFERENCES simcards(id) ON DELETE SET NULL
   );
+
+  -- Índices de optimización para el Motor de Búsqueda y Filtros de Dispositivos (Módulo 3)
+  CREATE INDEX IF NOT EXISTS idx_devices_model ON devices(model);
+  CREATE INDEX IF NOT EXISTS idx_devices_internal_name ON devices(internal_name);
+  CREATE INDEX IF NOT EXISTS idx_devices_entity ON devices(entity);
 `);
 
-// Migraciones automáticas
+// Migraciones automáticas (Agregan campos a bases de datos SQLite existentes)
 try { db.exec("ALTER TABLE users ADD COLUMN team TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE simcards ADD COLUMN team TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE simcards ADD COLUMN wa_type TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE simcards ADD COLUMN wa_link TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE devices ADD COLUMN team TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE devices ADD COLUMN assigned_operator_id INTEGER;"); } catch (e) {}
+try { db.exec("ALTER TABLE devices ADD COLUMN assigned_operator2_id INTEGER;"); } catch (e) {}
+try { db.exec("ALTER TABLE devices ADD COLUMN sim1_phone TEXT;"); } catch (e) {}
+try { db.exec("ALTER TABLE devices ADD COLUMN sim2_phone TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE devices ADD COLUMN internal_name TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE devices ADD COLUMN entity TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE devices ADD COLUMN sim1_id INTEGER;"); } catch (e) {}
@@ -120,7 +132,7 @@ try { db.exec("ALTER TABLE devices ADD COLUMN sim1_is_official INTEGER DEFAULT 0
 try { db.exec("ALTER TABLE devices ADD COLUMN sim2_is_official INTEGER DEFAULT 0;"); } catch (e) {}
 try { db.exec("ALTER TABLE operators ADD COLUMN team TEXT;"); } catch (e) {}
 
-console.log("✅ Base de datos y tablas creadas/actualizadas exitosamente.");
+console.log("✅ Base de datos, tablas e índices creados/actualizados exitosamente.");
 
 const seedAdmin = () => {
   const adminExists = db.prepare('SELECT * FROM users WHERE email = ?').get('admin@tandem.com');

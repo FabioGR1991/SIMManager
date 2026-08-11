@@ -1,12 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
+const PORT = 3001;
 
 // Importamos el router de autenticación y el middleware desde ./routes/auth
 const { router: authRouter, authenticateToken } = require('./routes/auth');
 
 const app = express();
-const PORT = 3001;
+const PORT = 3000; // <--- Cambiado a 3000
 
 // Middlewares
 app.use(cors());

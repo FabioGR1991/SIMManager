@@ -21,16 +21,45 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
   if (!editingSim) return null;
 
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 10) value = value.slice(0, 10);
+    let rawValue = e.target.value.replace(/\D/g, '');
+    if (rawValue.length > 10) rawValue = rawValue.slice(0, 10);
 
-    if (value.length > 6) {
-      value = `${value.slice(0, 2)} ${value.slice(2, 6)} - ${value.slice(6)}`;
-    } else if (value.length > 2) {
-      value = `${value.slice(0, 2)} ${value.slice(2)}`;
+    let formattedValue = rawValue;
+    if (rawValue.length > 6) {
+      formattedValue = `${rawValue.slice(0, 2)} ${rawValue.slice(2, 6)} - ${rawValue.slice(6)}`;
+    } else if (rawValue.length > 2) {
+      formattedValue = `${rawValue.slice(0, 2)} ${rawValue.slice(2)}`;
     }
 
-    setPhoneNumber(value);
+    setPhoneNumber(formattedValue);
+
+    // Lógica de autorrelleno del Link al cambiar el número
+    if (waType) {
+      setWaLink((prevLink) => {
+        // Solo actualiza si está vacío o si ya tiene el formato automático
+        if (!prevLink || prevLink.startsWith('https://wa.me/549')) {
+          return rawValue ? `https://wa.me/549${rawValue}` : '';
+        }
+        return prevLink; // Mantiene la edición manual si el usuario puso un link distinto
+      });
+    }
+  };
+
+  const handleWaTypeChange = (e) => {
+    const newType = e.target.value;
+    setWaType(newType);
+
+    if (!newType) {
+      setWaLink(''); // Limpia el link si se selecciona "Sin WhatsApp"
+    } else {
+      const digits = phoneNumber.replace(/\D/g, '');
+      setWaLink((prevLink) => {
+        if (!prevLink || prevLink.startsWith('https://wa.me/549')) {
+          return digits ? `https://wa.me/549${digits}` : 'https://wa.me/549';
+        }
+        return prevLink;
+      });
+    }
   };
 
   const onSubmit = (e) => {
@@ -65,6 +94,7 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ margin: 0, fontSize: '18px', color: '#0f172a' }}>Editar SIMCard</h3>
           <button
+            type="button"
             onClick={() => setEditingSim(null)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
           >
@@ -140,7 +170,7 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
                 <select
                   className="form-control"
                   value={waType}
-                  onChange={(e) => setWaType(e.target.value)}
+                  onChange={handleWaTypeChange}
                 >
                   <option value="">Sin WhatsApp</option>
                   <option value="WA Normal">WA Normal</option>
