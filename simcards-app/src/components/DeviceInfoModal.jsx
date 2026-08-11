@@ -1,152 +1,122 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, Smartphone, ExternalLink } from 'lucide-react';
+import { X, Copy, Check, Smartphone, ExternalLink, User } from 'lucide-react';
 
 export default function DeviceInfoModal({ device, onClose }) {
-  const [copiedSim1, setCopiedSim1] = useState(false);
-  const [copiedSim2, setCopiedSim2] = useState(false);
+  const [copiedKey, setCopiedKey] = useState(null);
 
   if (!device) return null;
 
-  const copyToClipboard = (text, setCopied) => {
+  const handleCopy = (text, key) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const getStatusBadge = (status) => {
+  const getWaLink = (phone, customLink) => {
+    if (customLink && customLink.trim() !== '') return customLink;
+    if (!phone) return null;
+    const digits = phone.replace(/\D/g, '');
+    if (!digits) return null;
+    const formattedDigits = digits.startsWith('549') ? digits : `549${digits}`;
+    return `https://wa.me/${formattedDigits}`;
+  };
+
+  const waLink1 = getWaLink(device.sim1_phone || device.sim1_number, device.sim1_wa_link);
+  const waLink2 = getWaLink(device.sim2_phone || device.sim2_number, device.sim2_wa_link);
+
+  const getStatusStyle = (status) => {
     const st = (status || 'ACTIVO').toUpperCase();
-    let bg = 'bg-green-100 text-green-800 border-green-300';
-    if (st.includes('INACTIVO') || st.includes('REPUESTO')) bg = 'bg-gray-100 text-gray-800 border-gray-300';
-    if (st.includes('REPARACION')) bg = 'bg-yellow-100 text-yellow-800 border-yellow-300';
-    if (st.includes('RESERVA')) bg = 'bg-blue-100 text-blue-800 border-blue-300';
-
-    return (
-      <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border ${bg}`}>
-        {st}
-      </span>
-    );
+    if (st.includes('REPARACION')) return { bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
+    if (st.includes('RESERVA')) return { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' };
+    if (st.includes('INACTIVO') || st.includes('REPUESTO')) return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' };
+    return { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' };
   };
+
+  const statusStyle = getStatusStyle(device.status);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-150">
+    <div style={overlayStyle}>
+      <div style={modalStyle}>
         
         {/* Cabecera */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-lg">
-              <Smartphone className="w-5 h-5" />
+        <div style={headerStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={iconBoxStyle}>
+              <Smartphone size={20} color="#0284c7" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>
                 Información del Dispositivo
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Ficha de solo lectura</p>
+              <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>Ficha de solo lectura</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-          >
-            <X className="w-5 h-5" />
+          <button onClick={onClose} style={closeIconBtnStyle}>
+            <X size={18} color="#64748b" />
           </button>
         </div>
 
-        {/* Cuerpo / Estructura a 2 Columnas */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+        {/* Cuerpo / Formato a 2 Columnas */}
+        <div style={bodyGridStyle}>
           
           {/* Columna Izquierda */}
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                Modelo / Dispositivo
-              </label>
-              <p className="font-medium text-slate-800 dark:text-slate-100 text-base">
+              <label style={labelStyle}>Modelo / Dispositivo</label>
+              <p style={{ margin: '2px 0 0', fontWeight: '700', fontSize: '15px', color: '#0f172a' }}>
                 {device.model || '—'}
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                Entidad / Área
-              </label>
-              <p className="font-medium text-slate-700 dark:text-slate-200">
-                {device.entity || '—'}
+              <label style={labelStyle}>Entidad / Área</label>
+              <p style={{ margin: '2px 0 0', fontWeight: '600', color: '#0369a1' }}>
+                {device.entity ? (
+                  <span style={entityBadgeStyle}>{device.entity}</span>
+                ) : '—'}
               </p>
             </div>
 
-            {/* SIM 1 */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-lg border border-slate-200 dark:border-slate-700">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-semibold text-xs text-slate-500 dark:text-slate-400">
-                  SIM Card Slot 1
-                </span>
-                {device.sim1_is_official ? (
-                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800">
-                    Línea Oficial
-                  </span>
-                ) : null}
+            {/* Bloque SIM 1 */}
+            <div style={cardSectionStyle}>
+              <div style={flexSpaceBetween}>
+                <span style={cardSubTitleStyle}>SIM Card Slot 1</span>
+                {device.sim1_is_official && <span style={officialBadgeStyle}>Línea Oficial</span>}
               </div>
-              <p className="font-mono font-medium text-slate-800 dark:text-slate-200">
+              <p style={phoneTextStyle}>
                 {device.sim1_phone || device.sim1_number || 'Sin SIM asignada'}
               </p>
-              
-              {device.sim1_wa_link && (
-                <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600 flex items-center justify-between gap-2">
-                  <a
-                    href={device.sim1_wa_link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-green-600 dark:text-green-400 hover:underline flex items-center gap-1 font-medium truncate"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                    <span className="truncate">{device.sim1_wa_link}</span>
+              {waLink1 && (
+                <div style={waRowStyle}>
+                  <a href={waLink1} target="_blank" rel="noreferrer" style={waLinkStyle}>
+                    <ExternalLink size={13} />
+                    <span style={truncateStyle}>{waLink1}</span>
                   </a>
-                  <button
-                    onClick={() => copyToClipboard(device.sim1_wa_link, setCopiedSim1)}
-                    className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded hover:bg-slate-200 dark:hover:bg-slate-600 transition"
-                    title="Copiar enlace de WhatsApp"
-                  >
-                    {copiedSim1 ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                  <button onClick={() => handleCopy(waLink1, 'sim1')} style={copyBtnStyle}>
+                    {copiedKey === 'sim1' ? <Check size={14} color="#16a34a" /> : <Copy size={14} color="#64748b" />}
                   </button>
                 </div>
               )}
             </div>
 
-            {/* SIM 2 */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-lg border border-slate-200 dark:border-slate-700">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-semibold text-xs text-slate-500 dark:text-slate-400">
-                  SIM Card Slot 2
-                </span>
-                {device.sim2_is_official ? (
-                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800">
-                    Línea Oficial
-                  </span>
-                ) : null}
+            {/* Bloque SIM 2 */}
+            <div style={cardSectionStyle}>
+              <div style={flexSpaceBetween}>
+                <span style={cardSubTitleStyle}>SIM Card Slot 2</span>
+                {device.sim2_is_official && <span style={officialBadgeStyle}>Línea Oficial</span>}
               </div>
-              <p className="font-mono font-medium text-slate-800 dark:text-slate-200">
+              <p style={phoneTextStyle}>
                 {device.sim2_phone || device.sim2_number || 'Sin SIM Slot 2'}
               </p>
-              
-              {device.sim2_wa_link && (
-                <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600 flex items-center justify-between gap-2">
-                  <a
-                    href={device.sim2_wa_link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-green-600 dark:text-green-400 hover:underline flex items-center gap-1 font-medium truncate"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                    <span className="truncate">{device.sim2_wa_link}</span>
+              {waLink2 && (
+                <div style={waRowStyle}>
+                  <a href={waLink2} target="_blank" rel="noreferrer" style={waLinkStyle}>
+                    <ExternalLink size={13} />
+                    <span style={truncateStyle}>{waLink2}</span>
                   </a>
-                  <button
-                    onClick={() => copyToClipboard(device.sim2_wa_link, setCopiedSim2)}
-                    className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded hover:bg-slate-200 dark:hover:bg-slate-600 transition"
-                    title="Copiar enlace de WhatsApp"
-                  >
-                    {copiedSim2 ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                  <button onClick={() => handleCopy(waLink2, 'sim2')} style={copyBtnStyle}>
+                    {copiedKey === 'sim2' ? <Check size={14} color="#16a34a" /> : <Copy size={14} color="#64748b" />}
                   </button>
                 </div>
               )}
@@ -154,41 +124,45 @@ export default function DeviceInfoModal({ device, onClose }) {
           </div>
 
           {/* Columna Derecha */}
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                Nombre Interno
-              </label>
-              <p className="font-medium text-slate-700 dark:text-slate-200">
+              <label style={labelStyle}>Nombre Interno</label>
+              <p style={{ margin: '2px 0 0', fontWeight: '500', color: '#334155' }}>
                 {device.internal_name || '—'}
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                Estado del Dispositivo
-              </label>
-              <div className="mt-1">
-                {getStatusBadge(device.status)}
+              <label style={labelStyle}>Estado del Dispositivo</label>
+              <div style={{ marginTop: '4px' }}>
+                <span style={{
+                  padding: '3px 10px',
+                  borderRadius: '12px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  backgroundColor: statusStyle.bg,
+                  color: statusStyle.color,
+                  border: `1px solid ${statusStyle.border}`
+                }}>
+                  {(device.status || 'ACTIVO').toUpperCase()}
+                </span>
               </div>
             </div>
 
             {/* Operador Asignado SIM 1 */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-lg border border-slate-200 dark:border-slate-700">
-              <span className="block font-semibold text-xs text-slate-500 dark:text-slate-400 mb-1">
-                Operador Asignado (SIM 1)
-              </span>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">
-                {device.operator1_name || device.operator_name || device.assigned_operator_name || 'Sin Asignar'}
+            <div style={cardSectionStyle}>
+              <span style={cardSubTitleStyle}>Operador Asignado (SIM 1)</span>
+              <p style={operatorTextStyle}>
+                <User size={14} color="#64748b" />
+                {device.operator1_name || device.assigned_operator_name || device.operator_name || 'Sin Asignar'}
               </p>
             </div>
 
             {/* Operador Asignado SIM 2 */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-lg border border-slate-200 dark:border-slate-700">
-              <span className="block font-semibold text-xs text-slate-500 dark:text-slate-400 mb-1">
-                Operador Asignado (SIM 2)
-              </span>
-              <p className="font-semibold text-slate-800 dark:text-slate-100">
+            <div style={cardSectionStyle}>
+              <span style={cardSubTitleStyle}>Operador Asignado (SIM 2)</span>
+              <p style={operatorTextStyle}>
+                <User size={14} color="#64748b" />
                 {device.operator2_name || device.assigned_operator2_name || 'Sin Asignar'}
               </p>
             </div>
@@ -197,11 +171,8 @@ export default function DeviceInfoModal({ device, onClose }) {
         </div>
 
         {/* Pie de modal */}
-        <div className="flex justify-end px-6 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition"
-          >
+        <div style={footerStyle}>
+          <button onClick={onClose} style={closeBtnStyle}>
             Cerrar
           </button>
         </div>
@@ -210,3 +181,181 @@ export default function DeviceInfoModal({ device, onClose }) {
     </div>
   );
 }
+
+// Estilos nativos en objeto
+const overlayStyle = {
+  position: 'fixed',
+  top: 0, left: 0, right: 0, bottom: 0,
+  backgroundColor: 'rgba(15, 23, 42, 0.5)',
+  backdropFilter: 'blur(4px)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1000,
+  padding: '16px'
+};
+
+const modalStyle = {
+  backgroundColor: '#ffffff',
+  borderRadius: '12px',
+  width: '100%',
+  maxWidth: '560px',
+  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+  overflow: 'hidden',
+  border: '1px solid #e2e8f0',
+  fontFamily: 'system-ui, -apple-system, sans-serif'
+};
+
+const headerStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '16px 20px',
+  borderBottom: '1px solid #e2e8f0',
+  backgroundColor: '#f8fafc'
+};
+
+const iconBoxStyle = {
+  padding: '8px',
+  backgroundColor: '#e0f2fe',
+  borderRadius: '8px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+};
+
+const closeIconBtnStyle = {
+  border: 'none',
+  background: 'transparent',
+  cursor: 'pointer',
+  padding: '4px',
+  borderRadius: '6px',
+  display: 'flex',
+  alignItems: 'center'
+};
+
+const bodyGridStyle = {
+  padding: '20px',
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '16px'
+};
+
+const labelStyle = {
+  fontSize: '11px',
+  fontWeight: '700',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  color: '#94a3b8',
+  display: 'block'
+};
+
+const cardSectionStyle = {
+  padding: '10px 12px',
+  backgroundColor: '#f8fafc',
+  borderRadius: '8px',
+  border: '1px solid #e2e8f0'
+};
+
+const cardSubTitleStyle = {
+  fontSize: '11px',
+  fontWeight: '600',
+  color: '#64748b'
+};
+
+const phoneTextStyle = {
+  margin: '4px 0 0',
+  fontFamily: 'monospace',
+  fontWeight: '600',
+  fontSize: '13px',
+  color: '#0f172a'
+};
+
+const operatorTextStyle = {
+  margin: '4px 0 0',
+  fontWeight: '600',
+  fontSize: '13px',
+  color: '#0f172a',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px'
+};
+
+const flexSpaceBetween = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between'
+};
+
+const officialBadgeStyle = {
+  fontSize: '10px',
+  fontWeight: '700',
+  color: '#0284c7',
+  backgroundColor: '#e0f2fe',
+  padding: '1px 6px',
+  borderRadius: '4px'
+};
+
+const entityBadgeStyle = {
+  backgroundColor: '#e0f2fe',
+  color: '#0369a1',
+  padding: '2px 8px',
+  borderRadius: '6px',
+  fontSize: '12px',
+  fontWeight: '700'
+};
+
+const waRowStyle = {
+  marginTop: '8px',
+  paddingTop: '6px',
+  borderTop: '1px solid #e2e8f0',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '8px'
+};
+
+const waLinkStyle = {
+  fontSize: '11px',
+  color: '#16a34a',
+  textDecoration: 'none',
+  fontWeight: '600',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  overflow: 'hidden'
+};
+
+const truncateStyle = {
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  maxWidth: '160px'
+};
+
+const copyBtnStyle = {
+  border: 'none',
+  background: 'transparent',
+  cursor: 'pointer',
+  padding: '2px 4px',
+  borderRadius: '4px'
+};
+
+const footerStyle = {
+  padding: '12px 20px',
+  borderTop: '1px solid #e2e8f0',
+  backgroundColor: '#f8fafc',
+  display: 'flex',
+  justifyContent: 'flex-end'
+};
+
+const closeBtnStyle = {
+  padding: '6px 16px',
+  fontSize: '13px',
+  fontWeight: '600',
+  color: '#334155',
+  backgroundColor: '#e2e8f0',
+  border: 'none',
+  borderRadius: '6px',
+  cursor: 'pointer'
+};
