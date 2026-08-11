@@ -284,7 +284,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           <Search size={16} color="#64748b" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
-            placeholder="Buscar por modelo, nombre interno, entidad, línea o operador..."
+            placeholder="Buscar por modelo, nombre interno, entidad, línea u operador..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', padding: '8px 10px 8px 32px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
