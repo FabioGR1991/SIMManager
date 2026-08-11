@@ -116,22 +116,19 @@ router.put('/edit/:id', authenticateToken, (req, res) => {
       });
     }
 
-    db.prepare(`
-      UPDATE simcards 
-      SET phone_number = ?, 
-          campaign = ?, 
-          team = ?, 
-          wa_type = ?, 
-          wa_link = ? 
-      WHERE id = ?
-    `).run(
-      phone_number, 
-      campaign, 
-      team || null, 
-      wa_type || null, 
-      wa_link || null, 
-      id
-    );
+    if (team) {
+      db.prepare(`
+        UPDATE simcards 
+        SET phone_number = ?, campaign = ?, team = ?, wa_type = ?, wa_link = ? 
+        WHERE id = ?
+      `).run(phone_number, campaign, team, wa_type || null, wa_link || null, id);
+    } else {
+      db.prepare(`
+        UPDATE simcards 
+        SET phone_number = ?, campaign = ?, wa_type = ?, wa_link = ? 
+        WHERE id = ?
+      `).run(phone_number, campaign, wa_type || null, wa_link || null, id);
+    }
 
     res.json({ message: 'Línea actualizada con éxito' });
   } catch (err) {

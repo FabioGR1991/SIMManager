@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../db');
 const { authenticateToken, cleanDigits } = require('../utils/helpers');
 
-// GET /api/devices
+// GET /api/devices - Listar dispositivos con soporte para búsqueda (q) y filtros (status, entity)
 router.get('/', authenticateToken, (req, res) => {
   try {
     const { q, status, entity } = req.query;
@@ -38,21 +38,25 @@ router.get('/', authenticateToken, (req, res) => {
     const conditions = [];
     const params = [];
 
+    // Restricción de permisos por equipo si no es Admin
     if (!isAdmin) {
       conditions.push('devices.team = ?');
       params.push(userTeam);
     }
 
+    // Filtro por Estado
     if (status && status !== 'TODOS') {
       conditions.push('devices.status = ?');
       params.push(status);
     }
 
+    // Filtro por Entidad
     if (entity && entity !== 'TODAS') {
       conditions.push('devices.entity = ?');
       params.push(entity);
     }
 
+    // Motor de Búsqueda rápida (q)
     if (q && q.trim() !== '') {
       const searchTerm = `%${q.trim()}%`;
       conditions.push(`(
@@ -111,6 +115,7 @@ router.post('/', authenticateToken, (req, res) => {
 
     const deviceTeam = isAdmin ? (team || userTeam) : userTeam;
 
+    // Obtener SIMCards para validaciones
     const simcards = db.prepare(`
       SELECT simcards.*, users.team as user_team 
       FROM simcards 
@@ -119,6 +124,7 @@ router.post('/', authenticateToken, (req, res) => {
 
     const allDevices = db.prepare('SELECT * FROM devices').all();
 
+    // Determinar teléfonos efectivos a validar
     let effectiveSim1Phone = sim1_phone;
     let effectiveSim2Phone = sim2_phone;
 
@@ -130,18 +136,6 @@ router.post('/', authenticateToken, (req, res) => {
     if (sim2_id) {
       const sim2 = simcards.find(s => s.id === Number(sim2_id));
       if (sim2) effectiveSim2Phone = sim2.phone_number;
-    }
-
-    // Validación de ranuras duplicadas en el mismo dispositivo
-    const isSameSimId = sim1_id && sim2_id && String(sim1_id) === String(sim2_id);
-    const isSamePhone = effectiveSim1Phone && effectiveSim2Phone && 
-      effectiveSim1Phone !== 'NO_TIENE' && effectiveSim2Phone !== 'NO_TIENE' &&
-      cleanDigits(effectiveSim1Phone) === cleanDigits(effectiveSim2Phone);
-
-    if (isSameSimId || isSamePhone) {
-      return res.status(400).json({ 
-        error: 'No puedes asignar la misma SIM Card o número telefónico en ambas ranuras (SIM 1 y SIM 2).' 
-      });
     }
 
     const phonesToCheck = [
@@ -255,18 +249,6 @@ router.put('/:id', authenticateToken, (req, res) => {
     if (sim2_id) {
       const sim2 = simcards.find(s => s.id === Number(sim2_id));
       if (sim2) effectiveSim2Phone = sim2.phone_number;
-    }
-
-    // Validación de ranuras duplicadas en el mismo dispositivo
-    const isSameSimId = sim1_id && sim2_id && String(sim1_id) === String(sim2_id);
-    const isSamePhone = effectiveSim1Phone && effectiveSim2Phone && 
-      effectiveSim1Phone !== 'NO_TIENE' && effectiveSim2Phone !== 'NO_TIENE' &&
-      cleanDigits(effectiveSim1Phone) === cleanDigits(effectiveSim2Phone);
-
-    if (isSameSimId || isSamePhone) {
-      return res.status(400).json({ 
-        error: 'No puedes asignar la misma SIM Card o número telefónico en ambas ranuras (SIM 1 y SIM 2).' 
-      });
     }
 
     const phonesToCheck = [
