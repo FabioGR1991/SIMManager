@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { LogOut, Users, LayoutDashboard, RefreshCw, Smartphone, MapPin, UserCheck } from 'lucide-react';
+import { 
+  LogOut, 
+  Users, 
+  LayoutDashboard, 
+  RefreshCw, 
+  Smartphone, 
+  MapPin, 
+  UserCheck, 
+  Home 
+} from 'lucide-react';
 
 import LoginView from './components/LoginView';
 import DashboardView from './components/DashboardView';
@@ -9,6 +18,8 @@ import UsersView from './components/UsersView';
 import SyncView from './components/SyncView';
 import TeamsView from './components/TeamsView';
 import OperatorsView from './components/OperatorsView';
+import PanelControlView from './components/PanelControlView';
+
 import UserEditModal from './components/UserEditModal';
 import HistoryModal from './components/HistoryModal';
 import SimEditModal from './components/SimEditModal';
@@ -29,10 +40,12 @@ const getInitialUser = () => {
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [user, setUser] = useState(getInitialUser());
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('panel'); // 'panel' por defecto al iniciar
   const [loginError, setLoginError] = useState('');
 
   const [simcards, setSimcards] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [operators, setOperators] = useState([]);
   const [usersList, setUsersList] = useState([]);
   const [teamsList, setTeamsList] = useState([]);
   const [targetDeviceId, setTargetDeviceId] = useState(null);
@@ -47,19 +60,26 @@ export default function App() {
 
   useEffect(() => {
     if (token) {
-      fetchSimcards();
-      fetchTeams();
-      if (isAdmin) {
-        fetchUsers();
-      }
+      fetchAllData();
 
       const interval = setInterval(() => {
         fetchSimcards();
+        fetchDevices();
       }, 10000);
 
       return () => clearInterval(interval);
     }
   }, [token, user?.role]);
+
+  const fetchAllData = () => {
+    fetchSimcards();
+    fetchDevices();
+    fetchOperators();
+    fetchTeams();
+    if (isAdmin) {
+      fetchUsers();
+    }
+  };
 
   const fetchSimcards = async () => {
     try {
@@ -71,6 +91,28 @@ export default function App() {
       if (err.response?.status === 401 || err.response?.status === 403) {
         handleLogout();
       }
+    }
+  };
+
+  const fetchDevices = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/devices`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setDevices(res.data);
+    } catch (err) {
+      console.error('Error al cargar dispositivos:', err);
+    }
+  };
+
+  const fetchOperators = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/operators`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setOperators(res.data);
+    } catch (err) {
+      console.error('Error al cargar operadores:', err);
     }
   };
 
@@ -303,7 +345,7 @@ export default function App() {
         color: '#fff',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justify: 'space-between',
         padding: '20px',
         height: '100vh',
         boxSizing: 'border-box'
@@ -318,6 +360,24 @@ export default function App() {
           </div>
 
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
+            
+            {/* OPCIÓN: PANEL DE CONTROL */}
+            <button
+              onClick={() => {
+                setActiveTab('panel');
+                setTargetDeviceId(null);
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+                borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
+                backgroundColor: activeTab === 'panel' ? '#0284c7' : 'transparent',
+                color: activeTab === 'panel' ? '#fff' : '#cbd5e1', fontWeight: '500'
+              }}
+            >
+              <Home size={18} /> Panel de Control
+            </button>
+
+            {/* OPCIÓN: INVENTARIO SIMS */}
             <button
               onClick={() => {
                 setActiveTab('dashboard');
@@ -333,6 +393,7 @@ export default function App() {
               <LayoutDashboard size={18} /> Inventario SIMs
             </button>
 
+            {/* OPCIÓN: DISPOSITIVOS */}
             <button
               onClick={() => setActiveTab('devices')}
               style={{
@@ -345,7 +406,7 @@ export default function App() {
               <Smartphone size={18} /> Dispositivos
             </button>
 
-            {/* BOTÓN OPERADORES */}
+            {/* OPCIÓN: OPERADORES */}
             <button
               onClick={() => setActiveTab('operators')}
               style={{
@@ -358,7 +419,7 @@ export default function App() {
               <UserCheck size={18} /> Operadores
             </button>
 
-            {/* BOTÓN EXCLUSIVO ADMIN: EQUIPOS */}
+            {/* OPCIONES EXCLUSIVAS ADMIN */}
             {isAdmin && (
               <button
                 onClick={() => setActiveTab('teams')}
@@ -421,7 +482,7 @@ export default function App() {
               backgroundColor: '#ef4444',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              justify: 'center',
               gap: '8px',
               padding: '8px'
             }}
@@ -433,6 +494,19 @@ export default function App() {
 
       {/* Contenido Principal */}
       <main style={{ flex: 1, padding: '30px', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
+        
+        {/* VISTA PANEL DE CONTROL */}
+        {activeTab === 'panel' && (
+          <PanelControlView
+            user={user}
+            devices={devices}
+            simcards={simcards}
+            operators={operators}
+            onNavigate={(tab) => setActiveTab(tab)}
+          />
+        )}
+
+        {/* VISTA INVENTARIO SIMS */}
         {activeTab === 'dashboard' && (
           <DashboardView
             simcards={simcards}
@@ -447,6 +521,7 @@ export default function App() {
           />
         )}
 
+        {/* VISTA DISPOSITIVOS */}
         {activeTab === 'devices' && (
           <DevicesView
             API_URL={API_URL}
@@ -458,7 +533,7 @@ export default function App() {
           />
         )}
 
-        {/* VISTA DE OPERADORES */}
+        {/* VISTA OPERADORES */}
         {activeTab === 'operators' && (
           <OperatorsView
             API_URL={API_URL}
@@ -467,11 +542,12 @@ export default function App() {
           />
         )}
 
-        {/* VISTA DE EQUIPOS */}
+        {/* VISTA EQUIPOS */}
         {activeTab === 'teams' && isAdmin && (
           <TeamsView API_URL={API_URL} token={token} onTeamsChange={fetchTeams} />
         )}
 
+        {/* VISTA USUARIOS */}
         {activeTab === 'users' && isAdmin && (
           <UsersView
             usersList={usersList}
@@ -482,6 +558,7 @@ export default function App() {
           />
         )}
 
+        {/* VISTA CONCILIACIÓN */}
         {activeTab === 'sync' && isAdmin && (
           <SyncView API_URL={API_URL} token={token} />
         )}
