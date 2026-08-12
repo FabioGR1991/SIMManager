@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../db');
 const { authenticateToken, cleanDigits } = require('../utils/helpers');
 
-// GET /api/devices - Listar dispositivos con soporte para búsqueda (q) y filtros (status, entity)
+// GET /api/devices - Listar dispositivos con soporte para búsqueda y filtros
 router.get('/', authenticateToken, (req, res) => {
   try {
     const { q, status, entity } = req.query;
@@ -38,25 +38,21 @@ router.get('/', authenticateToken, (req, res) => {
     const conditions = [];
     const params = [];
 
-    // Restricción de permisos por equipo si no es Admin
     if (!isAdmin) {
       conditions.push('devices.team = ?');
       params.push(userTeam);
     }
 
-    // Filtro por Estado
     if (status && status !== 'TODOS') {
       conditions.push('devices.status = ?');
       params.push(status);
     }
 
-    // Filtro por Entidad / Área
     if (entity && entity !== 'TODAS') {
       conditions.push('devices.entity = ?');
       params.push(entity);
     }
 
-    // Motor de Búsqueda rápida (q)
     if (q && q.trim() !== '') {
       const searchTerm = `%${q.trim()}%`;
       conditions.push(`(
@@ -89,6 +85,31 @@ router.get('/', authenticateToken, (req, res) => {
   }
 });
 
+// GET /api/devices/:id/history - Obtener historial de auditoría de un dispositivo
+router.get('/:id/history', authenticateToken, (req, res) => {
+  const { id } = req.params;
+  try {
+    const history = db.prepare(`
+      SELECT 
+        dl.id,
+        dl.device_id,
+        dl.action,
+        dl.details,
+        dl.created_at,
+        COALESCE(u.name, 'Sistema') as user_name
+      FROM device_logs dl
+      LEFT JOIN users u ON dl.user_id = u.id
+      WHERE dl.device_id = ?
+      ORDER BY dl.created_at DESC, dl.id DESC
+    `).all(id);
+
+    res.json(history);
+  } catch (err) {
+    console.error('Error al obtener historial del dispositivo:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/devices - Crear un nuevo dispositivo
 router.post('/', authenticateToken, (req, res) => {
   const {
@@ -115,7 +136,6 @@ router.post('/', authenticateToken, (req, res) => {
 
     const deviceTeam = isAdmin ? (team || userTeam) : userTeam;
 
-    // Obtener SIMCards obteniendo su equipo efectivo (priorizando simcards.team y luego users.team)
     const simcards = db.prepare(`
       SELECT 
         simcards.*, 
@@ -126,7 +146,6 @@ router.post('/', authenticateToken, (req, res) => {
 
     const allDevices = db.prepare('SELECT * FROM devices').all();
 
-    // Determinar teléfonos efectivos a validar
     let effectiveSim1Phone = sim1_phone;
     let effectiveSim2Phone = sim2_phone;
 
@@ -163,7 +182,6 @@ router.post('/', authenticateToken, (req, res) => {
         return res.status(400).json({ error: `La línea ${item.phone} (${item.slot}) no existe en el sistema.` });
       }
 
-      // Validar pertenencia de equipo exclusivamente
       if (!isAdmin && sim.effective_team !== userTeam) {
         return res.status(403).json({ error: `La línea ${item.phone} (${item.slot}) pertenece al equipo "${sim.effective_team}" y no a tu equipo (${userTeam}).` });
       }
@@ -193,7 +211,23 @@ router.post('/', authenticateToken, (req, res) => {
       deviceTeam
     );
 
-    res.json({ id: result.lastInsertRowid, message: 'Dispositivo guardado correctamente' });
+    const newDeviceId = result.lastInsertRowid;
+
+    // Nombres de los operadores asignados para auditoría
+    const op1 = assigned_operator_id ? db.prepare('SELECT full_name FROM operators WHERE id = ?').get(assigned_operator_id)?.full_name : null;
+    const op2 = assigned_operator2_id ? db.prepare('SELECT full_name FROM operators WHERE id = ?').get(assigned_operator2_id)?.full_name : null;
+
+    let logDetails = `Alta de dispositivo ${model}`;
+    if (effectiveSim1Phone) logDetails += ` | SIM 1: ${effectiveSim1Phone}${op1 ? ` (Op: ${op1})` : ''}`;
+    if (effectiveSim2Phone && effectiveSim2Phone !== 'NO_TIENE') logDetails += ` | SIM 2: ${effectiveSim2Phone}${op2 ? ` (Op: ${op2})` : ''}`;
+
+    // Insertar registro en el historial
+    db.prepare(`
+      INSERT INTO device_logs (device_id, user_id, action, details)
+      VALUES (?, ?, ?, ?)
+    `).run(newDeviceId, req.user.id, 'Creación', logDetails);
+
+    res.json({ id: newDeviceId, message: 'Dispositivo guardado correctamente' });
 
   } catch (err) {
     console.error('Error al guardar dispositivo:', err);
@@ -279,13 +313,36 @@ router.put('/:id', authenticateToken, (req, res) => {
         return res.status(400).json({ error: `La línea ${item.phone} (${item.slot}) no existe en el sistema.` });
       }
 
-      // Validar pertenencia de equipo exclusivamente
       if (!isAdmin && sim.effective_team !== userTeam) {
         return res.status(403).json({ error: `La línea ${item.phone} (${item.slot}) pertenece al equipo "${sim.effective_team}" y no a tu equipo (${userTeam}).` });
       }
     }
 
     const updatedTeam = (isAdmin && team) ? team : device.team;
+
+    // Comparativa de cambios para registrar en auditoría
+    const changes = [];
+    if (device.model !== model) changes.push(`Modelo: '${device.model}' ➔ '${model}'`);
+    if (device.status !== (status || 'ACTIVO')) changes.push(`Estado: '${device.status}' ➔ '${status || 'ACTIVO'}'`);
+    if ((device.entity || '') !== (entity || '')) changes.push(`Entidad: '${device.entity || 'Ninguna'}' ➔ '${entity || 'Ninguna'}'`);
+
+    const newSim1 = effectiveSim1Phone || 'Ninguna';
+    const oldSim1 = device.sim1_phone || 'Ninguna';
+    if (oldSim1 !== newSim1) changes.push(`SIM 1: '${oldSim1}' ➔ '${newSim1}'`);
+
+    const newSim2 = effectiveSim2Phone || 'NO_TIENE';
+    const oldSim2 = device.sim2_phone || 'NO_TIENE';
+    if (oldSim2 !== newSim2) changes.push(`SIM 2: '${oldSim2}' ➔ '${newSim2}'`);
+
+    const oldOp1 = device.assigned_operator_id ? db.prepare('SELECT full_name FROM operators WHERE id = ?').get(device.assigned_operator_id)?.full_name : 'Sin asignar';
+    const newOp1 = assigned_operator_id ? db.prepare('SELECT full_name FROM operators WHERE id = ?').get(assigned_operator_id)?.full_name : 'Sin asignar';
+    if (oldOp1 !== newOp1) changes.push(`Op SIM 1: '${oldOp1}' ➔ '${newOp1}'`);
+
+    const oldOp2 = device.assigned_operator2_id ? db.prepare('SELECT full_name FROM operators WHERE id = ?').get(device.assigned_operator2_id)?.full_name : 'Sin asignar';
+    const newOp2 = assigned_operator2_id ? db.prepare('SELECT full_name FROM operators WHERE id = ?').get(assigned_operator2_id)?.full_name : 'Sin asignar';
+    if (oldOp2 !== newOp2) changes.push(`Op SIM 2: '${oldOp2}' ➔ '${newOp2}'`);
+
+    const detailText = changes.length > 0 ? changes.join(' | ') : 'Actualización de datos del dispositivo';
 
     db.prepare(`
       UPDATE devices 
@@ -320,6 +377,12 @@ router.put('/:id', authenticateToken, (req, res) => {
       updatedTeam,
       id
     );
+
+    // Insertar registro en el historial
+    db.prepare(`
+      INSERT INTO device_logs (device_id, user_id, action, details)
+      VALUES (?, ?, ?, ?)
+    `).run(id, req.user.id, 'Modificación', detailText);
 
     res.json({ message: 'Dispositivo actualizado correctamente' });
 

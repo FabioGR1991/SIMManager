@@ -55,7 +55,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
     }
   };
 
-  // Obtener lista única de entidades para el filtro
   const uniqueEntities = useMemo(() => {
     const entities = devices
       .map(d => d.entity)
@@ -69,7 +68,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
     setEntityFilter('TODAS');
   };
 
-  // FUNCIÓN PARA EXPORTAR DISPOSITIVOS A CSV
   const handleExportCSV = () => {
     if (!devices || devices.length === 0) {
       alert('No hay registros para exportar con los filtros actuales.');
@@ -105,7 +103,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
       ].join(';');
     });
 
-    // Encabezado BOM UTF-8 (\uFEFF) para garantizar compatibilidad con Excel
     const csvContent = '\uFEFF' + [headers.join(';'), ...rows].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -128,9 +125,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
       setDeviceHistory(res.data);
     } catch (err) {
       console.error('Error al obtener historial:', err);
-      setDeviceHistory([
-        { id: 1, date: new Date().toLocaleDateString(), action: 'Registro inicial', details: `Dispositivo ${device.model} creado` }
-      ]);
+      setDeviceHistory([]);
     }
     setShowHistoryModal(true);
   };
@@ -171,6 +166,21 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
     }
   };
 
+  // Helper para formatear fecha y hora
+  const formatDateTime = (rawDate) => {
+    if (!rawDate) return '';
+    const d = new Date(rawDate);
+    if (isNaN(d.getTime())) return rawDate;
+    return d.toLocaleString('es-AR', {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
   return (
     <div style={{ padding: '15px' }}>
       
@@ -189,7 +199,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
         </button>
       </div>
 
-      {/* FICHA DESTACADA SUPERIOR (SELECCIONADO) */}
+      {/* FICHA DESTACADA SUPERIOR */}
       <div className="device-card" style={{ backgroundColor: '#fff', padding: '18px 20px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
         {selectedDevice ? (
           (() => {
@@ -204,7 +214,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
             return (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 
-                {/* Lado Izquierdo: Icono + Detalles del teléfono + SIM 1 y SIM 2 apiladas */}
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                   <div style={{ width: '64px', height: '64px', borderRadius: '12px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: '6px' }}>
                     <img 
@@ -230,10 +239,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                       )}
                     </div>
 
-                    {/* Contenedor de 2 líneas apiladas */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12px' }}>
-                      
-                      {/* LÍNEA SIM 1 */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <strong style={{ color: '#475569', width: '42px' }}>SIM 1:</strong>
                         <span style={{ color: selectedDevice.sim1_phone ? '#15803d' : '#94a3b8', fontFamily: 'monospace', fontWeight: 'bold' }}>
@@ -246,7 +252,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                         )}
                       </div>
 
-                      {/* LÍNEA SIM 2 */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <strong style={{ color: '#475569', width: '42px' }}>SIM 2:</strong>
                         <span style={{ color: selectedDevice.sim2_phone ? '#15803d' : '#94a3b8', fontFamily: 'monospace', fontWeight: 'bold' }}>
@@ -258,14 +263,11 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                           </span>
                         )}
                       </div>
-
                     </div>
                   </div>
                 </div>
 
-                {/* Lado Derecho */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                  
                   {isSameOperator && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 14px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
@@ -291,18 +293,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                   <button
                     onClick={() => setShowInfoModal(true)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 14px',
-                      backgroundColor: '#0284c7',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      fontSize: '13px',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                      display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                     }}
                   >
                     <Info size={16} /> + Info
@@ -321,8 +312,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
 
       {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div style={{ backgroundColor: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '15px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-        
-        {/* Búsqueda */}
         <div style={{ flex: '1 1 250px', position: 'relative' }}>
           <Search size={16} color="#64748b" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
@@ -334,7 +323,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           />
         </div>
 
-        {/* Filtro por Estado */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Filter size={15} color="#64748b" />
           <select
@@ -350,7 +338,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           </select>
         </div>
 
-        {/* Filtro por Entidad */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <select
             value={entityFilter}
@@ -365,7 +352,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           </select>
         </div>
 
-        {/* Limpiar Filtros */}
         {(searchTerm || statusFilter !== 'TODOS' || entityFilter !== 'TODAS') && (
           <button
             onClick={handleClearFilters}
@@ -376,30 +362,17 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           </button>
         )}
 
-        {/* BOTÓN EXPORTAR CSV */}
         <button
           type="button"
           onClick={handleExportCSV}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 14px',
-            fontSize: '13px',
-            fontWeight: '500',
-            color: '#0284c7',
-            backgroundColor: '#f0f9ff',
-            border: '1px solid #bae6fd',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap'
+            display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', fontSize: '13px', fontWeight: '500', color: '#0284c7', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', cursor: 'pointer', whiteSpace: 'nowrap'
           }}
           title="Exportar resultados a un archivo CSV"
         >
           <Download size={15} color="#0284c7" />
           Exportar CSV ({devices.length})
         </button>
-
       </div>
 
       {/* TABLA DE DISPOSITIVOS */}
@@ -421,7 +394,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                 <tr key={device.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '10px 12px', fontWeight: 'bold', color: '#64748b' }}>#{device.id}</td>
                   
-                  {/* Modelo + Nombre Interno + Entidad */}
                   <td style={{ padding: '10px 12px' }}>
                     <div 
                       onClick={() => setSelectedDevice(device)} 
@@ -439,7 +411,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                     </div>
                   </td>
 
-                  {/* SIM 1 + Operador 1 */}
                   <td style={{ padding: '10px 12px' }}>
                     <div style={{ fontWeight: '600', color: device.sim1_phone ? '#1e293b' : '#94a3b8' }}>
                       {device.sim1_phone || '-'}
@@ -451,7 +422,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                     )}
                   </td>
 
-                  {/* SIM 2 + Operador 2 */}
                   <td style={{ padding: '10px 12px' }}>
                     <div style={{ fontWeight: '600', color: device.sim2_phone ? '#1e293b' : '#94a3b8' }}>
                       {device.sim2_phone || '-'}
@@ -463,13 +433,9 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                     )}
                   </td>
 
-                  {/* Estado */}
                   <td style={{ padding: '10px 12px' }}>
                     <span style={{
-                      padding: '4px 8px',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      fontWeight: 'bold',
+                      padding: '4px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold',
                       backgroundColor: device.status === 'ACTIVO' ? '#dcfce7' : '#f1f5f9',
                       color: device.status === 'ACTIVO' ? '#15803d' : '#64748b'
                     }}>
@@ -477,7 +443,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                     </span>
                   </td>
 
-                  {/* Acciones */}
                   <td style={{ padding: '10px 12px', textAlign: 'center' }}>
                     <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
                       <button 
@@ -519,7 +484,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
         </table>
       </div>
 
-      {/* MODAL COMPONENTIZADO DE EDICIÓN / CREACIÓN */}
       <DeviceEditModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -529,7 +493,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
         operators={operators}
       />
 
-      {/* MODAL DE VISTA RÁPIDA / + INFO (SOLO LECTURA) */}
       {showInfoModal && selectedDevice && (
         <DeviceInfoModal
           device={selectedDevice}
@@ -537,54 +500,103 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
         />
       )}
 
-      {/* MODAL DE HISTORIAL */}
+      {/* MODAL DE HISTORIAL ESTILIZADO COMO LAS SIMS */}
       {showHistoryModal && (
         <div style={modalOverlayStyle}>
-          <div style={{ ...modalContentStyle, width: '500px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-              <h3 style={{ color: '#0f172a', margin: 0 }}>
-                Historial - {selectedDevice?.model} (#{selectedDevice?.id})
+          <div style={{ ...modalContentStyle, width: '520px' }}>
+            
+            {/* Título Estilo SIM */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+              <h3 style={{ color: '#0f172a', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
+                Historial de Dispositivo: <span style={{ color: '#0284c7' }}>{selectedDevice?.model} (#{selectedDevice?.id})</span>
               </h3>
               <button 
                 onClick={() => setShowHistoryModal(false)}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px' }}
               >
                 <X size={20} color="#64748b" />
               </button>
             </div>
 
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+            {/* Listado de Registros */}
+            <div style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '4px' }}>
               {deviceHistory.length > 0 ? (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {deviceHistory.map((item, idx) => (
-                    <li key={idx} style={{ padding: '10px 0', borderBottom: '1px solid #f1f5f9' }}>
-                      <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '600' }}>
-                        {item.date || item.created_at || 'Fecha N/A'}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {deviceHistory.map((item, idx) => {
+                    const userName = item.user_name || item.created_by || item.user || 'Sistema';
+                    const actionLabel = item.action || 'Modificación';
+                    const rawDate = item.created_at || item.date || item.timestamp;
+                    const dateFormatted = formatDateTime(rawDate);
+
+                    return (
+                      <div 
+                        key={idx} 
+                        style={{ 
+                          paddingBottom: '12px', 
+                          borderBottom: '1px solid #f1f5f9',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '4px'
+                        }}
+                      >
+                        {/* Línea Principal: Usuario + Acción Badge + Fecha/Hora */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '14px' }}>
+                          <strong style={{ color: '#0f172a' }}>{userName}</strong>
+                          <span style={{ color: '#475569', fontSize: '13px' }}>realizó</span>
+                          
+                          <span style={{
+                            padding: '2px 8px',
+                            borderRadius: '12px',
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            backgroundColor: '#fee2e2',
+                            color: '#991b1b',
+                            display: 'inline-block'
+                          }}>
+                            {actionLabel}
+                          </span>
+
+                          <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                            ({dateFormatted})
+                          </span>
+                        </div>
+
+                        {/* Detalle del Cambio (Asignación de SIMs / Operadores) */}
+                        {(item.details || item.description) && (
+                          <div style={{ fontSize: '13px', color: '#475569', marginTop: '2px', backgroundColor: '#f8fafc', padding: '6px 10px', borderRadius: '6px', border: '1px solid #f1f5f9' }}>
+                            {item.details || item.description}
+                          </div>
+                        )}
                       </div>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#1e293b' }}>
-                        {item.action || 'Cambio registrado'}
-                      </div>
-                      <div style={{ fontSize: '13px', color: '#475569' }}>
-                        {item.details || item.description || 'Sin detalle adicional'}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                    );
+                  })}
+                </div>
               ) : (
-                <p style={{ color: '#64748b', fontSize: '14px', textAlign: 'center', padding: '20px 0' }}>
+                <p style={{ color: '#64748b', fontSize: '14px', textAlign: 'center', padding: '20px 0', margin: 0 }}>
                   No hay registros de historial para este dispositivo.
                 </p>
               )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+            {/* Botón de Cierre */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
               <button 
                 onClick={() => setShowHistoryModal(false)} 
-                style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#fff', cursor: 'pointer', fontWeight: '500' }}
+                style={{ 
+                  padding: '10px 24px', 
+                  borderRadius: '8px', 
+                  border: 'none', 
+                  backgroundColor: '#64748b', 
+                  color: '#fff',
+                  cursor: 'pointer', 
+                  fontWeight: 'bold',
+                  fontSize: '13px'
+                }}
               >
                 Cerrar
               </button>
             </div>
+
           </div>
         </div>
       )}
@@ -601,7 +613,7 @@ const iconBtnStyle = {
   cursor: 'pointer',
   display: 'inline-flex',
   alignItems: 'center',
-  justifyContent: 'center'
+  justify: 'center'
 };
 
 const modalOverlayStyle = {

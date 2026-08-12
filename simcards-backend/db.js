@@ -48,7 +48,7 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
   );
 
-  -- Tabla de Historial / Trazabilidad
+  -- Tabla de Historial / Trazabilidad de SIMCards
   CREATE TABLE IF NOT EXISTS sim_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     simcard_id INTEGER NOT NULL,
@@ -108,13 +108,26 @@ db.exec(`
     FOREIGN KEY (sim2_id) REFERENCES simcards(id) ON DELETE SET NULL
   );
 
-  -- Índices de optimización para el Motor de Búsqueda y Filtros de Dispositivos (Módulo 3)
+  -- Tabla de Historial / Trazabilidad de Dispositivos
+  CREATE TABLE IF NOT EXISTS device_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    device_id INTEGER NOT NULL,
+    user_id INTEGER,
+    action TEXT NOT NULL,
+    details TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+  );
+
+  -- Índices de optimización
   CREATE INDEX IF NOT EXISTS idx_devices_model ON devices(model);
   CREATE INDEX IF NOT EXISTS idx_devices_internal_name ON devices(internal_name);
   CREATE INDEX IF NOT EXISTS idx_devices_entity ON devices(entity);
+  CREATE INDEX IF NOT EXISTS idx_device_logs_device_id ON device_logs(device_id);
 `);
 
-// Migraciones automáticas (Agregan campos a bases de datos SQLite existentes)
+// Migraciones automáticas
 try { db.exec("ALTER TABLE users ADD COLUMN team TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE simcards ADD COLUMN team TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE simcards ADD COLUMN wa_type TEXT;"); } catch (e) {}
