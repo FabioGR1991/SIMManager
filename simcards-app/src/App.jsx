@@ -345,7 +345,7 @@ export default function App() {
         color: '#fff',
         display: 'flex',
         flexDirection: 'column',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         padding: '20px',
         height: '100vh',
         boxSizing: 'border-box'
@@ -355,7 +355,11 @@ export default function App() {
           <div style={{ paddingBottom: '20px', borderBottom: '1px solid #334155', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '18px', margin: 0, color: '#38bdf8' }}>SIMManager</h2>
             <small style={{ color: '#94a3b8' }}>
-              {isAdmin ? 'Administrador' : `TL - ${user?.team || 'Sin Equipo'}`}
+              {isAdmin 
+                ? 'Administrador' 
+                : (user?.role === 'pl' || user?.role === 'Planificador')
+                  ? `PL - ${user?.team || 'Sin Equipo'}`
+                  : `TL - ${user?.team || 'Sin Equipo'}`}
             </small>
           </div>
 
@@ -482,7 +486,7 @@ export default function App() {
               backgroundColor: '#ef4444',
               display: 'flex',
               alignItems: 'center',
-              justify: 'center',
+              justifyContent: 'center',
               gap: '8px',
               padding: '8px'
             }}
