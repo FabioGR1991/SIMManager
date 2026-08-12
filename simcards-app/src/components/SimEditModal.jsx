@@ -3,7 +3,7 @@ import { X, Save, MessageCircle } from 'lucide-react';
 
 export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimEdit, teamsList = [] }) {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [campaign, setCampaign] = useState('');
+  const [entity, setEntity] = useState('');
   const [team, setTeam] = useState('');
   const [waType, setWaType] = useState('');
   const [waLink, setWaLink] = useState('');
@@ -11,7 +11,7 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
   useEffect(() => {
     if (editingSim) {
       setPhoneNumber(editingSim.phone_number || '');
-      setCampaign(editingSim.campaign || '');
+      setEntity(editingSim.entity || editingSim.campaign || '');
       setTeam(editingSim.team || '');
       setWaType(editingSim.wa_type || '');
       setWaLink(editingSim.wa_link || '');
@@ -36,11 +36,10 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
     // Lógica de autorrelleno del Link al cambiar el número
     if (waType) {
       setWaLink((prevLink) => {
-        // Solo actualiza si está vacío o si ya tiene el formato automático
         if (!prevLink || prevLink.startsWith('https://wa.me/549')) {
           return rawValue ? `https://wa.me/549${rawValue}` : '';
         }
-        return prevLink; // Mantiene la edición manual si el usuario puso un link distinto
+        return prevLink;
       });
     }
   };
@@ -50,7 +49,7 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
     setWaType(newType);
 
     if (!newType) {
-      setWaLink(''); // Limpia el link si se selecciona "Sin WhatsApp"
+      setWaLink('');
     } else {
       const digits = phoneNumber.replace(/\D/g, '');
       setWaLink((prevLink) => {
@@ -66,10 +65,14 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
     e.preventDefault();
     handleSaveSimEdit({
       id: editingSim.id,
+      phone_number: phoneNumber,
       phoneNumber,
-      campaign,
+      entity: entity || 'General',
+      campaign: entity || 'General',
       team,
+      wa_type: waType,
       waType,
+      wa_link: waLink,
       waLink,
     });
     setEditingSim(null);
@@ -127,14 +130,14 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
 
           <div>
             <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
-              Campaña
+              Entidad / Área
             </label>
             <input
               type="text"
               className="form-control"
-              value={campaign}
-              onChange={(e) => setCampaign(e.target.value)}
-              placeholder="General"
+              value={entity}
+              onChange={(e) => setEntity(e.target.value)}
+              placeholder="Ej. General, Ventas, Soporte"
               required
             />
           </div>

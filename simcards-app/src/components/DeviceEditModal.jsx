@@ -21,6 +21,7 @@ export default function DeviceEditModal({
     sim1_is_official: false,
     sim2_id: '',
     sim2_is_official: false,
+    team: ''
   });
 
   const [copiedSim1, setCopiedSim1] = useState(false);
@@ -32,7 +33,7 @@ export default function DeviceEditModal({
         id: device.id || null,
         model: device.model || '',
         internal_name: device.internal_name || '',
-        entity: device.entity || '',
+        entity: device.entity || device.campaign || '',
         status: device.status || 'ACTIVO',
         assigned_operator_id: device.assigned_operator_id || device.assigned_operator1_id || '',
         assigned_operator2_id: device.assigned_operator2_id || device.assigned_operator_2_id || '',
@@ -40,6 +41,7 @@ export default function DeviceEditModal({
         sim1_is_official: Boolean(device.sim1_is_official),
         sim2_id: device.sim2_id || '',
         sim2_is_official: Boolean(device.sim2_is_official),
+        team: device.team || ''
       });
     } else {
       setFormData({
@@ -54,6 +56,7 @@ export default function DeviceEditModal({
         sim1_is_official: false,
         sim2_id: '',
         sim2_is_official: false,
+        team: ''
       });
     }
   }, [device, isOpen]);
@@ -112,7 +115,10 @@ export default function DeviceEditModal({
       return;
     }
     if (typeof onSave === 'function') {
-      onSave(formData);
+      onSave({
+        ...formData,
+        campaign: formData.entity
+      });
     } else {
       console.warn('DeviceEditModal: La propiedad "onSave" no está configurada.');
     }
@@ -179,7 +185,7 @@ export default function DeviceEditModal({
                     .filter((sim) => String(sim.id) !== String(formData.sim2_id))
                     .map((sim) => (
                       <option key={sim.id} value={sim.id}>
-                        {sim.phone_number} {sim.campaign ? `(${sim.campaign})` : ''}
+                        {sim.phone_number} {(sim.entity || sim.campaign) ? `(${sim.entity || sim.campaign})` : ''}
                       </option>
                     ))}
                 </select>
@@ -230,7 +236,7 @@ export default function DeviceEditModal({
                     .filter((sim) => String(sim.id) !== String(formData.sim1_id))
                     .map((sim) => (
                       <option key={sim.id} value={sim.id}>
-                        {sim.phone_number} {sim.campaign ? `(${sim.campaign})` : ''}
+                        {sim.phone_number} {(sim.entity || sim.campaign) ? `(${sim.entity || sim.campaign})` : ''}
                       </option>
                     ))}
                 </select>

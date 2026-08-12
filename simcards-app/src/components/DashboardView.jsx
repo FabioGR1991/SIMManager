@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function DashboardView({
-  simcards,
+  simcards = [],
   user,
   handleCreateSim,
   handleEditPhone,
@@ -25,7 +25,7 @@ export default function DashboardView({
   navigateToDevice
 }) {
   const [newPhone, setNewPhone] = useState('');
-  const [newCampaign, setNewCampaign] = useState('');
+  const [newEntity, setNewEntity] = useState('');
 
   // Estado para el buscador
   const [searchTerm, setSearchTerm] = useState('');
@@ -57,12 +57,12 @@ export default function DashboardView({
   const onSubmitSim = (e) => {
     e.preventDefault();
     if (!newPhone) return;
-    handleCreateSim(newPhone, newCampaign);
+    handleCreateSim(newPhone, newEntity);
     setNewPhone('');
-    setNewCampaign('');
+    setNewEntity('');
   };
 
-  // LÓGICA DE BÚSQUEDA Y FILTRADO (incluye campos de WhatsApp)
+  // LÓGICA DE BÚSQUEDA Y FILTRADO (incluye campos de WhatsApp y Entidad / Área)
   const cleanSearch = searchTerm.replace(/\D/g, ''); 
   const rawSearchText = searchTerm.toLowerCase().trim();
 
@@ -72,13 +72,13 @@ export default function DashboardView({
     const cleanPhone = (sim.phone_number || '').replace(/\D/g, '');
     const matchesPhone = cleanSearch !== '' && cleanPhone.includes(cleanSearch);
 
-    const matchesCampaign = (sim.campaign || '').toLowerCase().includes(rawSearchText);
+    const matchesEntity = (sim.entity || sim.campaign || '').toLowerCase().includes(rawSearchText);
     const matchesUser = (sim.user_name || '').toLowerCase().includes(rawSearchText);
     const matchesTeam = (sim.team || '').toLowerCase().includes(rawSearchText);
     const matchesWaType = (sim.wa_type || '').toLowerCase().includes(rawSearchText);
     const matchesWaLink = (sim.wa_link || '').toLowerCase().includes(rawSearchText);
 
-    return matchesPhone || matchesCampaign || matchesUser || matchesTeam || matchesWaType || matchesWaLink;
+    return matchesPhone || matchesEntity || matchesUser || matchesTeam || matchesWaType || matchesWaLink;
   });
 
   const handleSearchChange = (e) => {
@@ -156,9 +156,9 @@ export default function DashboardView({
           <input
             type="text"
             className="form-control"
-            placeholder={`Campaña (por defecto: ${user?.campaign || 'General'})`}
-            value={newCampaign}
-            onChange={(e) => setNewCampaign(e.target.value)}
+            placeholder={`Entidad / Área (por defecto: ${user?.entity || user?.campaign || 'General'})`}
+            value={newEntity}
+            onChange={(e) => setNewEntity(e.target.value)}
             style={{ flex: 1, minWidth: '200px' }}
           />
           <button type="submit" className="btn" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -174,7 +174,7 @@ export default function DashboardView({
           <input
             type="text"
             className="form-control"
-            placeholder="Buscar por número, campaña, equipo o WhatsApp..."
+            placeholder="Buscar por número, entidad / área, equipo o WhatsApp..."
             value={searchTerm}
             onChange={handleSearchChange}
             style={{
@@ -210,7 +210,7 @@ export default function DashboardView({
       <div className="table-container">
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justify: 'space-between',
           alignItems: 'center',
           marginBottom: '15px',
           paddingBottom: '10px',
@@ -281,7 +281,7 @@ export default function DashboardView({
               <th># ID</th>
               <th>Número de Línea</th>
               <th>WhatsApp</th>
-              <th>Campaña</th>
+              <th>Entidad / Área</th>
               {user?.role === 'admin' && <th>Equipo / Sede</th>}
               <th>Estado Actual</th>
               <th>Acciones</th>
@@ -357,7 +357,7 @@ export default function DashboardView({
                         <span style={{ fontSize: '12px', color: '#94a3b8' }}>-</span>
                       )}
                     </td>
-                    <td>{sim.campaign || 'N/A'}</td>
+                    <td>{sim.entity || sim.campaign || 'N/A'}</td>
                     {user?.role === 'admin' && <td>{sim.team || 'Sin Equipo'}</td>}
                     <td>
                       <span className={`status-badge ${getBadgeClass(sim.status)}`}>
@@ -398,7 +398,7 @@ export default function DashboardView({
         {!isAll && totalPages > 1 && (
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
+            justify: 'space-between',
             alignItems: 'center',
             marginTop: '15px',
             paddingTop: '10px',

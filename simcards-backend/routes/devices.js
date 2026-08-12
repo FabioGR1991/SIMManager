@@ -50,7 +50,7 @@ router.get('/', authenticateToken, (req, res) => {
       params.push(status);
     }
 
-    // Filtro por Entidad
+    // Filtro por Entidad / Área
     if (entity && entity !== 'TODAS') {
       conditions.push('devices.entity = ?');
       params.push(entity);
@@ -115,9 +115,11 @@ router.post('/', authenticateToken, (req, res) => {
 
     const deviceTeam = isAdmin ? (team || userTeam) : userTeam;
 
-    // Obtener SIMCards para validaciones
+    // Obtener SIMCards obteniendo su equipo efectivo (priorizando simcards.team y luego users.team)
     const simcards = db.prepare(`
-      SELECT simcards.*, users.team as user_team 
+      SELECT 
+        simcards.*, 
+        COALESCE(simcards.team, users.team, 'Sin Equipo') as effective_team 
       FROM simcards 
       LEFT JOIN users ON simcards.user_id = users.id
     `).all();
@@ -161,8 +163,9 @@ router.post('/', authenticateToken, (req, res) => {
         return res.status(400).json({ error: `La línea ${item.phone} (${item.slot}) no existe en el sistema.` });
       }
 
-      if (!isAdmin && sim.user_team !== userTeam) {
-        return res.status(403).json({ error: `La línea ${item.phone} (${item.slot}) no pertenece a ningún usuario de tu equipo (${userTeam}).` });
+      // Validar pertenencia de equipo exclusivamente
+      if (!isAdmin && sim.effective_team !== userTeam) {
+        return res.status(403).json({ error: `La línea ${item.phone} (${item.slot}) pertenece al equipo "${sim.effective_team}" y no a tu equipo (${userTeam}).` });
       }
     }
 
@@ -231,7 +234,9 @@ router.put('/:id', authenticateToken, (req, res) => {
     }
 
     const simcards = db.prepare(`
-      SELECT simcards.*, users.team as user_team 
+      SELECT 
+        simcards.*, 
+        COALESCE(simcards.team, users.team, 'Sin Equipo') as effective_team 
       FROM simcards 
       LEFT JOIN users ON simcards.user_id = users.id
     `).all();
@@ -274,8 +279,9 @@ router.put('/:id', authenticateToken, (req, res) => {
         return res.status(400).json({ error: `La línea ${item.phone} (${item.slot}) no existe en el sistema.` });
       }
 
-      if (!isAdmin && sim.user_team !== userTeam) {
-        return res.status(403).json({ error: `La línea ${item.phone} (${item.slot}) no pertenece a tu equipo.` });
+      // Validar pertenencia de equipo exclusivamente
+      if (!isAdmin && sim.effective_team !== userTeam) {
+        return res.status(403).json({ error: `La línea ${item.phone} (${item.slot}) pertenece al equipo "${sim.effective_team}" y no a tu equipo (${userTeam}).` });
       }
     }
 

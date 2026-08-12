@@ -16,6 +16,7 @@ router.get('/', authenticateToken, (req, res) => {
       sims = db.prepare(`
         SELECT 
           simcards.*, 
+          COALESCE(simcards.campaign, 'General') as entity,
           COALESCE(simcards.team, users.team, 'Sin Equipo') as team,
           users.name as user_name,
           devices.model as device_model,
@@ -26,9 +27,11 @@ router.get('/', authenticateToken, (req, res) => {
         ORDER BY simcards.id DESC
       `).all();
     } else {
+      // Filtrado estricto por equipo del usuario/TL (sin mostrar SIMs huérfanas ni de otros equipos)
       sims = db.prepare(`
         SELECT 
           simcards.*,
+          COALESCE(simcards.campaign, 'General') as entity,
           COALESCE(simcards.team, users.team) as team,
           users.name as user_name,
           devices.model as device_model,
@@ -48,7 +51,7 @@ router.get('/', authenticateToken, (req, res) => {
 
 // POST /api/simcards
 router.post('/', authenticateToken, (req, res) => {
-  const { phone_number, status, campaign, assigned_user_id, team, wa_type, wa_link } = req.body;
+  const { phone_number, status, campaign, entity, assigned_user_id, team, wa_type, wa_link } = req.body;
 
   const cleanIncoming = cleanDigits(phone_number);
   if (!cleanIncoming) {
@@ -56,7 +59,6 @@ router.post('/', authenticateToken, (req, res) => {
   }
 
   try {
-    // Validar si ya existe una SIMCard con el mismo número de dígitos sin importar espacios o guiones
     const existingSim = db.prepare(`
       SELECT id, phone_number FROM simcards 
       WHERE REPLACE(REPLACE(REPLACE(REPLACE(phone_number, ' ', ''), '-', ''), '(', ''), ')', '') = ?
@@ -70,7 +72,7 @@ router.post('/', authenticateToken, (req, res) => {
 
     const currentUser = db.prepare('SELECT campaign, team FROM users WHERE id = ?').get(req.user.id);
     const userId = assigned_user_id || req.user.id; 
-    const simCampaign = campaign || currentUser?.campaign || req.user.campaign || 'General';
+    const simEntity = entity || campaign || currentUser?.campaign || req.user.campaign || 'General';
     const simTeam = team || currentUser?.team || req.user.team;
 
     const result = db.prepare(`
@@ -80,7 +82,7 @@ router.post('/', authenticateToken, (req, res) => {
       phone_number, 
       status || 'En stock/Sin uso', 
       userId, 
-      simCampaign, 
+      simEntity, 
       simTeam, 
       wa_type || null, 
       wa_link || null
@@ -95,7 +97,7 @@ router.post('/', authenticateToken, (req, res) => {
 // PUT /api/simcards/edit/:id
 router.put('/edit/:id', authenticateToken, (req, res) => {
   const { id } = req.params;
-  const { phone_number, campaign, team, wa_type, wa_link } = req.body;
+  const { phone_number, campaign, entity, team, wa_type, wa_link } = req.body;
 
   const cleanIncoming = cleanDigits(phone_number);
   if (!cleanIncoming) {
@@ -103,7 +105,6 @@ router.put('/edit/:id', authenticateToken, (req, res) => {
   }
 
   try {
-    // Validar duplicados al editar (excluyendo el id actual)
     const existingSim = db.prepare(`
       SELECT id, phone_number FROM simcards 
       WHERE REPLACE(REPLACE(REPLACE(REPLACE(phone_number, ' ', ''), '-', ''), '(', ''), ')', '') = ?
@@ -116,18 +117,20 @@ router.put('/edit/:id', authenticateToken, (req, res) => {
       });
     }
 
+    const simEntity = entity || campaign || 'General';
+
     if (team) {
       db.prepare(`
         UPDATE simcards 
         SET phone_number = ?, campaign = ?, team = ?, wa_type = ?, wa_link = ? 
         WHERE id = ?
-      `).run(phone_number, campaign, team, wa_type || null, wa_link || null, id);
+      `).run(phone_number, simEntity, team, wa_type || null, wa_link || null, id);
     } else {
       db.prepare(`
         UPDATE simcards 
         SET phone_number = ?, campaign = ?, wa_type = ?, wa_link = ? 
         WHERE id = ?
-      `).run(phone_number, campaign, wa_type || null, wa_link || null, id);
+      `).run(phone_number, simEntity, wa_type || null, wa_link || null, id);
     }
 
     res.json({ message: 'Línea actualizada con éxito' });
