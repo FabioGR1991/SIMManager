@@ -11,7 +11,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-// Batch de frases motivacionales/positivas (25 opciones)
+// Batch de frases motivacionales/positivas (31 opciones)
 const MOTIVATIONAL_QUOTES = [
   // --- Tono cercano / Informal argentino ---
   "¡Buenas! Todo listo por acá, a meterle con todo hoy.",
@@ -48,7 +48,14 @@ const MOTIVATIONAL_QUOTES = [
   "«La simplicidad es la máxima sofisticación.» — Leonardo da Vinci",
   "«El éxito es la suma de pequeños esfuerzos repetidos día tras día.» — Robert Collier",
   "La constancia y el orden siempre pagan. ¡Que tengas un excelente día!",
-  "Paso a paso, cada detalle suma para mantener la flota impecable."
+  "Paso a paso, cada detalle suma para mantener la flota impecable.",
+
+  // --- Fabio Gómez Ramírez (Sin límites) ---
+  "«Los límites son solo un reflejo de aquello que todavía no te atreves a enfrentar.» — Fabio Gómez Ramírez (Sin límites)",
+  "«Tener personas con quienes compartir tu éxito es lo que realmente lo hace valioso.» — Fabio Gómez Ramírez (Sin límites)",
+  "«Hay una diferencia entre trabajar para sobrevivir y trabajar para prosperar. Todo empieza en la mente.» — Fabio Gómez Ramírez (Sin límites)",
+  "«La riqueza no solo se mide en términos monetarios, sino también en conocimiento, oportunidades y conexiones.» — Fabio Gómez Ramírez (Sin límites)",
+  "«Tu mejor versión no solo iluminará tu propio camino, sino que también será la luz que guíe a otros hacia sus propios destinos.» — Fabio Gómez Ramírez (Sin límites)"
 ];
 
 // Helper para determinar el prefijo de bienvenida por género
