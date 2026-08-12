@@ -10,7 +10,9 @@ import {
   Search, 
   X, 
   MessageCircle, 
-  ExternalLink 
+  ExternalLink,
+  Filter,
+  RotateCcw
 } from 'lucide-react';
 
 export default function DashboardView({
@@ -27,8 +29,10 @@ export default function DashboardView({
   const [newPhone, setNewPhone] = useState('');
   const [newEntity, setNewEntity] = useState('');
 
-  // Estado para el buscador
+  // Estados para Búsqueda y Filtros Dropdown
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('TODOS');
+  const [entityFilter, setEntityFilter] = useState('TODOS');
 
   // Estados para Paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,6 +44,18 @@ export default function DashboardView({
     bloqueados: simcards.filter((s) => s.status?.includes('Bloqueado')).length,
     quemados: simcards.filter((s) => s.status === 'Quemado').length,
   };
+
+  // Obtener lista única de entidades para el desplegable de filtro
+  const uniqueEntities = Array.from(
+    new Set(
+      simcards
+        .map((s) => s.entity || s.campaign)
+        .filter(Boolean)
+    )
+  );
+
+  // Comprobar si hay algún filtro activo para mostrar u ocultar el botón "Limpiar"
+  const isFiltered = Boolean(searchTerm.trim()) || statusFilter !== 'TODOS' || entityFilter !== 'TODOS';
 
   const handlePhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -62,17 +78,37 @@ export default function DashboardView({
     setNewEntity('');
   };
 
-  // LÓGICA DE BÚSQUEDA Y FILTRADO (incluye campos de WhatsApp y Entidad / Área)
+  // Función para resetear/limpiar todos los filtros
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('TODOS');
+    setEntityFilter('TODOS');
+    setCurrentPage(1);
+  };
+
+  // LÓGICA DE BÚSQUEDA Y FILTRADO
   const cleanSearch = searchTerm.replace(/\D/g, ''); 
   const rawSearchText = searchTerm.toLowerCase().trim();
 
   const filteredSimcards = simcards.filter((sim) => {
+    // 1. Filtro por Estado
+    if (statusFilter !== 'TODOS' && sim.status !== statusFilter) {
+      return false;
+    }
+
+    // 2. Filtro por Entidad / Área
+    const simEntity = sim.entity || sim.campaign || '';
+    if (entityFilter !== 'TODOS' && simEntity !== entityFilter) {
+      return false;
+    }
+
+    // 3. Búsqueda por Texto
     if (!searchTerm) return true;
 
     const cleanPhone = (sim.phone_number || '').replace(/\D/g, '');
     const matchesPhone = cleanSearch !== '' && cleanPhone.includes(cleanSearch);
 
-    const matchesEntity = (sim.entity || sim.campaign || '').toLowerCase().includes(rawSearchText);
+    const matchesEntity = simEntity.toLowerCase().includes(rawSearchText);
     const matchesUser = (sim.user_name || '').toLowerCase().includes(rawSearchText);
     const matchesTeam = (sim.team || '').toLowerCase().includes(rawSearchText);
     const matchesWaType = (sim.wa_type || '').toLowerCase().includes(rawSearchText);
@@ -83,6 +119,16 @@ export default function DashboardView({
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (e) => {
+    setStatusFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleEntityFilterChange = (e) => {
+    setEntityFilter(e.target.value);
     setCurrentPage(1);
   };
 
@@ -167,42 +213,106 @@ export default function DashboardView({
         </form>
       </div>
 
-      {/* BARRA DE BÚSQUEDA */}
+      {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div className="table-container" style={{ marginBottom: '20px', padding: '15px 20px' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px' }} />
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Buscar por número, entidad / área, equipo o WhatsApp..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            style={{
-              paddingLeft: '38px',
-              paddingRight: searchTerm ? '38px' : '12px',
-              width: '100%',
-              fontSize: '14px'
-            }}
-          />
-          {searchTerm && (
-            <button
-              onClick={() => { setSearchTerm(''); setCurrentPage(1); }}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          
+          {/* Campo de búsqueda libre */}
+          <div style={{ position: 'relative', flex: 1, minWidth: '240px', display: 'flex', alignItems: 'center' }}>
+            <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px' }} />
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Buscar por número, entidad / área, equipo o WhatsApp..."
+              value={searchTerm}
+              onChange={handleSearchChange}
               style={{
-                position: 'absolute',
-                right: '10px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '4px',
+                paddingLeft: '38px',
+                paddingRight: searchTerm ? '38px' : '12px',
+                width: '100%',
+                fontSize: '14px'
+              }}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => { setSearchTerm(''); setCurrentPage(1); }}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#64748b'
+                }}
+                title="Limpiar búsqueda"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
+          {/* Icono de Filtro */}
+          <Filter size={18} color="#64748b" style={{ flexShrink: 0 }} />
+
+          {/* Dropdown Filtro por Estado */}
+          <select
+            value={statusFilter}
+            onChange={handleStatusFilterChange}
+            className="form-control"
+            style={{ width: 'auto', minWidth: '180px', fontSize: '14px' }}
+          >
+            <option value="TODOS">Todos los Estados</option>
+            <option value="En stock/Sin uso">En stock/Sin uso</option>
+            <option value="Activo">Activo</option>
+            <option value="Whastapp Bloqueado">Whastapp Bloqueado</option>
+            <option value="Whastapp Business Bloqueado">Whastapp Business Bloqueado</option>
+            <option value="Quemado">Quemado</option>
+            <option value="Repuesto">Repuesto</option>
+          </select>
+
+          {/* Dropdown Filtro por Entidad / Área */}
+          <select
+            value={entityFilter}
+            onChange={handleEntityFilterChange}
+            className="form-control"
+            style={{ width: 'auto', minWidth: '170px', fontSize: '14px' }}
+          >
+            <option value="TODOS">Todas las Entidades</option>
+            {uniqueEntities.map((ent) => (
+              <option key={ent} value={ent}>
+                {ent}
+              </option>
+            ))}
+          </select>
+
+          {/* Botón Limpiar Filtros (Solo visible cuando hay filtros activos) */}
+          {isFiltered && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              style={{
                 display: 'flex',
                 alignItems: 'center',
-                color: '#64748b'
+                gap: '6px',
+                padding: '8px 14px',
+                fontSize: '14px',
+                color: '#334155',
+                backgroundColor: '#ffffff',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
               }}
-              title="Limpiar búsqueda"
+              title="Restablecer todos los filtros"
             >
-              <X size={16} />
+              <RotateCcw size={15} color="#64748b" />
+              Limpiar
             </button>
           )}
+
         </div>
       </div>
 
@@ -291,7 +401,9 @@ export default function DashboardView({
             {currentSimcards.length === 0 ? (
               <tr>
                 <td colSpan={user?.role === 'admin' ? 7 : 6} style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
-                  {searchTerm ? 'No se encontraron líneas que coincidan con la búsqueda.' : 'No hay SIMCards registradas aún.'}
+                  {isFiltered
+                    ? 'No se encontraron líneas que coincidan con los filtros aplicados.'
+                    : 'No hay SIMCards registradas aún.'}
                 </td>
               </tr>
             ) : (
