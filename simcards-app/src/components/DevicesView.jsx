@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Edit2, History, Trash2, Plus, Search, Filter, RotateCcw, X, Info, User } from "lucide-react";
+import { Edit2, History, Trash2, Plus, Search, Filter, RotateCcw, X, Info, User, Download } from "lucide-react";
 import movilTandemImg from '../assets/moviltandem.png';
 import DeviceEditModal from './DeviceEditModal';
 import DeviceInfoModal from './DeviceInfoModal';
@@ -67,6 +67,56 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
     setSearchTerm('');
     setStatusFilter('TODOS');
     setEntityFilter('TODAS');
+  };
+
+  // FUNCIÓN PARA EXPORTAR DISPOSITIVOS A CSV
+  const handleExportCSV = () => {
+    if (!devices || devices.length === 0) {
+      alert('No hay registros para exportar con los filtros actuales.');
+      return;
+    }
+
+    const headers = [
+      'ID',
+      'Modelo',
+      'Nombre Interno',
+      'Entidad / Área',
+      'SIM Card 1',
+      'Operador SIM 1',
+      'SIM Card 2',
+      'Operador SIM 2',
+      'Estado'
+    ];
+
+    const rows = devices.map(d => {
+      const op1 = d.operator1_name || d.assigned_operator_name || d.operator_1_name || d.operator1 || d.assigned_operator_1_name || '';
+      const op2 = d.operator2_name || d.assigned_operator2_name || d.operator_2_name || d.operator2 || d.assigned_operator_2_name || '';
+
+      return [
+        `"${d.id ?? ''}"`,
+        `"${d.model ?? ''}"`,
+        `"${d.internal_name ?? ''}"`,
+        `"${d.entity ?? ''}"`,
+        `"${d.sim1_phone ?? ''}"`,
+        `"${op1}"`,
+        `"${d.sim2_phone ?? ''}"`,
+        `"${op2}"`,
+        `"${d.status ?? ''}"`
+      ].join(';');
+    });
+
+    // Encabezado BOM UTF-8 (\uFEFF) para garantizar compatibilidad con Excel
+    const csvContent = '\uFEFF' + [headers.join(';'), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Informe_Dispositivos_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleOpenHistory = async (device) => {
@@ -143,14 +193,12 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
       <div className="device-card" style={{ backgroundColor: '#fff', padding: '18px 20px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
         {selectedDevice ? (
           (() => {
-            // Mapeo exhaustivo para garantizar compatibilidad con los nombres de la API
             const op1 = selectedDevice.operator1_name || selectedDevice.assigned_operator_name || selectedDevice.operator_1_name || selectedDevice.operator1 || selectedDevice.assigned_operator_1_name || null;
             const op2 = selectedDevice.operator2_name || selectedDevice.assigned_operator2_name || selectedDevice.operator_2_name || selectedDevice.operator2 || selectedDevice.assigned_operator_2_name || null;
 
             const hasOp1 = Boolean(op1 && String(op1).trim() !== '');
             const hasOp2 = Boolean(op2 && String(op2).trim() !== '');
 
-            // ¿Tienen exactamente el mismo operador asignado en ambas SIMs?
             const isSameOperator = hasOp1 && hasOp2 && op1 === op2;
 
             return (
@@ -182,7 +230,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                       )}
                     </div>
 
-                    {/* Contenedor de 2 líneas apiladas (SIM 1 arriba, SIM 2 abajo) */}
+                    {/* Contenedor de 2 líneas apiladas */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12px' }}>
                       
                       {/* LÍNEA SIM 1 */}
@@ -191,7 +239,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                         <span style={{ color: selectedDevice.sim1_phone ? '#15803d' : '#94a3b8', fontFamily: 'monospace', fontWeight: 'bold' }}>
                           {selectedDevice.sim1_phone || 'Sin Asignar'}
                         </span>
-                        {/* Se muestra la etiqueta de SIM 1 si tiene operador y no es repetido */}
                         {hasOp1 && !isSameOperator && (
                           <span style={{ backgroundColor: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <User size={12} color="#0369a1" /> {op1}
@@ -205,7 +252,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                         <span style={{ color: selectedDevice.sim2_phone ? '#15803d' : '#94a3b8', fontFamily: 'monospace', fontWeight: 'bold' }}>
                           {selectedDevice.sim2_phone || 'Sin Asignar'}
                         </span>
-                        {/* Se muestra la etiqueta de SIM 2 si tiene operador y no es repetido */}
                         {hasOp2 && !isSameOperator && (
                           <span style={{ backgroundColor: '#f3e8ff', color: '#7e22ce', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <User size={12} color="#7e22ce" /> {op2}
@@ -217,10 +263,9 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                   </div>
                 </div>
 
-                {/* Lado Derecho: Recuadro de Operador Asignado único (cuando aplica) + Botón + Info */}
+                {/* Lado Derecho */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                   
-                  {/* Caso 1: Ambas SIMs comparten el mismo operador */}
                   {isSameOperator && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 14px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
@@ -237,14 +282,12 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                     </div>
                   )}
 
-                  {/* Caso 2: Sin ningún operador asignado */}
                   {!hasOp1 && !hasOp2 && (
                     <div style={{ padding: '6px 12px', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #f1f5f9', fontSize: '12px', color: '#94a3b8', fontStyle: 'italic' }}>
                       Sin operador asignado
                     </div>
                   )}
 
-                  {/* Botón + INFO */}
                   <button
                     onClick={() => setShowInfoModal(true)}
                     style={{
@@ -332,6 +375,31 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
             <RotateCcw size={14} /> Limpiar
           </button>
         )}
+
+        {/* BOTÓN EXPORTAR CSV */}
+        <button
+          type="button"
+          onClick={handleExportCSV}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 14px',
+            fontSize: '13px',
+            fontWeight: '500',
+            color: '#0284c7',
+            backgroundColor: '#f0f9ff',
+            border: '1px solid #bae6fd',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap'
+          }}
+          title="Exportar resultados a un archivo CSV"
+        >
+          <Download size={15} color="#0284c7" />
+          Exportar CSV ({devices.length})
+        </button>
+
       </div>
 
       {/* TABLA DE DISPOSITIVOS */}

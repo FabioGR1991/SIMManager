@@ -12,7 +12,8 @@ import {
   MessageCircle, 
   ExternalLink,
   Filter,
-  RotateCcw
+  RotateCcw,
+  Download
 } from 'lucide-react';
 
 export default function DashboardView({
@@ -116,6 +117,53 @@ export default function DashboardView({
 
     return matchesPhone || matchesEntity || matchesUser || matchesTeam || matchesWaType || matchesWaLink;
   });
+
+  // FUNCIÓN PARA EXPORTAR A CSV (Exporta el total del resultado filtrado, no solo la página actual)
+  const handleExportCSV = () => {
+    if (!filteredSimcards || filteredSimcards.length === 0) {
+      alert('No hay registros para exportar con los filtros actuales.');
+      return;
+    }
+
+    const headers = [
+      'ID',
+      'Número de Línea',
+      'Tipo WhatsApp',
+      'Link WhatsApp',
+      'Entidad / Área',
+      'Equipo / Sede',
+      'Estado Actual',
+      'Operador',
+      'ICCID',
+      'Modelo Dispositivo'
+    ];
+
+    const rows = filteredSimcards.map(sim => [
+      `"${sim.id ?? ''}"`,
+      `"${sim.phone_number ?? ''}"`,
+      `"${sim.wa_type ?? ''}"`,
+      `"${sim.wa_link ?? ''}"`,
+      `"${(sim.entity || sim.campaign) ?? ''}"`,
+      `"${sim.team ?? ''}"`,
+      `"${sim.status ?? ''}"`,
+      `"${sim.operator ?? ''}"`,
+      `"${sim.iccid ?? ''}"`,
+      `"${sim.device_model ?? ''}"`
+    ].join(';'));
+
+    // Encabezado BOM UTF-8 (\uFEFF) para garantizar compatibilidad con Excel
+    const csvContent = '\uFEFF' + [headers.join(';'), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Informe_SIMCards_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -313,6 +361,30 @@ export default function DashboardView({
             </button>
           )}
 
+          {/* BOTÓN EXPORTAR CSV */}
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#0284c7',
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bae6fd',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+            title="Exportar resultados a un archivo CSV"
+          >
+            <Download size={16} color="#0284c7" />
+            Exportar CSV ({filteredSimcards.length})
+          </button>
+
         </div>
       </div>
 
@@ -320,7 +392,7 @@ export default function DashboardView({
       <div className="table-container">
         <div style={{
           display: 'flex',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '15px',
           paddingBottom: '10px',
@@ -510,7 +582,7 @@ export default function DashboardView({
         {!isAll && totalPages > 1 && (
           <div style={{
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
             marginTop: '15px',
             paddingTop: '10px',
