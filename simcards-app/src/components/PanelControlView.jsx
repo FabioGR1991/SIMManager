@@ -11,15 +11,44 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-// Batch de frases motivacionales/positivas
+// Batch de frases motivacionales/positivas (25 opciones)
 const MOTIVATIONAL_QUOTES = [
-  "¡Que tengas un excelente día de trabajo!",
-  "Todo listo para una jornada productiva y ordenada.",
-  "La flota de dispositivos está operando bajo control.",
-  "¡Excelente verte de nuevo por aquí!",
-  "Recuerda revisar las alertas de auditoría del sistema.",
-  "Que tengas un día genial y lleno de metas cumplidas.",
-  "Control de flota al día, operaciones sin contratiempos."
+  // --- Tono cercano / Informal argentino ---
+  "¡Buenas! Todo listo por acá, a meterle con todo hoy.",
+  "Mate en mano y la flota ordenada. ¡A romperla!",
+  "Control de flota al día y cero drama. ¡A darle para adelante!",
+  "Organización impecable, día resuelto. ¡Que sea una jornada genial!",
+  "¡Qué bueno verte de nuevo! Todo bajo control para arrancar.",
+  "Sistemas OK y equipo en marcha. Hoy se avanza fuerte.",
+  "Todo en regla por acá. Te espera una jornada bien productiva.",
+  "Revisión al día, alertas bajo control. ¡Metele garra!",
+  "Un día ordenado es un día tranquilo. ¡A meterle ritmo!",
+  "Flota operativa y operativa sin sobresaltos. ¡Buen día!",
+
+  // --- Steve Jobs ---
+  "«La única forma de hacer un gran trabajo es amar lo que hacés.» — Steve Jobs",
+  "«El diseño no es solo cómo se ve o cómo se siente, es cómo funciona.» — Steve Jobs",
+  "«Mantente hambriento, mantente curioso.» — Steve Jobs",
+
+  // --- Albert Einstein ---
+  "«En medio de la dificultad y el caos reside la oportunidad.» — Albert Einstein",
+  "«Si querés resultados distintos, no hagas siempre lo mismo.» — Albert Einstein",
+  "«La medida de la inteligencia es la capacidad de cambiar.» — Albert Einstein",
+
+  // --- Tony Robbins ---
+  "«Donde va tu enfoque, fluye tu energía.» — Tony Robbins",
+  "«Establecer metas es el primer paso para volver lo invisible visible.» — Tony Robbins",
+  "«Tu destino se moldea en tus momentos de decisión.» — Tony Robbins",
+
+  // --- Madre Teresa de Calcuta ---
+  "«A veces sentimos que lo que hacemos es solo una gota en el mar, pero el mar sería menos sin esa gota.» — Madre Teresa",
+  "«No todos podemos hacer grandes cosas, pero sí pequeñas cosas con gran amor.» — Madre Teresa",
+
+  // --- Inspiración de Cierre / Trabajo en equipo ---
+  "«La simplicidad es la máxima sofisticación.» — Leonardo da Vinci",
+  "«El éxito es la suma de pequeños esfuerzos repetidos día tras día.» — Robert Collier",
+  "La constancia y el orden siempre pagan. ¡Que tengas un excelente día!",
+  "Paso a paso, cada detalle suma para mantener la flota impecable."
 ];
 
 // Helper para determinar el prefijo de bienvenida por género
