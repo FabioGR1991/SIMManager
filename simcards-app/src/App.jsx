@@ -201,7 +201,6 @@ export default function App() {
     setEditingSim(sim);
   };
 
-  // ACTUALIZADO: Recibe un único objeto con los datos de la SIM
   const handleSaveSimEdit = async (simData) => {
     try {
       await axios.put(

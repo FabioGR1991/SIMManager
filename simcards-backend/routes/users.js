@@ -2,27 +2,119 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const db = require('../db');
-const { authenticateToken } = require('../utils/helpers');
+const { authenticateToken } = require('./auth');
 
-// GET /api/teams
+// GET /api/teams - Listar todos los equipos / ciudades
 router.get('/teams', authenticateToken, (req, res) => {
   try {
     const rows = db.prepare(`
-      SELECT DISTINCT team FROM (
-        SELECT team FROM users WHERE team IS NOT NULL AND TRIM(team) != ''
+      SELECT DISTINCT name FROM (
+        SELECT name FROM teams WHERE name IS NOT NULL AND TRIM(name) != ''
         UNION
-        SELECT team FROM devices WHERE team IS NOT NULL AND TRIM(team) != ''
-      ) ORDER BY team ASC
+        SELECT team AS name FROM users WHERE team IS NOT NULL AND TRIM(team) != ''
+        UNION
+        SELECT team AS name FROM devices WHERE team IS NOT NULL AND TRIM(team) != ''
+      ) ORDER BY name ASC
     `).all();
 
-    const teams = rows.map(r => r.team);
-    res.json(teams);
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET /api/users
+// POST /api/teams - Crear nuevo equipo / ciudad (Solo Admin)
+router.post('/teams', authenticateToken, (req, res) => {
+  const currentUser = db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.id);
+  const userRole = currentUser?.role || req.user.role;
+
+  if (userRole?.toLowerCase() !== 'admin' && userRole !== 'Administrador') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+
+  const { name } = req.body;
+
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'El nombre del equipo es obligatorio.' });
+  }
+
+  try {
+    const cleanName = name.trim();
+    const result = db.prepare('INSERT INTO teams (name) VALUES (?)').run(cleanName);
+    res.json({ id: result.lastInsertRowid, name: cleanName, message: 'Equipo creado con éxito' });
+  } catch (err) {
+    if (err.message.includes('UNIQUE constraint failed')) {
+      return res.status(400).json({ error: 'El equipo o ciudad ya existe.' });
+    }
+    res.status(500).json({ error: 'Error al registrar el equipo en la base de datos.' });
+  }
+});
+
+// PUT /api/teams/rename - Renombrar equipo y actualizar referencias en cascada (Solo Admin)
+router.put('/teams/rename', authenticateToken, (req, res) => {
+  const currentUser = db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.id);
+  const userRole = currentUser?.role || req.user.role;
+
+  if (userRole?.toLowerCase() !== 'admin' && userRole !== 'Administrador') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+
+  const { oldName, newName } = req.body;
+
+  if (!oldName || !newName || !newName.trim()) {
+    return res.status(400).json({ error: 'El nombre actual y el nuevo nombre son obligatorios.' });
+  }
+
+  const oldClean = oldName.trim();
+  const newClean = newName.trim();
+
+  if (oldClean === newClean) {
+    return res.json({ message: 'El nombre no ha cambiado.' });
+  }
+
+  // Transacción segura: Si falla alguna tabla, no se aplica ningún cambio
+  const renameTransaction = db.transaction((fromName, toName) => {
+    db.prepare('UPDATE teams SET name = ? WHERE name = ?').run(toName, fromName);
+    db.prepare('UPDATE users SET team = ? WHERE team = ?').run(toName, fromName);
+    db.prepare('UPDATE simcards SET team = ? WHERE team = ?').run(toName, fromName);
+    db.prepare('UPDATE devices SET team = ? WHERE team = ?').run(toName, fromName);
+    db.prepare('UPDATE operators SET team = ? WHERE team = ?').run(toName, fromName);
+  });
+
+  try {
+    renameTransaction(oldClean, newClean);
+    res.json({ message: `Equipo '${oldClean}' renombrado a '${newClean}' correctamente.` });
+  } catch (err) {
+    if (err.message.includes('UNIQUE constraint failed')) {
+      return res.status(400).json({ error: 'Ya existe un equipo registrado con ese nombre.' });
+    }
+    res.status(500).json({ error: 'Error al renombrar el equipo: ' + err.message });
+  }
+});
+
+// DELETE /api/teams/:id - Eliminar equipo (Solo Admin)
+router.delete('/teams/:id', authenticateToken, (req, res) => {
+  const currentUser = db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.id);
+  const userRole = currentUser?.role || req.user.role;
+
+  if (userRole?.toLowerCase() !== 'admin' && userRole !== 'Administrador') {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const result = db.prepare('DELETE FROM teams WHERE id = ? OR name = ?').run(id, id);
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Equipo no encontrado.' });
+    }
+    res.json({ message: 'Equipo eliminado con éxito' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/users - Listar usuarios (Solo Admin)
 router.get('/users', authenticateToken, (req, res) => {
   const currentUser = db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.id);
   const userRole = currentUser?.role || req.user.role;
@@ -30,6 +122,7 @@ router.get('/users', authenticateToken, (req, res) => {
   if (userRole?.toLowerCase() !== 'admin' && userRole !== 'Administrador') {
     return res.status(403).json({ error: 'Acceso denegado' });
   }
+  
   try {
     const users = db.prepare('SELECT id, name, email, role, campaign, team FROM users ORDER BY id DESC').all();
     res.json(users);
@@ -38,7 +131,7 @@ router.get('/users', authenticateToken, (req, res) => {
   }
 });
 
-// POST /api/users
+// POST /api/users - Crear usuario (Solo Admin)
 router.post('/users', authenticateToken, (req, res) => {
   const currentUser = db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.id);
   const userRole = currentUser?.role || req.user.role;
@@ -66,7 +159,7 @@ router.post('/users', authenticateToken, (req, res) => {
   }
 });
 
-// PUT /api/users/:id
+// PUT /api/users/:id - Actualizar usuario (Solo Admin)
 router.put('/users/:id', authenticateToken, (req, res) => {
   const dbUser = db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.id);
   const userRole = dbUser?.role || req.user.role;
@@ -90,7 +183,6 @@ router.put('/users/:id', authenticateToken, (req, res) => {
     const updatedCampaign = campaign !== undefined ? campaign : currentUser.campaign;
     const updatedTeam = team !== undefined ? team : currentUser.team;
 
-    // Actualización de usuario aislada (sin alterar SIMs ni Dispositivos)
     if (password && password.trim() !== '') {
       const hashedPassword = bcrypt.hashSync(password, 10);
       db.prepare(`
@@ -116,7 +208,7 @@ router.put('/users/:id', authenticateToken, (req, res) => {
   }
 });
 
-// DELETE /api/users/:id
+// DELETE /api/users/:id - Eliminar usuario (Solo Admin)
 router.delete('/users/:id', authenticateToken, (req, res) => {
   const currentUser = db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.id);
   const userRole = currentUser?.role || req.user.role;

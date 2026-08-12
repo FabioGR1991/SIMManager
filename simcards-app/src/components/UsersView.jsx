@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserPlus } from 'lucide-react';
 
 export default function UsersView({ 
-  usersList, 
-  teamsList = [], // Recibe los equipos reales desde tu backend/padre (ej: [{ id: 1, name: 'Ventas' }, ...])
+  usersList = [], 
+  teamsList = [], 
   handleCreateUser, 
   setEditingUser, 
   handleDeleteUser 
@@ -12,8 +12,29 @@ export default function UsersView({
   const [uEmail, setUEmail] = useState('');
   const [uPassword, setUPassword] = useState('');
   const [uRole, setURole] = useState('tl');
-  // Se inicializa con el primer equipo real si existe
-  const [uTeam, setUTeam] = useState(teamsList[0]?.name || teamsList[0] || '');
+  const [uTeam, setUTeam] = useState('');
+
+  // Sincronizar el equipo por defecto cuando cargan los equipos dinámicos
+  useEffect(() => {
+    if (teamsList.length > 0 && !uTeam) {
+      const firstTeam = typeof teamsList[0] === 'object' ? teamsList[0].name : teamsList[0];
+      setUTeam(firstTeam);
+    }
+  }, [teamsList]);
+
+  // Manejar cambio de rol con auto-asignación a "Monte Olimpo" para admins
+  const handleRoleChange = (newRole) => {
+    setURole(newRole);
+    if (newRole === 'admin') {
+      const monteOlimpoExists = teamsList.some(t => {
+        const name = typeof t === 'object' ? t.name : t;
+        return name.toLowerCase() === 'monte olimpo';
+      });
+      if (monteOlimpoExists) {
+        setUTeam('Monte Olimpo');
+      }
+    }
+  };
 
   const onSubmitUser = (e) => {
     e.preventDefault();
@@ -21,7 +42,9 @@ export default function UsersView({
       setUName('');
       setUEmail('');
       setUPassword('');
-      setUTeam(teamsList[0]?.name || teamsList[0] || '');
+      setURole('tl');
+      const defaultTeam = typeof teamsList[0] === 'object' ? teamsList[0].name : (teamsList[0] || '');
+      setUTeam(defaultTeam);
     });
   };
 
@@ -48,7 +71,7 @@ export default function UsersView({
           </div>
           <div>
             <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Rol / Permisos</label>
-            <select className="form-control" value={uRole} onChange={(e) => setURole(e.target.value)}>
+            <select className="form-control" value={uRole} onChange={(e) => handleRoleChange(e.target.value)}>
               <option value="tl">Team Leader (TL)</option>
               <option value="admin">Administrador General</option>
             </select>
@@ -61,6 +84,7 @@ export default function UsersView({
               className="form-control" 
               value={uTeam} 
               onChange={(e) => setUTeam(e.target.value)}
+              required
             >
               <option value="">-- Seleccionar Equipo --</option>
               {teamsList.map((team, index) => {
@@ -113,6 +137,7 @@ export default function UsersView({
                 <td>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
+                      type="button"
                       onClick={() => setEditingUser({ ...u, password: '' })}
                       title="Editar usuario"
                       style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}
@@ -121,6 +146,7 @@ export default function UsersView({
                     </button>
                     
                     <button
+                      type="button"
                       onClick={() => handleDeleteUser(u)}
                       title="Eliminar usuario"
                       style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#dc2626', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}
