@@ -2,19 +2,17 @@ export default function UserEditModal({
   editingUser, 
   setEditingUser, 
   handleUpdateUser,
-  teamsList = [] // Mismo listado dinámico real
+  teamsList = []
 }) {
   if (!editingUser) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Ejecutar el handler de actualización enviado por el componente padre
     if (handleUpdateUser) {
       await handleUpdateUser(e);
     }
 
-    // 2. Si el usuario editado es el mismo que está logueado, actualizar el localStorage
     try {
       const loggedUser = JSON.parse(localStorage.getItem('user') || '{}');
       if (loggedUser && loggedUser.id === editingUser.id) {
@@ -26,7 +24,7 @@ export default function UserEditModal({
           team: editingUser.team
         };
         localStorage.setItem('user', JSON.stringify(updatedSessionUser));
-        window.location.reload(); // Recargar para refrescar la sesión e interfaz (Sidebar)
+        window.location.reload();
       }
     } catch (err) {
       console.error('Error actualizando sesión local:', err);
@@ -75,11 +73,11 @@ export default function UserEditModal({
               onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
             >
               <option value="tl">Team Leader (TL)</option>
+              <option value="pl">Planificador (PL)</option>
               <option value="admin">Administrador General</option>
             </select>
           </div>
 
-          {/* DROPDOWN DINÁMICO EN EL MODAL DE EDICIÓN */}
           <div>
             <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Equipo Asignado</label>
             <select

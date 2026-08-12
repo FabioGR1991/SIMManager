@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs');
 const db = require('../db');
 const { authenticateToken } = require('./auth');
 
+// Listar roles válidos
+const ALLOWED_ROLES = ['admin', 'tl', 'pl'];
+
 // GET /api/teams - Listar todos los equipos / ciudades
 router.get('/teams', authenticateToken, (req, res) => {
   try {
@@ -72,7 +75,6 @@ router.put('/teams/rename', authenticateToken, (req, res) => {
     return res.json({ message: 'El nombre no ha cambiado.' });
   }
 
-  // Transacción segura: Si falla alguna tabla, no se aplica ningún cambio
   const renameTransaction = db.transaction((fromName, toName) => {
     db.prepare('UPDATE teams SET name = ? WHERE name = ?').run(toName, fromName);
     db.prepare('UPDATE users SET team = ? WHERE team = ?').run(toName, fromName);
@@ -146,12 +148,17 @@ router.post('/users', authenticateToken, (req, res) => {
     return res.status(400).json({ error: 'Nombre, email y contraseña son obligatorios' });
   }
 
+  const selectedRole = (role || 'tl').toLowerCase();
+  if (!ALLOWED_ROLES.includes(selectedRole)) {
+    return res.status(400).json({ error: 'El rol seleccionado no es válido.' });
+  }
+
   try {
     const hashedPassword = bcrypt.hashSync(password, 10);
     const result = db.prepare(`
       INSERT INTO users (name, email, password, role, campaign, team)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(name, email, hashedPassword, role || 'tl', campaign || 'General', team || '');
+    `).run(name, email, hashedPassword, selectedRole, campaign || 'General', team || '');
 
     res.json({ id: result.lastInsertRowid, message: 'Usuario creado con éxito' });
   } catch (err) {
@@ -177,9 +184,17 @@ router.put('/users/:id', authenticateToken, (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
+    let updatedRole = currentUser.role;
+    if (role !== undefined) {
+      const normalized = role.toLowerCase();
+      if (!ALLOWED_ROLES.includes(normalized)) {
+        return res.status(400).json({ error: 'El rol seleccionado no es válido.' });
+      }
+      updatedRole = normalized;
+    }
+
     const updatedName = name !== undefined ? name : currentUser.name;
     const updatedEmail = email !== undefined ? email : currentUser.email;
-    const updatedRole = role !== undefined ? role : currentUser.role;
     const updatedCampaign = campaign !== undefined ? campaign : currentUser.campaign;
     const updatedTeam = team !== undefined ? team : currentUser.team;
 

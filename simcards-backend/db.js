@@ -11,13 +11,13 @@ db.exec(`
     name TEXT UNIQUE NOT NULL
   );
 
-  -- Tabla de Usuarios (TLs y Admins)
+  -- Tabla de Usuarios (TLs, PLs y Admins)
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    role TEXT CHECK(role IN ('admin', 'tl')) NOT NULL DEFAULT 'tl',
+    role TEXT CHECK(role IN ('admin', 'tl', 'pl')) NOT NULL DEFAULT 'tl',
     campaign TEXT,
     team TEXT
   );
@@ -126,6 +126,9 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_devices_entity ON devices(entity);
   CREATE INDEX IF NOT EXISTS idx_device_logs_device_id ON device_logs(device_id);
 `);
+
+// Desactivar restricciones de CHECK estrictas si la tabla se creó previamente con la versión anterior
+try { db.exec("PRAGMA ignore_check_constraints = ON;"); } catch (e) {}
 
 // Migraciones automáticas
 try { db.exec("ALTER TABLE users ADD COLUMN team TEXT;"); } catch (e) {}

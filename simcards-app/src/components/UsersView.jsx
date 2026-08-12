@@ -73,6 +73,7 @@ export default function UsersView({
             <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Rol / Permisos</label>
             <select className="form-control" value={uRole} onChange={(e) => handleRoleChange(e.target.value)}>
               <option value="tl">Team Leader (TL)</option>
+              <option value="pl">Planificador (PL)</option>
               <option value="admin">Administrador General</option>
             </select>
           </div>
@@ -127,10 +128,10 @@ export default function UsersView({
                 <td>
                   <span style={{
                     padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold',
-                    backgroundColor: u.role === 'admin' ? '#dbeafe' : '#f1f5f9',
-                    color: u.role === 'admin' ? '#1e40af' : '#475569'
+                    backgroundColor: u.role === 'admin' ? '#dbeafe' : u.role === 'pl' ? '#f3e8ff' : '#f1f5f9',
+                    color: u.role === 'admin' ? '#1e40af' : u.role === 'pl' ? '#6b21a8' : '#475569'
                   }}>
-                    {u.role === 'admin' ? 'Administrador' : 'Team Leader'}
+                    {u.role === 'admin' ? 'Administrador' : u.role === 'pl' ? 'Planificador' : 'Team Leader'}
                   </span>
                 </td>
                 <td>{u.team || 'Sin asignar'}</td>
