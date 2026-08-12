@@ -215,7 +215,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <div style={{ width: '64px', height: '64px', borderRadius: '12px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: '6px' }}>
+                  <div style={{ width: '150px', height: '150px', borderRadius: '16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: '8px' }}>
                     <img 
                       src={movilTandemImg} 
                       alt="Móvil Tandem" 
