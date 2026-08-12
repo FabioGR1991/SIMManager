@@ -1,5 +1,180 @@
-import React, { useState, useEffect } from 'react';
-import { Copy, Check, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Copy, Check, X, Search, ChevronDown } from 'lucide-react';
+
+// Componente de desplegable con buscador integrado
+function SearchableSimSelect({ name, value, onChange, options = [], placeholder = "-- Seleccionar SIM --" }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const containerRef = useRef(null);
+
+  // Cerrar dropdown al hacer clic afuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedSim = options.find((s) => String(s.id) === String(value));
+
+  // Filtrado dinámico por número de teléfono, entidad o campaña
+  const filteredOptions = options.filter((sim) => {
+    const phone = String(sim.phone_number || '');
+    const entity = String(sim.entity || sim.campaign || '');
+    const target = `${phone} ${entity}`.toLowerCase();
+    return target.includes(searchTerm.toLowerCase());
+  });
+
+  const handleSelect = (selectedId) => {
+    // Simula un evento sintético para que handleChange(e) del formulario funcione sin modificar tu estado
+    onChange({
+      target: {
+        name: name,
+        value: selectedId,
+        type: 'select-one'
+      }
+    });
+    setIsOpen(false);
+    setSearchTerm('');
+  };
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', marginTop: '4px' }}>
+      {/* Input / Botón Principal del Select */}
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          padding: '8px 10px',
+          borderRadius: '6px',
+          border: '1px solid #cbd5e1',
+          backgroundColor: '#fff',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '13px',
+          minHeight: '35px',
+          boxSizing: 'border-box'
+        }}
+      >
+        <span style={{ color: selectedSim ? '#0f172a' : '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {selectedSim
+            ? `${selectedSim.phone_number} ${(selectedSim.entity || selectedSim.campaign) ? `(${selectedSim.entity || selectedSim.campaign})` : ''}`
+            : placeholder}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {value && (
+            <X
+              size={14}
+              color="#94a3b8"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSelect('');
+              }}
+              style={{ cursor: 'pointer' }}
+            />
+          )}
+          <ChevronDown size={16} color="#64748b" />
+        </div>
+      </div>
+
+      {/* Menú Flotante con buscador */}
+      {isOpen && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: '4px',
+          backgroundColor: '#fff',
+          border: '1px solid #cbd5e1',
+          borderRadius: '6px',
+          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
+          zIndex: 1050,
+          maxHeight: '220px',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          {/* Carga de buscador dentro del menú */}
+          <div style={{ padding: '6px 8px', borderBottom: '1px solid #f1f5f9', position: 'relative' }}>
+            <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+            <input
+              type="text"
+              autoFocus
+              placeholder="Buscar por número o área..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                padding: '5px 8px 5px 26px',
+                fontSize: '12px',
+                border: '1px solid #cbd5e1',
+                borderRadius: '4px',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+          </div>
+
+          {/* Opciones filtradas */}
+          <div style={{ overflowY: 'auto', flex: 1 }}>
+            <div
+              onClick={() => handleSelect('')}
+              style={{
+                padding: '8px 10px',
+                fontSize: '13px',
+                cursor: 'pointer',
+                color: '#64748b',
+                borderBottom: '1px solid #f8fafc',
+                backgroundColor: !value ? '#f1f5f9' : 'transparent'
+              }}
+            >
+              {placeholder}
+            </div>
+
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((sim) => {
+                const isSelected = String(value) === String(sim.id);
+                const entityLabel = sim.entity || sim.campaign;
+
+                return (
+                  <div
+                    key={sim.id}
+                    onClick={() => handleSelect(sim.id)}
+                    style={{
+                      padding: '8px 10px',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      backgroundColor: isSelected ? '#e0f2fe' : 'transparent',
+                      color: isSelected ? '#0369a1' : '#1e293b',
+                      fontWeight: isSelected ? 'bold' : 'normal'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) e.currentTarget.style.backgroundColor = '#f8fafc';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    {sim.phone_number} {entityLabel ? `(${entityLabel})` : ''}
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ padding: '10px', fontSize: '12px', color: '#94a3b8', textAlign: 'center' }}>
+                No se encontraron coincidencias
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function DeviceEditModal({ 
   isOpen, 
@@ -171,24 +346,17 @@ export default function DeviceEditModal({
                 />
               </div>
 
-              {/* SIM SLOT 1 */}
+              {/* SIM SLOT 1 (CON BÚSQUEDA AGREGADA) */}
               <div style={simBoxStyle}>
                 <label style={labelStyle}>SIM Card Slot 1</label>
-                <select
+                
+                <SearchableSimSelect
                   name="sim1_id"
                   value={formData.sim1_id}
                   onChange={handleChange}
-                  style={inputStyle}
-                >
-                  <option value="">-- Seleccionar SIM --</option>
-                  {simcards
-                    .filter((sim) => String(sim.id) !== String(formData.sim2_id))
-                    .map((sim) => (
-                      <option key={sim.id} value={sim.id}>
-                        {sim.phone_number} {(sim.entity || sim.campaign) ? `(${sim.entity || sim.campaign})` : ''}
-                      </option>
-                    ))}
-                </select>
+                  placeholder="-- Seleccionar SIM --"
+                  options={simcards.filter((sim) => String(sim.id) !== String(formData.sim2_id))}
+                />
 
                 <label style={checkboxLabelStyle}>
                   <input
@@ -222,24 +390,17 @@ export default function DeviceEditModal({
                 )}
               </div>
 
-              {/* SIM SLOT 2 */}
+              {/* SIM SLOT 2 (CON BÚSQUEDA AGREGADA) */}
               <div style={simBoxStyle}>
                 <label style={labelStyle}>SIM Card Slot 2</label>
-                <select
+                
+                <SearchableSimSelect
                   name="sim2_id"
                   value={formData.sim2_id}
                   onChange={handleChange}
-                  style={inputStyle}
-                >
-                  <option value="">-- Sin SIM Slot 2 --</option>
-                  {simcards
-                    .filter((sim) => String(sim.id) !== String(formData.sim1_id))
-                    .map((sim) => (
-                      <option key={sim.id} value={sim.id}>
-                        {sim.phone_number} {(sim.entity || sim.campaign) ? `(${sim.entity || sim.campaign})` : ''}
-                      </option>
-                    ))}
-                </select>
+                  placeholder="-- Sin SIM Slot 2 --"
+                  options={simcards.filter((sim) => String(sim.id) !== String(formData.sim1_id))}
+                />
 
                 <label style={checkboxLabelStyle}>
                   <input
