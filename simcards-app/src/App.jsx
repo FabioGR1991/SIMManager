@@ -496,76 +496,81 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Contenido Principal */}
+      {/* Contenido Principal con Transición Suave */}
       <main style={{ flex: 1, padding: '30px', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
         
-        {/* VISTA PANEL DE CONTROL */}
-        {activeTab === 'panel' && (
-          <PanelControlView
-            user={user}
-            devices={devices}
-            simcards={simcards}
-            operators={operators}
-            onNavigate={(tab) => setActiveTab(tab)}
-          />
-        )}
+        <div key={activeTab} className="view-animated">
+          
+          {/* VISTA PANEL DE CONTROL */}
+          {activeTab === 'panel' && (
+            <PanelControlView
+              user={user}
+              devices={devices}
+              simcards={simcards}
+              operators={operators}
+              onNavigate={(tab) => setActiveTab(tab)}
+            />
+          )}
 
-        {/* VISTA INVENTARIO SIMS */}
-        {activeTab === 'dashboard' && (
-          <DashboardView
-            simcards={simcards}
-            user={user}
-            handleCreateSim={handleCreateSim}
-            handleEditPhone={handleEditPhone}
-            handleViewHistory={handleViewHistory}
-            handleDeleteSim={handleDeleteSim}
-            handleStatusChange={handleStatusChange}
-            getBadgeClass={getBadgeClass}
-            navigateToDevice={navigateToDevice}
-          />
-        )}
+          {/* VISTA INVENTARIO SIMS */}
+          {activeTab === 'dashboard' && (
+            <DashboardView
+              simcards={simcards}
+              user={user}
+              handleCreateSim={handleCreateSim}
+              handleEditPhone={handleEditPhone}
+              handleViewHistory={handleViewHistory}
+              handleDeleteSim={handleDeleteSim}
+              handleStatusChange={handleStatusChange}
+              getBadgeClass={getBadgeClass}
+              navigateToDevice={navigateToDevice}
+            />
+          )}
 
-        {/* VISTA DISPOSITIVOS */}
-        {activeTab === 'devices' && (
-          <DevicesView
-            API_URL={API_URL}
-            token={token}
-            user={user}
-            simcards={simcards}
-            fetchSimcards={fetchSimcards}
-            targetDeviceId={targetDeviceId}
-          />
-        )}
+          {/* VISTA DISPOSITIVOS */}
+          {activeTab === 'devices' && (
+            <DevicesView
+              API_URL={API_URL}
+              token={token}
+              user={user}
+              simcards={simcards}
+              fetchSimcards={fetchSimcards}
+              targetDeviceId={targetDeviceId}
+            />
+          )}
 
-        {/* VISTA OPERADORES */}
-        {activeTab === 'operators' && (
-          <OperatorsView
-            API_URL={API_URL}
-            token={token}
-            user={user}
-          />
-        )}
+          {/* VISTA OPERADORES */}
+          {activeTab === 'operators' && (
+            <OperatorsView
+              API_URL={API_URL}
+              token={token}
+              user={user}
+            />
+          )}
 
-        {/* VISTA EQUIPOS */}
-        {activeTab === 'teams' && isAdmin && (
-          <TeamsView API_URL={API_URL} token={token} onTeamsChange={fetchTeams} />
-        )}
+          {/* VISTA EQUIPOS */}
+          {activeTab === 'teams' && isAdmin && (
+            <TeamsView API_URL={API_URL} token={token} onTeamsChange={fetchTeams} />
+          )}
 
-        {/* VISTA USUARIOS */}
-        {activeTab === 'users' && isAdmin && (
-          <UsersView
-            usersList={usersList}
-            teamsList={teamsList}
-            handleCreateUser={handleCreateUser}
-            setEditingUser={setEditingUser}
-            handleDeleteUser={handleDeleteUser}
-          />
-        )}
+          {/* VISTA USUARIOS */}
+          {activeTab === 'users' && isAdmin && (
+            <UsersView
+              usersList={usersList}
+              teamsList={teamsList}
+              handleCreateUser={handleCreateUser}
+              setEditingUser={setEditingUser}
+              handleDeleteUser={handleDeleteUser}
+            />
+          )}
 
-        {/* VISTA CONCILIACIÓN */}
-        {activeTab === 'sync' && isAdmin && (
-          <SyncView API_URL={API_URL} token={token} />
-        )}
+          {/* VISTA CONCILIACIÓN */}
+          {activeTab === 'sync' && isAdmin && (
+            <SyncView API_URL={API_URL} token={token} />
+          )}
+
+        </div>
+
       </main>
 
       {/* Modales */}

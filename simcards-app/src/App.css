@@ -287,7 +287,7 @@ tr:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap; /* Evita que el texto se rompa en dos líneas */
+  white-space: nowrap;
 }
 
 .btn-primary:hover {
@@ -414,4 +414,24 @@ tr:hover {
     align-items: flex-start;
     gap: 16px;
   }
+}
+
+/* ==========================================
+   TRANSICIONES Y FUNDIDOS DE VISTAS (NUEVO)
+   ========================================== */
+
+@keyframes viewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.view-animated {
+  animation: viewFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
 }

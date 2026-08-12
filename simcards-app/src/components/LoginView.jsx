@@ -12,8 +12,10 @@ export default function LoginView({ handleLogin, loginError }) {
 
   return (
     <div style={styles.pageBackground}>
-      {/* Animaciones CSS inyectadas para esferas de luz y botón */}
+      {/* Importación de Google Fonts & Animaciones CSS inyectadas */}
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+
         @keyframes floatPulse1 {
           0% { transform: translate(0px, 0px) scale(1); opacity: 0.6; }
           50% { transform: translate(40px, -30px) scale(1.25); opacity: 0.9; }
@@ -44,22 +46,27 @@ export default function LoginView({ handleLogin, loginError }) {
       {/* Tarjeta SIM de Vidrio */}
       <div style={styles.simCardContainer}>
         
-        {/* Chip SIM Dorado Vectorizado */}
-        <div style={styles.chipHeader}>
-          <div style={styles.simChip}>
-            <div style={styles.chipLineHorizontal} />
-            <div style={styles.chipLineVertical} />
-            <div style={styles.chipInnerBox} />
+        {/* CABECERA CON CHIP Y TIPOGRAFÍA DE ALTO IMPACTO */}
+        <div style={styles.headerGroup}>
+          <div style={styles.chipHeader}>
+            <div style={styles.simChip}>
+              <div style={styles.chipLineHorizontal} />
+              <div style={styles.chipLineVertical} />
+              <div style={styles.chipInnerBox} />
+            </div>
+          </div>
+
+          <h1 style={styles.brandTitle}>
+            <span style={styles.brandPrimary}>SIM</span>
+            <span style={styles.brandSecondary}>finity</span>
+          </h1>
+
+          <div style={styles.taglineWrapper}>
+            <span style={styles.brandSubtitle}>Conectividad sin límites.</span>
           </div>
         </div>
 
-        {/* Título y Subtítulo */}
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <h2 style={styles.title}>Gestión de SIMCards</h2>
-          <p style={styles.subtitle}>Inicia sesión para acceder al sistema</p>
-        </div>
-
-        {/* Alerta de Error original (mantiene la clase .error-alert con estilos adaptados) */}
+        {/* Alerta de Error original */}
         {loginError && (
           <div style={styles.errorAlert} className="error-alert">
             {loginError}
@@ -112,7 +119,7 @@ export default function LoginView({ handleLogin, loginError }) {
   );
 }
 
-// ESTILOS GLASSMORPHISM Y FONDO VIVO
+// ESTILOS GLASSMORPHISM Y TIPOGRAFÍA AVANZADA
 const styles = {
   pageBackground: {
     position: 'relative',
@@ -131,6 +138,7 @@ const styles = {
     overflow: 'hidden',
     padding: '20px',
     boxSizing: 'border-box',
+    fontFamily: "'Inter', sans-serif",
   },
 
   // Esferas Flotantes
@@ -194,7 +202,7 @@ const styles = {
   chipHeader: {
     display: 'flex',
     justifyContent: 'center',
-    marginBottom: '20px',
+    marginBottom: '16px',
   },
   simChip: {
     width: '54px',
@@ -203,7 +211,7 @@ const styles = {
     background: 'linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%)',
     border: '1px solid rgba(255, 255, 255, 0.5)',
     position: 'relative',
-    boxShadow: '0 4px 12px rgba(234, 179, 8, 0.35), inset 0 1px 2px rgba(255,255,255,0.8)',
+    boxShadow: '0 4px 16px rgba(234, 179, 8, 0.4), inset 0 1px 2px rgba(255,255,255,0.8)',
   },
   chipLineHorizontal: {
     position: 'absolute',
@@ -234,17 +242,46 @@ const styles = {
     opacity: 0.5,
   },
 
-  title: {
-    margin: 0,
-    fontSize: '22px',
-    fontWeight: '700',
-    color: '#ffffff',
-    letterSpacing: '-0.02em',
+  // Grupo de Título Avanzado
+  headerGroup: {
+    textAlign: 'center',
+    marginBottom: '28px',
   },
-  subtitle: {
-    margin: '6px 0 0 0',
+  brandTitle: {
+    margin: '10px 0 4px 0',
+    fontSize: '34px',
+    fontWeight: '800',
+    fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+    letterSpacing: '-0.035em',
+    lineHeight: '1.1',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brandPrimary: {
+    color: '#ffffff',
+    textShadow: '0 0 20px rgba(56, 189, 248, 0.45), 0 0 40px rgba(37, 99, 235, 0.25)',
+  },
+  brandSecondary: {
+    background: 'linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    fontWeight: '800',
+    filter: 'drop-shadow(0 0 12px rgba(168, 85, 247, 0.35))',
+  },
+  taglineWrapper: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '2px',
+  },
+  brandSubtitle: {
     fontSize: '13px',
+    fontWeight: '500',
     color: '#94a3b8',
+    letterSpacing: '0.04em',
+    fontFamily: "'Inter', sans-serif",
+    textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
   },
 
   // Alerta de Error
