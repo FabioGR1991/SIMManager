@@ -220,8 +220,8 @@ export default function App() {
     try {
       await axios.post(
         `${API_URL}/simcards`,
-        { 
-          phone_number: newPhone, 
+        {
+          phone_number: newPhone,
           campaign: newCampaign || user?.campaign || 'General',
           wa_type: waType,
           wa_link: waLink
@@ -242,8 +242,8 @@ export default function App() {
     try {
       await axios.put(
         `${API_URL}/simcards/edit/${simData.id}`,
-        { 
-          phone_number: simData.phoneNumber, 
+        {
+          phone_number: simData.phoneNumber,
           campaign: simData.campaign,
           team: simData.team,
           wa_type: simData.waType,
@@ -330,8 +330,8 @@ export default function App() {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: '#f8fafc' }}>
-      
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: 'transparent' }}>
+
       {/* Sidebar Aislado */}
       <Sidebar
         user={user}
@@ -344,9 +344,9 @@ export default function App() {
 
       {/* Contenido Principal */}
       <main style={{ flex: 1, padding: '30px', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
-        
+
         <div key={activeTab} className="view-animated">
-          
+
           {/* VISTA PANEL DE CONTROL */}
           {activeTab === 'panel' && (
             <PanelControlView

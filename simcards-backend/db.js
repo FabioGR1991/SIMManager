@@ -128,25 +128,25 @@ db.exec(`
 `);
 
 // Desactivar restricciones de CHECK estrictas si la tabla se creó previamente con la versión anterior
-try { db.exec("PRAGMA ignore_check_constraints = ON;"); } catch (e) {}
+try { db.exec("PRAGMA ignore_check_constraints = ON;"); } catch (e) { }
 
 // Migraciones automáticas
-try { db.exec("ALTER TABLE users ADD COLUMN team TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE simcards ADD COLUMN team TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE simcards ADD COLUMN wa_type TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE simcards ADD COLUMN wa_link TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN team TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN assigned_operator_id INTEGER;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN assigned_operator2_id INTEGER;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN sim1_phone TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN sim2_phone TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN internal_name TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN entity TEXT;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN sim1_id INTEGER;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN sim2_id INTEGER;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN sim1_is_official INTEGER DEFAULT 0;"); } catch (e) {}
-try { db.exec("ALTER TABLE devices ADD COLUMN sim2_is_official INTEGER DEFAULT 0;"); } catch (e) {}
-try { db.exec("ALTER TABLE operators ADD COLUMN team TEXT;"); } catch (e) {}
+try { db.exec("ALTER TABLE users ADD COLUMN team TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE simcards ADD COLUMN team TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE simcards ADD COLUMN wa_type TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE simcards ADD COLUMN wa_link TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN team TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN assigned_operator_id INTEGER;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN assigned_operator2_id INTEGER;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN sim1_phone TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN sim2_phone TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN internal_name TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN entity TEXT;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN sim1_id INTEGER;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN sim2_id INTEGER;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN sim1_is_official INTEGER DEFAULT 0;"); } catch (e) { }
+try { db.exec("ALTER TABLE devices ADD COLUMN sim2_is_official INTEGER DEFAULT 0;"); } catch (e) { }
+try { db.exec("ALTER TABLE operators ADD COLUMN team TEXT;"); } catch (e) { }
 
 console.log("✅ Base de datos, tablas e índices creados/actualizados exitosamente.");
 
