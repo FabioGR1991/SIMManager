@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Upload, CheckCircle, AlertTriangle, HelpCircle, FileText, Download, Filter } from 'lucide-react';
+import {
+  GitCompare,
+  ArrowRight,
+  UploadCloud,
+  FileSpreadsheet,
+  CheckCircle,
+  AlertTriangle,
+  HelpCircle,
+  Download,
+  Filter,
+  RefreshCw
+} from 'lucide-react';
 
 export default function SyncView({ API_URL, token }) {
   const [parsedLines, setParsedLines] = useState([]);
@@ -9,10 +20,10 @@ export default function SyncView({ API_URL, token }) {
   const [summary, setSummary] = useState(null);
   const [results, setResults] = useState([]);
   const [filter, setFilter] = useState('ALL');
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Lectura automática de CSV exportado desde Excel (detecta ; o ,)
-  const handleCSVUpload = (e) => {
-    const file = e.target.files[0];
+  // Procesador de archivo genérico
+  const processFile = (file) => {
     if (!file) return;
 
     setFileName(file.name);
@@ -55,6 +66,29 @@ export default function SyncView({ API_URL, token }) {
     };
 
     reader.readAsText(file);
+  };
+
+  const handleCSVUpload = (e) => {
+    const file = e.target.files[0];
+    processFile(file);
+  };
+
+  // Handlers para Drag & Drop
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processFile(e.dataTransfer.files[0]);
+    }
   };
 
   const handleProcessSync = async () => {
@@ -128,127 +162,205 @@ export default function SyncView({ API_URL, token }) {
   const filteredResults = results.filter(r => filter === 'ALL' || r.status === filter);
 
   return (
-    <div className="view-animated" style={{ padding: '10px' }}>
+    <div className="view-animated" style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px 0' }}>
 
-      {/* Encabezado Principal */}
-      <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ color: '#ffffff', fontSize: '22px', fontWeight: '700', margin: 0 }}>
-          Conciliación Masiva (Movistar vs App)
-        </h2>
-        <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
+      {/* ------------------------------------------------------------------ */}
+      {/* 1. CABECERA: TÍTULO, BADGE Y SUBTÍTULO                             */}
+      {/* ------------------------------------------------------------------ */}
+      <div style={{ marginBottom: '28px' }}>
+
+        {/* Fila del Título con Icono y Tag */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '8px' }}>
+
+          {/* Contenedor Neón para el Icono de la vista */}
+          <div style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(56, 189, 248, 0.12)',
+            border: '1px solid rgba(56, 189, 248, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#38bdf8'
+          }}>
+            <GitCompare size={20} />
+          </div>
+
+          <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', color: '#ffffff', letterSpacing: '-0.3px' }}>
+            Conciliación Masiva
+          </h1>
+
+          {/* Badge Comparativo */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '3px 10px',
+            borderRadius: '20px',
+            backgroundColor: 'rgba(14, 165, 233, 0.15)',
+            border: '1px solid rgba(14, 165, 233, 0.3)',
+            color: '#38bdf8',
+            fontSize: '12px',
+            fontWeight: '600'
+          }}>
+            <span>Movistar</span>
+            <ArrowRight size={12} style={{ opacity: 0.7 }} />
+            <span>Base App</span>
+          </div>
+        </div>
+
+        {/* Subtítulo limpio y legible */}
+        <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8', lineHeight: '1.5', paddingLeft: '2px' }}>
           Realizá un crosscheck en tiempo real entre el listado exportado del operador y la base de datos interna.
         </p>
       </div>
 
-      {/* Carga de Archivo (Card Cristal) */}
-      <div style={{
-        background: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        padding: '24px',
-        borderRadius: '16px',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
-        marginBottom: '24px'
-      }}>
-        <p style={{ margin: '0 0 16px 0', fontSize: '14px', color: '#cbd5e1' }}>
-          Seleccioná o arrastrá el archivo CSV exportado desde la plataforma de Movistar:
-        </p>
+      {/* ------------------------------------------------------------------ */}
+      {/* 2. DROPZONE DE CARGA Y EJECUCIÓN DEL CROSSCHECK                   */}
+      {/* ------------------------------------------------------------------ */}
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        style={{
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          padding: '32px 24px',
+          borderRadius: '16px',
+          border: isDragging ? '2px dashed #38bdf8' : '1px dashed rgba(255, 255, 255, 0.15)',
+          boxShadow: isDragging ? '0 0 25px rgba(56, 189, 248, 0.2)' : '0 10px 25px rgba(0, 0, 0, 0.3)',
+          marginBottom: '28px',
+          transition: 'all 0.2s ease',
+          textAlign: 'center'
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
 
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-
-          {/* Custom File Input Trigger */}
-          <label style={{
-            display: 'inline-flex',
+          {/* Icono Principal de Carga */}
+          <div style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(56, 189, 248, 0.08)',
+            border: '1px solid rgba(56, 189, 248, 0.2)',
+            display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px dashed rgba(56, 189, 248, 0.4)',
-            color: '#38bdf8',
-            padding: '10px 18px',
-            borderRadius: '10px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: '600',
-            transition: 'all 0.2s ease'
+            justifyContent: 'center',
+            color: '#38bdf8'
           }}>
-            <FileText size={16} />
-            {fileName ? 'Cambiar archivo CSV' : 'Seleccionar archivo CSV'}
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleCSVUpload}
-              style={{ display: 'none' }}
-            />
-          </label>
+            <UploadCloud size={28} />
+          </div>
 
-          {/* Badge del Archivo Cargado */}
-          {parsedLines.length > 0 && (
-            <div style={{
+          <div>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '600', color: '#f8fafc' }}>
+              Seleccioná o arrastrá el archivo CSV
+            </h3>
+            <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>
+              Exportado directamente desde la plataforma de Movistar
+            </p>
+          </div>
+
+          {/* Botones y Badges de Acción */}
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
+
+            {/* Input Oculto Triggered por label */}
+            <label style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              backgroundColor: 'rgba(56, 189, 248, 0.12)',
-              border: '1px solid rgba(56, 189, 248, 0.3)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
               color: '#38bdf8',
-              padding: '8px 14px',
+              padding: '9px 16px',
               borderRadius: '8px',
-              fontSize: '13px',
-              fontWeight: '600'
-            }}>
-              <span>{fileName}</span>
-              <span style={{
-                backgroundColor: '#0284c7',
-                color: '#fff',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                fontSize: '11px'
-              }}>
-                {parsedLines.length} líneas
-              </span>
-            </div>
-          )}
-
-          {/* Botón Iniciar Crosscheck */}
-          <button
-            onClick={handleProcessSync}
-            disabled={parsedLines.length === 0 || loading}
-            style={{
-              marginLeft: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: parsedLines.length === 0
-                ? 'rgba(255, 255, 255, 0.1)'
-                : 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)',
-              color: parsedLines.length === 0 ? '#64748b' : '#ffffff',
-              border: 'none',
-              padding: '10px 22px',
-              borderRadius: '10px',
+              cursor: 'pointer',
               fontSize: '13px',
               fontWeight: '600',
-              cursor: parsedLines.length === 0 || loading ? 'not-allowed' : 'pointer',
-              boxShadow: parsedLines.length > 0 ? '0 4px 14px rgba(2, 132, 199, 0.35)' : 'none',
               transition: 'all 0.2s ease'
-            }}
-          >
-            <Upload size={16} /> {loading ? 'Procesando...' : 'Iniciar Crosscheck'}
-          </button>
+            }}>
+              <FileSpreadsheet size={16} />
+              {fileName ? 'Cambiar archivo CSV' : 'Buscar archivo CSV'}
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleCSVUpload}
+                style={{ display: 'none' }}
+              />
+            </label>
+
+            {/* Badge de archivo seleccionado */}
+            {parsedLines.length > 0 && (
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+                color: '#38bdf8',
+                padding: '7px 12px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: '600'
+              }}>
+                <span>{fileName}</span>
+                <span style={{
+                  backgroundColor: '#0284c7',
+                  color: '#fff',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '11px'
+                }}>
+                  {parsedLines.length} líneas
+                </span>
+              </div>
+            )}
+
+            {/* Botón Principal para iniciar Crosscheck */}
+            <button
+              onClick={handleProcessSync}
+              disabled={parsedLines.length === 0 || loading}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: parsedLines.length === 0
+                  ? 'rgba(255, 255, 255, 0.08)'
+                  : 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)',
+                color: parsedLines.length === 0 ? '#64748b' : '#ffffff',
+                border: 'none',
+                padding: '9px 20px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: parsedLines.length === 0 || loading ? 'not-allowed' : 'pointer',
+                boxShadow: parsedLines.length > 0 ? '0 4px 14px rgba(2, 132, 199, 0.35)' : 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+              {loading ? 'Procesando...' : 'Iniciar Crosscheck'}
+            </button>
+          </div>
+
         </div>
       </div>
 
-      {/* Dashboard KPI Neón */}
+      {/* ------------------------------------------------------------------ */}
+      {/* 3. DASHBOARD KPI NEÓN                                              */}
+      {/* ------------------------------------------------------------------ */}
       {summary && (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
           gap: '16px',
-          marginBottom: '24px'
+          marginBottom: '28px'
         }}>
 
           {/* Total Movistar */}
           <div style={kpiCardStyle('#38bdf8', 'rgba(56, 189, 248, 0.15)')}>
-            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+            <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Total en Movistar
             </span>
             <h3 style={{ margin: '8px 0 0 0', color: '#ffffff', fontSize: '26px', fontWeight: '700' }}>
@@ -258,7 +370,7 @@ export default function SyncView({ API_URL, token }) {
 
           {/* Conciliadas */}
           <div style={kpiCardStyle('#4ade80', 'rgba(74, 222, 128, 0.15)')}>
-            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+            <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Conciliadas (Match)
             </span>
             <h3 style={{ margin: '8px 0 0 0', color: '#4ade80', fontSize: '26px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -268,7 +380,7 @@ export default function SyncView({ API_URL, token }) {
 
           {/* Huérfanas */}
           <div style={kpiCardStyle('#fbbf24', 'rgba(251, 191, 36, 0.15)')}>
-            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+            <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Huérfanas (Solo Movistar)
             </span>
             <h3 style={{ margin: '8px 0 0 0', color: '#fbbf24', fontSize: '26px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -278,7 +390,7 @@ export default function SyncView({ API_URL, token }) {
 
           {/* Faltantes */}
           <div style={kpiCardStyle('#f87171', 'rgba(248, 113, 113, 0.15)')}>
-            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+            <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Faltantes (Solo App)
             </span>
             <h3 style={{ margin: '8px 0 0 0', color: '#f87171', fontSize: '26px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -289,7 +401,9 @@ export default function SyncView({ API_URL, token }) {
         </div>
       )}
 
-      {/* Tabla de Resultados y Filtros */}
+      {/* ------------------------------------------------------------------ */}
+      {/* 4. TABLA DE RESULTADOS Y FILTROS                                  */}
+      {/* ------------------------------------------------------------------ */}
       {results.length > 0 && (
         <div className="table-container">
 
@@ -359,7 +473,7 @@ export default function SyncView({ API_URL, token }) {
                   <td style={{ fontWeight: '700', color: '#ffffff' }}>{r.phone_number}</td>
                   <td>
                     <span className={`status-badge ${r.status === 'MATCHED' ? 'badge-activo' :
-                        r.status === 'ORPHAN_MOVISTAR' ? 'badge-stock' : 'badge-quemado'
+                      r.status === 'ORPHAN_MOVISTAR' ? 'badge-stock' : 'badge-quemado'
                       }`}>
                       {r.status === 'MATCHED' ? 'Conciliado' : r.status === 'ORPHAN_MOVISTAR' ? 'Sin registrar en App' : 'Faltante en Movistar'}
                     </span>
