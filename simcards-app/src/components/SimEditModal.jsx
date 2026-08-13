@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Save, MessageCircle } from 'lucide-react';
+import { X } from 'lucide-react';
 
 export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimEdit, teamsList = [] }) {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -33,7 +33,6 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
 
     setPhoneNumber(formattedValue);
 
-    // Lógica de autorrelleno del Link al cambiar el número
     if (waType) {
       setWaLink((prevLink) => {
         if (!prevLink || prevLink.startsWith('https://wa.me/549')) {
@@ -79,44 +78,79 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.65)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      backdropFilter: 'blur(3px)'
-    }}>
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        width: '100%',
-        maxWidth: '450px',
-        padding: '24px',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-      }}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(5, 10, 20, 0.75)',
+        backdropFilter: 'blur(4px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '16px'
+      }}
+      onClick={() => setEditingSim(null)}
+    >
+      <div
+        style={{
+          backgroundColor: '#17202e',
+          border: '1px solid #233147',
+          borderRadius: '12px',
+          width: '100%',
+          maxWidth: '480px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          overflow: 'hidden',
+          color: '#f8fafc'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header Modal */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h3 style={{ margin: 0, fontSize: '18px', color: '#0f172a' }}>Editar SIMCard</h3>
+        <div
+          style={{
+            padding: '20px 24px 16px 24px',
+            borderBottom: '1px solid #233147',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '700', color: '#ffffff' }}>
+            Editar SIMCard
+          </h3>
           <button
             type="button"
             onClick={() => setEditingSim(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#94a3b8',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title="Cerrar modal"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Formulario */}
-        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={onSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+          {/* Subtítulo de Sección */}
+          <div style={{ fontSize: '12px', fontWeight: '700', color: '#38bdf8', letterSpacing: '0.5px' }}>
+            DATOS GENERALES
+          </div>
+
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
-              Número de Línea
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>
+              Número de Línea *
             </label>
             <input
               type="text"
@@ -129,7 +163,7 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>
               Entidad / Área
             </label>
             <input
@@ -137,14 +171,14 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
               className="form-control"
               value={entity}
               onChange={(e) => setEntity(e.target.value)}
-              placeholder="Ej. General, Ventas, Soporte"
+              placeholder="Ej: Administración / Ventas"
               required
             />
           </div>
 
           {teamsList && teamsList.length > 0 && (
             <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>
                 Equipo / Sede Asignada
               </label>
               <select
@@ -165,73 +199,84 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
             </div>
           )}
 
-          {/* Configuración de WhatsApp */}
-          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '12px', marginTop: '4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px', color: '#16a34a', fontWeight: '600', fontSize: '14px' }}>
-              <MessageCircle size={18} />
-              <span>Ajustes de WhatsApp</span>
+          {/* Sección WhatsApp estilo Slot de Imagen 2 */}
+          <div
+            style={{
+              backgroundColor: '#111827',
+              border: '1px solid #1f293d',
+              borderRadius: '8px',
+              padding: '14px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              marginTop: '4px'
+            }}
+          >
+            <div style={{ fontSize: '12px', fontWeight: '700', color: '#38bdf8', letterSpacing: '0.5px' }}>
+              CONFIGURACIÓN DE WHATSAPP
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
-                  Tipo de WhatsApp
-                </label>
-                <select
-                  className="form-control"
-                  value={waType}
-                  onChange={handleWaTypeChange}
-                >
-                  <option value="">Sin WhatsApp</option>
-                  <option value="WA Normal">WA Normal</option>
-                  <option value="WA Business">WA Business</option>
-                </select>
-              </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
+                Tipo de WhatsApp
+              </label>
+              <select
+                className="form-control"
+                value={waType}
+                onChange={handleWaTypeChange}
+              >
+                <option value="">Sin WhatsApp</option>
+                <option value="WA Normal">WA Normal</option>
+                <option value="WA Business">WA Business</option>
+              </select>
+            </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
-                  Link Directo de WhatsApp
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={waLink}
-                  onChange={(e) => setWaLink(e.target.value)}
-                  placeholder="https://wa.me/54911..."
-                />
-              </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
+                Link Directo de WhatsApp
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                value={waLink}
+                onChange={(e) => setWaLink(e.target.value)}
+                placeholder="https://wa.me/54911..."
+              />
             </div>
           </div>
 
-          {/* Botones de acción */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+          {/* Botones estilo Imagen 2 */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
             <button
               type="button"
               onClick={() => setEditingSim(null)}
               style={{
-                padding: '8px 16px',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                backgroundColor: '#ffffff',
-                color: '#475569',
+                padding: '9px 18px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: '#334155',
+                color: '#ffffff',
                 cursor: 'pointer',
-                fontWeight: '500'
+                fontWeight: '600',
+                fontSize: '13px'
               }}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="btn"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                width: 'auto',
-                padding: '8px 16px'
+                padding: '9px 20px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: '#0284c7',
+                color: '#ffffff',
+                cursor: 'pointer',
+                fontWeight: '600',
+                fontSize: '13px'
               }}
             >
-              <Save size={16} /> Guardar Cambios
+              Guardar Cambios
             </button>
           </div>
         </form>
