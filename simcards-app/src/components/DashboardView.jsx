@@ -1,19 +1,22 @@
-import { useState } from 'react';
-import { 
-  Smartphone, 
-  CheckCircle, 
-  AlertTriangle, 
-  ShieldAlert, 
-  Plus, 
-  ChevronLeft, 
-  ChevronRight, 
-  Search, 
-  X, 
-  MessageCircle, 
+import { useState, useMemo } from 'react';
+import {
+  Smartphone,
+  CheckCircle,
+  AlertTriangle,
+  ShieldAlert,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  X,
+  MessageCircle,
   ExternalLink,
   Filter,
   RotateCcw,
-  Download
+  Download,
+  SquarePen,
+  ClipboardList,
+  Trash2
 } from 'lucide-react';
 
 export default function DashboardView({
@@ -30,7 +33,7 @@ export default function DashboardView({
   const [newPhone, setNewPhone] = useState('');
   const [newEntity, setNewEntity] = useState('');
 
-  // Estados para Búsqueda y Filtros Dropdown
+  // Estados para Búsqueda y Filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('TODOS');
   const [entityFilter, setEntityFilter] = useState('TODOS');
@@ -39,23 +42,26 @@ export default function DashboardView({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
-  const metrics = {
+  // 1. MEMOIZACIÓN DE MÉTRICAS
+  const metrics = useMemo(() => ({
     total: simcards.length,
     activos: simcards.filter((s) => s.status === 'Activo').length,
-    bloqueados: simcards.filter((s) => s.status?.includes('Bloqueado')).length,
+    bloqueados: simcards.filter((s) => s.status?.toLowerCase().includes('bloqueado')).length,
     quemados: simcards.filter((s) => s.status === 'Quemado').length,
-  };
+  }), [simcards]);
 
-  // Obtener lista única de entidades para el desplegable de filtro
-  const uniqueEntities = Array.from(
-    new Set(
-      simcards
-        .map((s) => s.entity || s.campaign)
-        .filter(Boolean)
-    )
-  );
+  // 2. MEMOIZACIÓN DE ENTIDADES ÚNICAS
+  const uniqueEntities = useMemo(() => {
+    return Array.from(
+      new Set(
+        simcards
+          .map((s) => s.entity || s.campaign)
+          .filter(Boolean)
+      )
+    );
+  }, [simcards]);
 
-  // Comprobar si hay algún filtro activo para mostrar u ocultar el botón "Limpiar"
+  // Comprobar si hay algún filtro activo
   const isFiltered = Boolean(searchTerm.trim()) || statusFilter !== 'TODOS' || entityFilter !== 'TODOS';
 
   const handlePhoneChange = (e) => {
@@ -79,7 +85,6 @@ export default function DashboardView({
     setNewEntity('');
   };
 
-  // Función para resetear/limpiar todos los filtros
   const handleResetFilters = () => {
     setSearchTerm('');
     setStatusFilter('TODOS');
@@ -87,38 +92,40 @@ export default function DashboardView({
     setCurrentPage(1);
   };
 
-  // LÓGICA DE BÚSQUEDA Y FILTRADO
-  const cleanSearch = searchTerm.replace(/\D/g, ''); 
-  const rawSearchText = searchTerm.toLowerCase().trim();
+  // 3. MEMOIZACIÓN DEL FILTRADO
+  const filteredSimcards = useMemo(() => {
+    const cleanSearch = searchTerm.replace(/\D/g, '');
+    const rawSearchText = searchTerm.toLowerCase().trim();
 
-  const filteredSimcards = simcards.filter((sim) => {
-    // 1. Filtro por Estado
-    if (statusFilter !== 'TODOS' && sim.status !== statusFilter) {
-      return false;
-    }
+    return simcards.filter((sim) => {
+      // 1. Filtro por Estado
+      if (statusFilter !== 'TODOS' && sim.status !== statusFilter) {
+        return false;
+      }
 
-    // 2. Filtro por Entidad / Área
-    const simEntity = sim.entity || sim.campaign || '';
-    if (entityFilter !== 'TODOS' && simEntity !== entityFilter) {
-      return false;
-    }
+      // 2. Filtro por Entidad / Área
+      const simEntity = sim.entity || sim.campaign || '';
+      if (entityFilter !== 'TODOS' && simEntity !== entityFilter) {
+        return false;
+      }
 
-    // 3. Búsqueda por Texto
-    if (!searchTerm) return true;
+      // 3. Búsqueda por Texto
+      if (!searchTerm) return true;
 
-    const cleanPhone = (sim.phone_number || '').replace(/\D/g, '');
-    const matchesPhone = cleanSearch !== '' && cleanPhone.includes(cleanSearch);
+      const cleanPhone = (sim.phone_number || '').replace(/\D/g, '');
+      const matchesPhone = cleanSearch !== '' && cleanPhone.includes(cleanSearch);
 
-    const matchesEntity = simEntity.toLowerCase().includes(rawSearchText);
-    const matchesUser = (sim.user_name || '').toLowerCase().includes(rawSearchText);
-    const matchesTeam = (sim.team || '').toLowerCase().includes(rawSearchText);
-    const matchesWaType = (sim.wa_type || '').toLowerCase().includes(rawSearchText);
-    const matchesWaLink = (sim.wa_link || '').toLowerCase().includes(rawSearchText);
+      const matchesEntity = simEntity.toLowerCase().includes(rawSearchText);
+      const matchesUser = (sim.user_name || '').toLowerCase().includes(rawSearchText);
+      const matchesTeam = (sim.team || '').toLowerCase().includes(rawSearchText);
+      const matchesWaType = (sim.wa_type || '').toLowerCase().includes(rawSearchText);
+      const matchesWaLink = (sim.wa_link || '').toLowerCase().includes(rawSearchText);
 
-    return matchesPhone || matchesEntity || matchesUser || matchesTeam || matchesWaType || matchesWaLink;
-  });
+      return matchesPhone || matchesEntity || matchesUser || matchesTeam || matchesWaType || matchesWaLink;
+    });
+  }, [simcards, searchTerm, statusFilter, entityFilter]);
 
-  // FUNCIÓN PARA EXPORTAR A CSV (Exporta el total del resultado filtrado, no solo la página actual)
+  // EXPORTAR A CSV (Con escape de comillas dobles)
   const handleExportCSV = () => {
     if (!filteredSimcards || filteredSimcards.length === 0) {
       alert('No hay registros para exportar con los filtros actuales.');
@@ -138,24 +145,25 @@ export default function DashboardView({
       'Modelo Dispositivo'
     ];
 
+    const escapeCsvValue = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
+
     const rows = filteredSimcards.map(sim => [
-      `"${sim.id ?? ''}"`,
-      `"${sim.phone_number ?? ''}"`,
-      `"${sim.wa_type ?? ''}"`,
-      `"${sim.wa_link ?? ''}"`,
-      `"${(sim.entity || sim.campaign) ?? ''}"`,
-      `"${sim.team ?? ''}"`,
-      `"${sim.status ?? ''}"`,
-      `"${sim.operator ?? ''}"`,
-      `"${sim.iccid ?? ''}"`,
-      `"${sim.device_model ?? ''}"`
+      escapeCsvValue(sim.id),
+      escapeCsvValue(sim.phone_number),
+      escapeCsvValue(sim.wa_type),
+      escapeCsvValue(sim.wa_link),
+      escapeCsvValue(sim.entity || sim.campaign),
+      escapeCsvValue(sim.team),
+      escapeCsvValue(sim.status),
+      escapeCsvValue(sim.operator),
+      escapeCsvValue(sim.iccid),
+      escapeCsvValue(sim.device_model)
     ].join(';'));
 
-    // Encabezado BOM UTF-8 (\uFEFF) para garantizar compatibilidad con Excel
     const csvContent = '\uFEFF' + [headers.join(';'), ...rows].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
+
     const dateStr = new Date().toISOString().slice(0, 10);
     const link = document.createElement('a');
     link.setAttribute('href', url);
@@ -163,6 +171,7 @@ export default function DashboardView({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleSearchChange = (e) => {
@@ -264,7 +273,7 @@ export default function DashboardView({
       {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div className="table-container" style={{ marginBottom: '20px', padding: '15px 20px' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-          
+
           {/* Campo de búsqueda libre */}
           <div style={{ position: 'relative', flex: 1, minWidth: '240px', display: 'flex', alignItems: 'center' }}>
             <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px' }} />
@@ -283,6 +292,7 @@ export default function DashboardView({
             />
             {searchTerm && (
               <button
+                type="button"
                 onClick={() => { setSearchTerm(''); setCurrentPage(1); }}
                 style={{
                   position: 'absolute',
@@ -302,7 +312,6 @@ export default function DashboardView({
             )}
           </div>
 
-          {/* Icono de Filtro */}
           <Filter size={18} color="#64748b" style={{ flexShrink: 0 }} />
 
           {/* Dropdown Filtro por Estado */}
@@ -315,8 +324,8 @@ export default function DashboardView({
             <option value="TODOS">Todos los Estados</option>
             <option value="En stock/Sin uso">En stock/Sin uso</option>
             <option value="Activo">Activo</option>
-            <option value="Whastapp Bloqueado">Whastapp Bloqueado</option>
-            <option value="Whastapp Business Bloqueado">Whastapp Business Bloqueado</option>
+            <option value="WhatsApp Bloqueado">WhatsApp Bloqueado</option>
+            <option value="WhatsApp Business Bloqueado">WhatsApp Business Bloqueado</option>
             <option value="Quemado">Quemado</option>
             <option value="Repuesto">Repuesto</option>
           </select>
@@ -336,10 +345,11 @@ export default function DashboardView({
             ))}
           </select>
 
-          {/* Botón Limpiar Filtros (Solo visible cuando hay filtros activos) */}
+          {/* Botón Limpiar Filtros */}
           {isFiltered && (
             <button
               type="button"
+              className="btn-secondary"
               onClick={handleResetFilters}
               style={{
                 display: 'flex',
@@ -347,16 +357,12 @@ export default function DashboardView({
                 gap: '6px',
                 padding: '8px 14px',
                 fontSize: '14px',
-                color: '#334155',
-                backgroundColor: '#ffffff',
-                border: '1px solid #cbd5e1',
-                borderRadius: '6px',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap'
               }}
               title="Restablecer todos los filtros"
             >
-              <RotateCcw size={15} color="#64748b" />
+              <RotateCcw size={15} />
               Limpiar
             </button>
           )}
@@ -373,8 +379,8 @@ export default function DashboardView({
               fontSize: '14px',
               fontWeight: '500',
               color: '#0284c7',
-              backgroundColor: '#f0f9ff',
-              border: '1px solid #bae6fd',
+              backgroundColor: 'rgba(2, 132, 199, 0.1)',
+              border: '1px solid #0284c7',
               borderRadius: '6px',
               cursor: 'pointer',
               whiteSpace: 'nowrap'
@@ -396,11 +402,11 @@ export default function DashboardView({
           alignItems: 'center',
           marginBottom: '15px',
           paddingBottom: '10px',
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: '1px solid rgba(226, 232, 240, 0.1)',
           flexWrap: 'wrap',
           gap: '10px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#475569' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
             <span>Mostrar</span>
             <select
               value={itemsPerPage}
@@ -418,39 +424,41 @@ export default function DashboardView({
 
           {!isAll && totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '13px', color: '#64748b' }}>
+              <span style={{ fontSize: '13px', opacity: 0.8 }}>
                 Página <strong>{validCurrentPage}</strong> de <strong>{totalPages}</strong>
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
                 <button
+                  type="button"
+                  className="btn-pagination"
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   disabled={validCurrentPage === 1}
                   style={{
                     padding: '6px 10px',
                     borderRadius: '4px',
-                    border: '1px solid #cbd5e1',
-                    background: validCurrentPage === 1 ? '#f1f5f9' : '#fff',
                     cursor: validCurrentPage === 1 ? 'not-allowed' : 'pointer',
                     display: 'flex',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    opacity: validCurrentPage === 1 ? 0.4 : 1
                   }}
                 >
-                  <ChevronLeft size={16} color={validCurrentPage === 1 ? '#94a3b8' : '#1e293b'} />
+                  <ChevronLeft size={16} />
                 </button>
                 <button
+                  type="button"
+                  className="btn-pagination"
                   onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                   disabled={validCurrentPage === totalPages}
                   style={{
                     padding: '6px 10px',
                     borderRadius: '4px',
-                    border: '1px solid #cbd5e1',
-                    background: validCurrentPage === totalPages ? '#f1f5f9' : '#fff',
                     cursor: validCurrentPage === totalPages ? 'not-allowed' : 'pointer',
                     display: 'flex',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    opacity: validCurrentPage === totalPages ? 0.4 : 1
                   }}
                 >
-                  <ChevronRight size={16} color={validCurrentPage === totalPages ? '#94a3b8' : '#1e293b'} />
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>
@@ -472,7 +480,7 @@ export default function DashboardView({
           <tbody>
             {currentSimcards.length === 0 ? (
               <tr>
-                <td colSpan={user?.role === 'admin' ? 7 : 6} style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
+                <td colSpan={user?.role === 'admin' ? 7 : 6} style={{ textAlign: 'center', opacity: 0.7, padding: '20px' }}>
                   {isFiltered
                     ? 'No se encontraron líneas que coincidan con los filtros aplicados.'
                     : 'No hay SIMCards registradas aún.'}
@@ -516,8 +524,8 @@ export default function DashboardView({
                             fontWeight: '600',
                             padding: '2px 8px',
                             borderRadius: '12px',
-                            backgroundColor: sim.wa_type === 'WA Business' ? '#dcfce7' : '#e0f2fe',
-                            color: sim.wa_type === 'WA Business' ? '#15803d' : '#0369a1',
+                            backgroundColor: sim.wa_type === 'WA Business' ? 'rgba(22, 163, 74, 0.15)' : 'rgba(3, 105, 161, 0.15)',
+                            color: sim.wa_type === 'WA Business' ? '#22c55e' : '#38bdf8',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px'
@@ -538,7 +546,7 @@ export default function DashboardView({
                           )}
                         </div>
                       ) : (
-                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>-</span>
+                        <span style={{ fontSize: '12px', opacity: 0.5 }}>-</span>
                       )}
                     </td>
                     <td>{sim.entity || sim.campaign || 'N/A'}</td>
@@ -550,12 +558,69 @@ export default function DashboardView({
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <button onClick={() => handleEditPhone(sim)} title="Editar número" style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>✏️</button>
-                        <button onClick={() => handleViewHistory(sim)} title="Ver Historial" style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>📋</button>
+                        {/* Editar número */}
+                        <button
+                          type="button"
+                          onClick={() => handleEditPhone(sim)}
+                          title="Editar número"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: '4px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            color: '#3b82f6',
+                            opacity: 0.9,
+                            transition: 'opacity 0.2s'
+                          }}
+                        >
+                          <SquarePen size={18} />
+                        </button>
+
+                        {/* Ver Historial */}
+                        <button
+                          type="button"
+                          onClick={() => handleViewHistory(sim)}
+                          title="Ver Historial"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: '4px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            color: '#38bdf8',
+                            opacity: 0.9,
+                            transition: 'opacity 0.2s'
+                          }}
+                        >
+                          <ClipboardList size={18} />
+                        </button>
+
+                        {/* Eliminar número (Solo Admin) */}
                         {user?.role === 'admin' && (
-                          <button onClick={() => handleDeleteSim(sim)} title="Eliminar número" style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#dc2626', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>🗑️</button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSim(sim)}
+                            title="Eliminar número"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              padding: '4px',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              color: '#f87171',
+                              opacity: 0.9,
+                              transition: 'opacity 0.2s'
+                            }}
+                          >
+                            <Trash2 size={18} />
+                          </button>
                         )}
 
+                        {/* Cambiar Estado */}
                         <select
                           value={sim.status}
                           onChange={(e) => handleStatusChange(sim.id, e.target.value)}
@@ -565,8 +630,8 @@ export default function DashboardView({
                         >
                           <option value="En stock/Sin uso">En stock/Sin uso</option>
                           <option value="Activo">Activo</option>
-                          <option value="Whastapp Bloqueado">Whastapp Bloqueado</option>
-                          <option value="Whastapp Business Bloqueado">Whastapp Business Bloqueado</option>
+                          <option value="WhatsApp Bloqueado">WhatsApp Bloqueado</option>
+                          <option value="WhatsApp Business Bloqueado">WhatsApp Business Bloqueado</option>
                           <option value="Quemado">Quemado</option>
                           <option value="Repuesto">Repuesto</option>
                         </select>
@@ -586,34 +651,36 @@ export default function DashboardView({
             alignItems: 'center',
             marginTop: '15px',
             paddingTop: '10px',
-            borderTop: '1px solid #f1f5f9'
+            borderTop: '1px solid rgba(226, 232, 240, 0.1)'
           }}>
-            <span style={{ fontSize: '12px', color: '#64748b' }}>
+            <span style={{ fontSize: '12px', opacity: 0.7 }}>
               Mostrando del {indexOfFirstItem + 1} al {Math.min(indexOfLastItem, totalItems)} de {totalItems} registros
             </span>
             <div style={{ display: 'flex', gap: '4px' }}>
               <button
+                type="button"
+                className="btn-pagination"
                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                 disabled={validCurrentPage === 1}
                 style={{
                   padding: '4px 8px',
                   borderRadius: '4px',
-                  border: '1px solid #cbd5e1',
-                  background: validCurrentPage === 1 ? '#f1f5f9' : '#fff',
-                  cursor: validCurrentPage === 1 ? 'not-allowed' : 'pointer'
+                  cursor: validCurrentPage === 1 ? 'not-allowed' : 'pointer',
+                  opacity: validCurrentPage === 1 ? 0.4 : 1
                 }}
               >
                 Anterior
               </button>
               <button
+                type="button"
+                className="btn-pagination"
                 onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                 disabled={validCurrentPage === totalPages}
                 style={{
                   padding: '4px 8px',
                   borderRadius: '4px',
-                  border: '1px solid #cbd5e1',
-                  background: validCurrentPage === totalPages ? '#f1f5f9' : '#fff',
-                  cursor: validCurrentPage === totalPages ? 'not-allowed' : 'pointer'
+                  cursor: validCurrentPage === totalPages ? 'not-allowed' : 'pointer',
+                  opacity: validCurrentPage === totalPages ? 0.4 : 1
                 }}
               >
                 Siguiente
