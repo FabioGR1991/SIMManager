@@ -165,55 +165,98 @@ export default function SyncView({ API_URL, token }) {
     <div className="view-animated" style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px 0' }}>
 
       {/* ------------------------------------------------------------------ */}
-      {/* 1. CABECERA: TÍTULO, BADGE Y SUBTÍTULO                             */}
+      {/* CABECERA ESTRICTA EN 2 LÍNEAS INDEPENDIENTES                      */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ marginBottom: '28px' }}>
+      <div style={{ marginBottom: '28px', width: '100%' }}>
 
-        {/* Fila del Título con Icono y Tag */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '8px' }}>
+        {/* LÍNEA 1: Icono + Título (1 sola línea) + Píldora */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          width: '100%',
+          flexWrap: 'nowrap'
+        }}>
 
-          {/* Contenedor Neón para el Icono de la vista */}
+          {/* Icono Neón */}
           <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            backgroundColor: 'rgba(56, 189, 248, 0.12)',
-            border: '1px solid rgba(56, 189, 248, 0.3)',
+            width: '46px',
+            height: '46px',
+            borderRadius: '12px',
+            backgroundColor: 'rgba(14, 165, 233, 0.12)',
+            border: '1.5px solid rgba(56, 189, 248, 0.6)',
+            boxShadow: '0 0 16px rgba(56, 189, 248, 0.25)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#38bdf8'
+            color: '#38bdf8',
+            flexShrink: 0
           }}>
-            <GitCompare size={20} />
+            <GitCompare size={24} />
           </div>
 
-          <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', color: '#ffffff', letterSpacing: '-0.3px' }}>
+          {/* Título (forzado a 1 sola línea continua con degradé) */}
+          <h1 style={{
+            margin: 0,
+            fontSize: '30px',
+            fontWeight: '800',
+            letterSpacing: '-0.5px',
+            whiteSpace: 'nowrap',
+            background: 'linear-gradient(180deg, #ffffff 30%, #38bdf8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.35))'
+          }}>
             Conciliación Masiva
           </h1>
 
-          {/* Badge Comparativo */}
+          {/* Badge Píldora */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '6px',
-            padding: '3px 10px',
+            gap: '8px',
+            padding: '5px 14px',
             borderRadius: '20px',
-            backgroundColor: 'rgba(14, 165, 233, 0.15)',
-            border: '1px solid rgba(14, 165, 233, 0.3)',
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            border: '1px solid rgba(56, 189, 248, 0.4)',
             color: '#38bdf8',
-            fontSize: '12px',
-            fontWeight: '600'
+            fontSize: '13px',
+            fontWeight: '500',
+            whiteSpace: 'nowrap',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)'
           }}>
             <span>Movistar</span>
-            <ArrowRight size={12} style={{ opacity: 0.7 }} />
+            <ArrowRight size={13} />
             <span>Base App</span>
           </div>
+
         </div>
 
-        {/* Subtítulo limpio y legible */}
-        <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8', lineHeight: '1.5', paddingLeft: '2px' }}>
-          Realizá un crosscheck en tiempo real entre el listado exportado del operador y la base de datos interna.
-        </p>
+        {/* LÍNEA 2: Subtítulo (texto exacto original, 1 sola línea en su caja) */}
+        <div style={{
+          marginTop: '12px',
+          padding: '10px 16px',
+          borderRadius: '10px',
+          backgroundColor: 'rgba(15, 23, 42, 0.45)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          <p style={{
+            margin: 0,
+            fontSize: '14px',
+            color: '#94a3b8',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
+            Realizá un crosscheck en tiempo real entre el listado exportado del operador y la base de datos interna.
+          </p>
+        </div>
+
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -238,7 +281,6 @@ export default function SyncView({ API_URL, token }) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
 
-          {/* Icono Principal de Carga */}
           <div style={{
             width: '56px',
             height: '56px',
@@ -262,10 +304,8 @@ export default function SyncView({ API_URL, token }) {
             </p>
           </div>
 
-          {/* Botones y Badges de Acción */}
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
 
-            {/* Input Oculto Triggered por label */}
             <label style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -290,7 +330,6 @@ export default function SyncView({ API_URL, token }) {
               />
             </label>
 
-            {/* Badge de archivo seleccionado */}
             {parsedLines.length > 0 && (
               <div style={{
                 display: 'inline-flex',
@@ -317,7 +356,6 @@ export default function SyncView({ API_URL, token }) {
               </div>
             )}
 
-            {/* Botón Principal para iniciar Crosscheck */}
             <button
               onClick={handleProcessSync}
               disabled={parsedLines.length === 0 || loading}
@@ -358,7 +396,6 @@ export default function SyncView({ API_URL, token }) {
           marginBottom: '28px'
         }}>
 
-          {/* Total Movistar */}
           <div style={kpiCardStyle('#38bdf8', 'rgba(56, 189, 248, 0.15)')}>
             <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Total en Movistar
@@ -368,7 +405,6 @@ export default function SyncView({ API_URL, token }) {
             </h3>
           </div>
 
-          {/* Conciliadas */}
           <div style={kpiCardStyle('#4ade80', 'rgba(74, 222, 128, 0.15)')}>
             <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Conciliadas (Match)
@@ -378,7 +414,6 @@ export default function SyncView({ API_URL, token }) {
             </h3>
           </div>
 
-          {/* Huérfanas */}
           <div style={kpiCardStyle('#fbbf24', 'rgba(251, 191, 36, 0.15)')}>
             <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Huérfanas (Solo Movistar)
@@ -388,7 +423,6 @@ export default function SyncView({ API_URL, token }) {
             </h3>
           </div>
 
-          {/* Faltantes */}
           <div style={kpiCardStyle('#f87171', 'rgba(248, 113, 113, 0.15)')}>
             <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Faltantes (Solo App)
@@ -407,7 +441,6 @@ export default function SyncView({ API_URL, token }) {
       {results.length > 0 && (
         <div className="table-container">
 
-          {/* Barra de Filtros y Botón Exportar */}
           <div style={{
             display: 'flex',
             gap: '10px',
@@ -433,7 +466,6 @@ export default function SyncView({ API_URL, token }) {
               Faltantes (En App)
             </button>
 
-            {/* Botón Exportar CSV */}
             <button
               onClick={handleDownloadCSV}
               style={{
@@ -456,7 +488,6 @@ export default function SyncView({ API_URL, token }) {
             </button>
           </div>
 
-          {/* Tabla de Resultados Oscura */}
           <table>
             <thead>
               <tr>
