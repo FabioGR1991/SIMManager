@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UserPlus, SquarePen, Trash2 } from 'lucide-react';
+import { UserPlus, SquarePen, Trash2, Users, ShieldCheck } from 'lucide-react';
 
 export default function UsersView({
   usersList = [],
@@ -74,9 +74,100 @@ export default function UsersView({
 
   return (
     <div className="view-animated">
-      <h1 style={{ marginTop: 0, fontSize: '24px', color: '#ffffff', marginBottom: '20px' }}>
-        Gestión de Usuarios y Permisos
-      </h1>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* CABECERA EN 2 LÍNEAS INDEPENDIENTES                               */}
+      {/* ------------------------------------------------------------------ */}
+      <div style={{ marginBottom: '28px', width: '100%' }}>
+
+        {/* LÍNEA 1: Icono + Título (1 sola línea) + Píldora */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          width: '100%',
+          flexWrap: 'nowrap'
+        }}>
+
+          {/* Icono Neón */}
+          <div style={{
+            width: '46px',
+            height: '46px',
+            borderRadius: '12px',
+            backgroundColor: 'rgba(14, 165, 233, 0.12)',
+            border: '1.5px solid rgba(56, 189, 248, 0.6)',
+            boxShadow: '0 0 16px rgba(56, 189, 248, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#38bdf8',
+            flexShrink: 0
+          }}>
+            <Users size={24} />
+          </div>
+
+          {/* Título */}
+          <h1 style={{
+            margin: 0,
+            fontSize: '30px',
+            fontWeight: '800',
+            letterSpacing: '-0.5px',
+            whiteSpace: 'nowrap',
+            background: 'linear-gradient(180deg, #ffffff 30%, #38bdf8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.35))'
+          }}>
+            Gestión de Usuarios y Permisos
+          </h1>
+
+          {/* Badge Píldora */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '5px 14px',
+            borderRadius: '20px',
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            border: '1px solid rgba(56, 189, 248, 0.4)',
+            color: '#38bdf8',
+            fontSize: '13px',
+            fontWeight: '500',
+            whiteSpace: 'nowrap',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)'
+          }}>
+            <ShieldCheck size={14} />
+            <span>Control de Acceso</span>
+          </div>
+
+        </div>
+
+        {/* LÍNEA 2: Subtítulo */}
+        <div style={{
+          marginTop: '12px',
+          padding: '10px 16px',
+          borderRadius: '10px',
+          backgroundColor: 'rgba(15, 23, 42, 0.45)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          <p style={{
+            margin: 0,
+            fontSize: '14px',
+            color: '#94a3b8',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
+            Administrá el alta de nuevos usuarios, asignación de roles y niveles de acceso para cada equipo de la plataforma.
+          </p>
+        </div>
+
+      </div>
 
       {/* Formulario de Alta */}
       <div className="table-container" style={{ marginBottom: '25px' }}>

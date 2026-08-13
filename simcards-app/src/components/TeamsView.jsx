@@ -163,14 +163,100 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      {/* HEADER DE LA SECCIÓN */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: '24px', color: '#f8fafc' }}>Gestión de Equipos</h2>
-          <p style={{ color: '#94a3b8', margin: '5px 0 0 0', fontSize: '14px' }}>
-            Organizá a los Team Leaders por ciudades. La información de SIMs y Dispositivos permanecerá vinculada al equipo.
-          </p>
+    <div className="view-animated">
+
+      {/* ------------------------------------------------------------------ */}
+      {/* CABECERA EN 2 LÍNEAS INDEPENDIENTES                               */}
+      {/* ------------------------------------------------------------------ */}
+      <div style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+
+        <div style={{ flex: '1 1 600px' }}>
+          {/* LÍNEA 1: Icono + Título + Badge */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            width: '100%',
+            flexWrap: 'nowrap'
+          }}>
+
+            {/* Icono Neón */}
+            <div style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(14, 165, 233, 0.12)',
+              border: '1.5px solid rgba(56, 189, 248, 0.6)',
+              boxShadow: '0 0 16px rgba(56, 189, 248, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#38bdf8',
+              flexShrink: 0
+            }}>
+              <Users size={24} />
+            </div>
+
+            {/* Título */}
+            <h1 style={{
+              margin: 0,
+              fontSize: '30px',
+              fontWeight: '800',
+              letterSpacing: '-0.5px',
+              whiteSpace: 'nowrap',
+              background: 'linear-gradient(180deg, #ffffff 30%, #38bdf8 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              filter: 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.35))'
+            }}>
+              Gestión de Equipos
+            </h1>
+
+            {/* Badge Píldora */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '5px 14px',
+              borderRadius: '20px',
+              backgroundColor: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              color: '#38bdf8',
+              fontSize: '13px',
+              fontWeight: '500',
+              whiteSpace: 'nowrap',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)'
+            }}>
+              <Shield size={14} />
+              <span>Estructura & Ciudades</span>
+            </div>
+
+          </div>
+
+          {/* LÍNEA 2: Subtítulo */}
+          <div style={{
+            marginTop: '12px',
+            padding: '10px 16px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(15, 23, 42, 0.45)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <p style={{
+              margin: 0,
+              fontSize: '14px',
+              color: '#94a3b8',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              Organizá a los Team Leaders por ciudades. La información de SIMs y Dispositivos permanecerá vinculada al equipo.
+            </p>
+          </div>
         </div>
 
         {/* BOTÓN CREAR EQUIPO */}
@@ -185,15 +271,18 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
             gap: '8px',
             backgroundColor: '#2563eb',
             color: '#ffffff',
-            padding: '9px 16px',
-            borderRadius: '6px',
+            padding: '10px 18px',
+            borderRadius: '8px',
             border: 'none',
             fontWeight: '600',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            marginTop: '4px',
+            boxShadow: '0 0 12px rgba(37, 99, 235, 0.3)'
           }}
         >
           <Plus size={18} /> Crear Equipo
         </button>
+
       </div>
 
       {/* SELECTOR DE EQUIPOS (BADGES EN TEMA OSCURO) */}
