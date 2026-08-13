@@ -1,3 +1,5 @@
+import { Pencil, X } from 'lucide-react';
+
 export default function UserEditModal({
   editingUser,
   setEditingUser,
@@ -34,17 +36,53 @@ export default function UserEditModal({
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
-      justifyContent: 'center', alignItems: 'center', zIndex: 1000
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      backdropFilter: 'blur(4px)',
+      display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
     }}>
-      <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', maxWidth: '500px', width: '90%' }}>
-        <h3 style={{ marginTop: 0, borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-          Editar Usuario: <span style={{ color: '#2563eb' }}>{editingUser.name}</span>
+      <div style={{
+        background: '#0f172a',
+        border: '1px solid #1e293b',
+        padding: '24px',
+        borderRadius: '12px',
+        maxWidth: '500px',
+        width: '90%',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+        position: 'relative'
+      }}>
+        {/* Botón X de Cierre */}
+        <button
+          type="button"
+          onClick={() => setEditingUser(null)}
+          style={{
+            position: 'absolute', top: '16px', right: '16px',
+            background: 'transparent', border: 'none', color: '#94a3b8',
+            cursor: 'pointer'
+          }}
+        >
+          <X size={20} />
+        </button>
+
+        {/* Titulo del Modal */}
+        <h3 style={{
+          marginTop: 0,
+          borderBottom: '1px solid #1e293b',
+          paddingBottom: '12px',
+          color: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <Pencil size={18} style={{ color: '#38bdf8' }} />
+          Editar Usuario: <span style={{ color: '#38bdf8' }}>{editingUser.name}</span>
         </h3>
 
+        {/* Formulario */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Nombre Completo</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+              Nombre Completo
+            </label>
             <input
               type="text"
               className="form-control"
@@ -55,7 +93,9 @@ export default function UserEditModal({
           </div>
 
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Correo Electrónico</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+              Correo Electrónico
+            </label>
             <input
               type="email"
               className="form-control"
@@ -66,7 +106,9 @@ export default function UserEditModal({
           </div>
 
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Rol / Permisos</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+              Rol / Permisos
+            </label>
             <select
               className="form-control"
               value={editingUser.role || 'tl'}
@@ -79,7 +121,9 @@ export default function UserEditModal({
           </div>
 
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Equipo Asignado</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+              Equipo Asignado
+            </label>
             <select
               className="form-control"
               value={editingUser.team || ''}
@@ -99,7 +143,9 @@ export default function UserEditModal({
           </div>
 
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Nueva Contraseña (Opcional)</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+              Nueva Contraseña (Opcional)
+            </label>
             <input
               type="password"
               className="form-control"
@@ -109,9 +155,17 @@ export default function UserEditModal({
             />
           </div>
 
+          {/* Botones */}
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
             <button type="submit" className="btn" style={{ flex: 1 }}>Guardar Cambios</button>
-            <button type="button" onClick={() => setEditingUser(null)} className="btn" style={{ flex: 1, backgroundColor: '#64748b' }}>Cancelar</button>
+            <button
+              type="button"
+              onClick={() => setEditingUser(null)}
+              className="btn"
+              style={{ flex: 1, backgroundColor: '#334155', color: '#f8fafc' }}
+            >
+              Cancelar
+            </button>
           </div>
         </form>
       </div>
