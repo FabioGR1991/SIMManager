@@ -1,12 +1,13 @@
 import React from 'react';
-import { 
-  LogOut, 
-  Users, 
-  LayoutDashboard, 
-  RefreshCw, 
-  Smartphone, 
-  MapPin, 
-  UserCheck, 
+import faviconLogo from '../assets/simfinity-favicon.png';
+import {
+  LogOut,
+  Users,
+  LayoutDashboard,
+  RefreshCw,
+  Smartphone,
+  MapPin,
+  UserCheck,
   Home,
   Radio
 } from 'lucide-react';
@@ -55,19 +56,51 @@ export default function Sidebar({
     }}>
       {/* Sección Superior - Logo y Menú */}
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-        
-        {/* Branding SIMFinity */}
-        <div style={{ paddingBottom: '16px', borderBottom: '1px solid #1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Radio size={20} color="#ffffff" />
+
+        {/* Branding SIMFinity con el estilo del Login */}
+        <div style={{ paddingBottom: '16px', borderBottom: '1px solid #1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+
+          {/* Favicon directo sin contenedor azul */}
+          <div style={{
+            width: '38px',
+            height: '38px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden'
+          }}>
+            <img
+              src={faviconLogo}
+              alt="SIMFinity Logo"
+              style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '10px' }}
+            />
           </div>
+
           <div>
-            <h1 style={{ fontSize: '18px', margin: 0, fontWeight: 'bold', color: '#ffffff', lineHeight: 1 }}>
-              SIM<span style={{ color: '#38bdf8' }}>Finity</span>
+            {/* LOGO ESTILIZADO IGUAL AL LOGIN */}
+            <h1 style={{
+              fontSize: '22px',
+              margin: 0,
+              fontWeight: '900',
+              lineHeight: 1,
+              letterSpacing: '-0.5px',
+              fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+              filter: 'drop-shadow(0px 2px 6px rgba(168, 85, 247, 0.35))'
+            }}>
+              <span style={{ color: '#ffffff' }}>SIM</span>
+              <span style={{
+                background: 'linear-gradient(90deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>
+                finity
+              </span>
             </h1>
-            <small style={{ color: '#64748b', fontSize: '11px', display: 'block', marginTop: '4px' }}>
-              {isAdmin 
-                ? 'Administración Global' 
+
+            {/* Subtítulo */}
+            <small style={{ color: '#64748b', fontSize: '11px', display: 'block', marginTop: '4px', fontWeight: '500' }}>
+              {isAdmin
+                ? 'Administración Global'
                 : (user?.role === 'pl' || user?.role === 'Planificador')
                   ? `PL • ${user?.team || 'Sin Equipo'}`
                   : `TL • ${user?.team || 'Sin Equipo'}`}
@@ -77,7 +110,7 @@ export default function Sidebar({
 
         {/* Menú de Navegación */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px', overflowY: 'auto' }}>
-          
+
           <button
             onClick={() => {
               setActiveTab('panel');
