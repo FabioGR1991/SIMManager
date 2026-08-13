@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Pencil, Trash2 } from 'lucide-react';
 
-export default function UsersView({ 
-  usersList = [], 
-  teamsList = [], 
-  handleCreateUser, 
-  setEditingUser, 
-  handleDeleteUser 
+export default function UsersView({
+  usersList = [],
+  teamsList = [],
+  handleCreateUser,
+  setEditingUser,
+  handleDeleteUser
 }) {
   const [uName, setUName] = useState('');
   const [uEmail, setUEmail] = useState('');
@@ -48,29 +48,56 @@ export default function UsersView({
     });
   };
 
-  return (
-    <div>
-      <h1 style={{ marginTop: 0, fontSize: '24px' }}>Gestión de Usuarios y Permisos</h1>
+  // Helper para badge de rol neón
+  const getRoleBadgeStyle = (role) => {
+    switch (role) {
+      case 'admin':
+        return {
+          backgroundColor: 'rgba(56, 189, 248, 0.12)',
+          color: '#38bdf8',
+          border: '1px solid rgba(56, 189, 248, 0.3)'
+        };
+      case 'pl':
+        return {
+          backgroundColor: 'rgba(168, 85, 247, 0.12)',
+          color: '#c084fc',
+          border: '1px solid rgba(168, 85, 247, 0.3)'
+        };
+      default: // 'tl'
+        return {
+          backgroundColor: 'rgba(148, 163, 184, 0.12)',
+          color: '#cbd5e1',
+          border: '1px solid rgba(148, 163, 184, 0.25)'
+        };
+    }
+  };
 
+  return (
+    <div className="view-animated">
+      <h1 style={{ marginTop: 0, fontSize: '24px', color: '#ffffff', marginBottom: '20px' }}>
+        Gestión de Usuarios y Permisos
+      </h1>
+
+      {/* Formulario de Alta */}
       <div className="table-container" style={{ marginBottom: '25px' }}>
-        <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <UserPlus size={18} /> Crear Nuevo Usuario
+        <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: '#ffffff' }}>
+          <UserPlus size={18} className="text-cyan-400" /> Crear Nuevo Usuario
         </h3>
         <form onSubmit={onSubmitUser} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Nombre Completo</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Nombre Completo</label>
             <input type="text" className="form-control" value={uName} onChange={(e) => setUName(e.target.value)} placeholder="Ej: Juan Pérez" required />
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Correo Electrónico</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Correo Electrónico</label>
             <input type="email" className="form-control" value={uEmail} onChange={(e) => setUEmail(e.target.value)} placeholder="juan@empresa.com" required />
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Contraseña</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Contraseña</label>
             <input type="password" className="form-control" value={uPassword} onChange={(e) => setUPassword(e.target.value)} placeholder="••••••••" required />
           </div>
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Rol / Permisos</label>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Rol / Permisos</label>
             <select className="form-control" value={uRole} onChange={(e) => handleRoleChange(e.target.value)}>
               <option value="tl">Team Leader (TL)</option>
               <option value="pl">Planificador (PL)</option>
@@ -78,12 +105,11 @@ export default function UsersView({
             </select>
           </div>
 
-          {/* DROPDOWN DINÁMICO DESDE LA BASE DE DATOS */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Equipo Asignado</label>
-            <select 
-              className="form-control" 
-              value={uTeam} 
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Equipo Asignado</label>
+            <select
+              className="form-control"
+              value={uTeam}
               onChange={(e) => setUTeam(e.target.value)}
               required
             >
@@ -101,13 +127,14 @@ export default function UsersView({
           </div>
 
           <div style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
-            <button type="submit" className="btn" style={{ width: 'auto' }}>Guardar Usuario</button>
+            <button type="submit" className="btn-primary">Guardar Usuario</button>
           </div>
         </form>
       </div>
 
+      {/* Tabla de Usuarios Registrados */}
       <div className="table-container">
-        <h3>Usuarios Registrados</h3>
+        <h3 style={{ margin: '0 0 15px 0', color: '#ffffff' }}>Usuarios Registrados</h3>
         <table>
           <thead>
             <tr>
@@ -122,38 +149,73 @@ export default function UsersView({
           <tbody>
             {usersList.map((u) => (
               <tr key={u.id}>
-                <td><strong>#{u.id}</strong></td>
-                <td>{u.name}</td>
-                <td>{u.email}</td>
+                <td style={{ fontWeight: '700', color: '#ffffff' }}>#{u.id}</td>
+                <td style={{ color: '#ffffff', fontWeight: '500' }}>{u.name}</td>
+                <td style={{ color: '#cbd5e1' }}>{u.email}</td>
                 <td>
                   <span style={{
-                    padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold',
-                    backgroundColor: u.role === 'admin' ? '#dbeafe' : u.role === 'pl' ? '#f3e8ff' : '#f1f5f9',
-                    color: u.role === 'admin' ? '#1e40af' : u.role === 'pl' ? '#6b21a8' : '#475569'
+                    padding: '4px 10px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    display: 'inline-block',
+                    ...getRoleBadgeStyle(u.role)
                   }}>
                     {u.role === 'admin' ? 'Administrador' : u.role === 'pl' ? 'Planificador' : 'Team Leader'}
                   </span>
                 </td>
-                <td>{u.team || 'Sin asignar'}</td>
+                <td style={{ color: '#cbd5e1' }}>{u.team || 'Sin asignar'}</td>
                 <td>
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+
+                    {/* Botón Editar - Estilo Imagen 1 */}
                     <button
                       type="button"
                       onClick={() => setEditingUser({ ...u, password: '' })}
                       title="Editar usuario"
-                      style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        backgroundColor: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
+                        transition: 'transform 0.15s ease'
+                      }}
+                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                      ✏️
+                      <Pencil size={15} color="#ea580c" />
                     </button>
-                    
+
+                    {/* Botón Eliminar - Estilo Imagen 1 */}
                     <button
                       type="button"
                       onClick={() => handleDeleteUser(u)}
                       title="Eliminar usuario"
-                      style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#dc2626', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        backgroundColor: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
+                        transition: 'transform 0.15s ease'
+                      }}
+                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                      🗑️
+                      <Trash2 size={15} color="#ef4444" />
                     </button>
+
                   </div>
                 </td>
               </tr>

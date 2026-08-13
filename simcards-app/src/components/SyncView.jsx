@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Upload, CheckCircle, AlertTriangle, HelpCircle, FileText } from 'lucide-react';
+import { Upload, CheckCircle, AlertTriangle, HelpCircle, FileText, Download, Filter } from 'lucide-react';
 
 export default function SyncView({ API_URL, token }) {
   const [parsedLines, setParsedLines] = useState([]);
@@ -26,7 +26,7 @@ export default function SyncView({ API_URL, token }) {
       const firstLine = lines[0];
       const delimiter = firstLine.includes(';') ? ';' : ',';
 
-      const headers = firstLine.split(delimiter).map(h => 
+      const headers = firstLine.split(delimiter).map(h =>
         h.trim().replace(/^["']|["']$/g, '').toLowerCase()
       );
 
@@ -92,14 +92,14 @@ export default function SyncView({ API_URL, token }) {
     ];
 
     const rows = results.map(r => {
-      const estadoTexto = r.status === 'MATCHED' 
-        ? 'Conciliado' 
-        : r.status === 'ORPHAN_MOVISTAR' 
-        ? 'Sin registrar en App' 
-        : 'Faltante en Movistar';
+      const estadoTexto = r.status === 'MATCHED'
+        ? 'Conciliado'
+        : r.status === 'ORPHAN_MOVISTAR'
+          ? 'Sin registrar en App'
+          : 'Faltante en Movistar';
 
-      const campanaTexto = r.app_campaign 
-        ? `${r.app_campaign} (${r.app_status || ''})` 
+      const campanaTexto = r.app_campaign
+        ? `${r.app_campaign} (${r.app_status || ''})`
         : 'N/A';
 
       return [
@@ -111,11 +111,10 @@ export default function SyncView({ API_URL, token }) {
       ];
     });
 
-    // Se agrega el caracter BOM (\uFEFF) para que Excel abra las tildes y eñes correctamente
     const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(row => row.join(";"))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement("a");
     const dateStr = new Date().toISOString().split('T')[0];
     link.href = url;
@@ -129,146 +128,279 @@ export default function SyncView({ API_URL, token }) {
   const filteredResults = results.filter(r => filter === 'ALL' || r.status === filter);
 
   return (
-    <div style={{ padding: '10px' }}>
-      <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Conciliación Masiva (Movistar vs App)</h2>
+    <div className="view-animated" style={{ padding: '10px' }}>
 
-      {/* Carga de Archivo */}
-      <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '20px' }}>
-        <p style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#64748b' }}>
-          Sube el archivo CSV exportado de Movistar.
+      {/* Encabezado Principal */}
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ color: '#ffffff', fontSize: '22px', fontWeight: '700', margin: 0 }}>
+          Conciliación Masiva (Movistar vs App)
+        </h2>
+        <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
+          Realizá un crosscheck en tiempo real entre el listado exportado del operador y la base de datos interna.
         </p>
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <input type="file" accept=".csv" onChange={handleCSVUpload} />
+      </div>
+
+      {/* Carga de Archivo (Card Cristal) */}
+      <div style={{
+        background: 'rgba(15, 23, 42, 0.65)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        padding: '24px',
+        borderRadius: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+        marginBottom: '24px'
+      }}>
+        <p style={{ margin: '0 0 16px 0', fontSize: '14px', color: '#cbd5e1' }}>
+          Seleccioná o arrastrá el archivo CSV exportado desde la plataforma de Movistar:
+        </p>
+
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+
+          {/* Custom File Input Trigger */}
+          <label style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            border: '1px dashed rgba(56, 189, 248, 0.4)',
+            color: '#38bdf8',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            cursor: 'pointer',
+            fontSize: '13px',
+            fontWeight: '600',
+            transition: 'all 0.2s ease'
+          }}>
+            <FileText size={16} />
+            {fileName ? 'Cambiar archivo CSV' : 'Seleccionar archivo CSV'}
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleCSVUpload}
+              style={{ display: 'none' }}
+            />
+          </label>
+
+          {/* Badge del Archivo Cargado */}
           {parsedLines.length > 0 && (
-            <span style={{ fontSize: '13px', color: '#0284c7', fontWeight: 'bold' }}>
-              <FileText size={14} /> {parsedLines.length} líneas cargadas ({fileName})
-            </span>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: 'rgba(56, 189, 248, 0.12)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              color: '#38bdf8',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: '600'
+            }}>
+              <span>{fileName}</span>
+              <span style={{
+                backgroundColor: '#0284c7',
+                color: '#fff',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontSize: '11px'
+              }}>
+                {parsedLines.length} líneas
+              </span>
+            </div>
           )}
+
+          {/* Botón Iniciar Crosscheck */}
           <button
             onClick={handleProcessSync}
             disabled={parsedLines.length === 0 || loading}
-            className="btn"
-            style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: parsedLines.length === 0
+                ? 'rgba(255, 255, 255, 0.1)'
+                : 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)',
+              color: parsedLines.length === 0 ? '#64748b' : '#ffffff',
+              border: 'none',
+              padding: '10px 22px',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: parsedLines.length === 0 || loading ? 'not-allowed' : 'pointer',
+              boxShadow: parsedLines.length > 0 ? '0 4px 14px rgba(2, 132, 199, 0.35)' : 'none',
+              transition: 'all 0.2s ease'
+            }}
           >
             <Upload size={16} /> {loading ? 'Procesando...' : 'Iniciar Crosscheck'}
           </button>
         </div>
       </div>
 
-      {/* Dashboard KPI */}
+      {/* Dashboard KPI Neón */}
       {summary && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '20px' }}>
-          <div style={cardStyle('#0284c7')}>
-            <small style={{ color: '#64748b' }}>Total en Movistar</small>
-            <h3 style={{ margin: '5px 0 0 0', color: '#0f172a' }}>{summary.total}</h3>
-          </div>
-          <div style={cardStyle('#16a34a')}>
-            <small style={{ color: '#64748b' }}>Conciliadas (Match)</small>
-            <h3 style={{ margin: '5px 0 0 0', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <CheckCircle size={20} /> {summary.matchedCount}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '16px',
+          marginBottom: '24px'
+        }}>
+
+          {/* Total Movistar */}
+          <div style={kpiCardStyle('#38bdf8', 'rgba(56, 189, 248, 0.15)')}>
+            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+              Total en Movistar
+            </span>
+            <h3 style={{ margin: '8px 0 0 0', color: '#ffffff', fontSize: '26px', fontWeight: '700' }}>
+              {summary.total}
             </h3>
           </div>
-          <div style={cardStyle('#eab308')}>
-            <small style={{ color: '#64748b' }}>Huérfanas (Solo Movistar)</small>
-            <h3 style={{ margin: '5px 0 0 0', color: '#ca8a04', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <HelpCircle size={20} /> {summary.orphansCount}
+
+          {/* Conciliadas */}
+          <div style={kpiCardStyle('#4ade80', 'rgba(74, 222, 128, 0.15)')}>
+            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+              Conciliadas (Match)
+            </span>
+            <h3 style={{ margin: '8px 0 0 0', color: '#4ade80', fontSize: '26px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle size={22} /> {summary.matchedCount}
             </h3>
           </div>
-          <div style={cardStyle('#dc2626')}>
-            <small style={{ color: '#64748b' }}>Faltantes (Solo App)</small>
-            <h3 style={{ margin: '5px 0 0 0', color: '#dc2626', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <AlertTriangle size={20} /> {summary.missingCount}
+
+          {/* Huérfanas */}
+          <div style={kpiCardStyle('#fbbf24', 'rgba(251, 191, 36, 0.15)')}>
+            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+              Huérfanas (Solo Movistar)
+            </span>
+            <h3 style={{ margin: '8px 0 0 0', color: '#fbbf24', fontSize: '26px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <HelpCircle size={22} /> {summary.orphansCount}
             </h3>
           </div>
+
+          {/* Faltantes */}
+          <div style={kpiCardStyle('#f87171', 'rgba(248, 113, 113, 0.15)')}>
+            <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>
+              Faltantes (Solo App)
+            </span>
+            <h3 style={{ margin: '8px 0 0 0', color: '#f87171', fontSize: '26px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertTriangle size={22} /> {summary.missingCount}
+            </h3>
+          </div>
+
         </div>
       )}
 
-      {/* Tabla de Resultados */}
+      {/* Tabla de Resultados y Filtros */}
       {results.length > 0 && (
-        <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', alignItems: 'center' }}>
-            <button onClick={() => setFilter('ALL')} style={filterBtnStyle(filter === 'ALL')}>Todos ({results.length})</button>
-            <button onClick={() => setFilter('MATCHED')} style={filterBtnStyle(filter === 'MATCHED')}>Conciliadas</button>
-            <button onClick={() => setFilter('ORPHAN_MOVISTAR')} style={filterBtnStyle(filter === 'ORPHAN_MOVISTAR')}>Huérfanas (En Movistar)</button>
-            <button onClick={() => setFilter('MISSING_MOVISTAR')} style={filterBtnStyle(filter === 'MISSING_MOVISTAR')}>Faltantes (En App)</button>
+        <div className="table-container">
 
-            {/* Botón de Descarga de CSV */}
+          {/* Barra de Filtros y Botón Exportar */}
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            marginBottom: '20px',
+            alignItems: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', marginRight: '6px' }}>
+              <Filter size={15} />
+              <span style={{ fontSize: '13px', fontWeight: '600' }}>Filtrar:</span>
+            </div>
+
+            <button onClick={() => setFilter('ALL')} style={filterBtnStyle(filter === 'ALL')}>
+              Todos ({results.length})
+            </button>
+            <button onClick={() => setFilter('MATCHED')} style={filterBtnStyle(filter === 'MATCHED')}>
+              Conciliadas
+            </button>
+            <button onClick={() => setFilter('ORPHAN_MOVISTAR')} style={filterBtnStyle(filter === 'ORPHAN_MOVISTAR')}>
+              Huérfanas (En Movistar)
+            </button>
+            <button onClick={() => setFilter('MISSING_MOVISTAR')} style={filterBtnStyle(filter === 'MISSING_MOVISTAR')}>
+              Faltantes (En App)
+            </button>
+
+            {/* Botón Exportar CSV */}
             <button
               onClick={handleDownloadCSV}
               style={{
                 marginLeft: 'auto',
-                backgroundColor: '#16a34a',
-                color: '#fff',
-                border: 'none',
-                padding: '6px 14px',
-                borderRadius: '6px',
+                backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                color: '#4ade80',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                padding: '8px 16px',
+                borderRadius: '8px',
                 cursor: 'pointer',
-                fontWeight: 'bold',
+                fontWeight: '600',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                fontSize: '13px'
+                gap: '8px',
+                fontSize: '13px',
+                transition: 'all 0.2s ease'
               }}
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Descargar Informe CSV
+              <Download size={15} /> Descargar Informe CSV
             </button>
           </div>
 
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+          {/* Tabla de Resultados Oscura */}
+          <table>
             <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
-                <th style={{ padding: '10px' }}>Número de Línea</th>
-                <th style={{ padding: '10px' }}>Estado Crosscheck</th>
-                <th style={{ padding: '10px' }}>Plan Movistar</th>
-                <th style={{ padding: '10px' }}>Estado Movistar</th>
-                <th style={{ padding: '10px' }}>Campaña / Estado App</th>
+              <tr>
+                <th>Número de Línea</th>
+                <th>Estado Crosscheck</th>
+                <th>Plan Movistar</th>
+                <th>Estado Movistar</th>
+                <th>Campaña / Estado App</th>
               </tr>
             </thead>
             <tbody>
               {filteredResults.map(r => (
-                <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '10px', fontWeight: 'bold' }}>{r.phone_number}</td>
-                  <td style={{ padding: '10px' }}>
-                    <span className={`badge ${
-                      r.status === 'MATCHED' ? 'badge-activo' :
-                      r.status === 'ORPHAN_MOVISTAR' ? 'badge-stock' : 'badge-quemado'
-                    }`}>
+                <tr key={r.id}>
+                  <td style={{ fontWeight: '700', color: '#ffffff' }}>{r.phone_number}</td>
+                  <td>
+                    <span className={`status-badge ${r.status === 'MATCHED' ? 'badge-activo' :
+                        r.status === 'ORPHAN_MOVISTAR' ? 'badge-stock' : 'badge-quemado'
+                      }`}>
                       {r.status === 'MATCHED' ? 'Conciliado' : r.status === 'ORPHAN_MOVISTAR' ? 'Sin registrar en App' : 'Faltante en Movistar'}
                     </span>
                   </td>
-                  <td style={{ padding: '10px', color: '#475569' }}>{r.movistar_plan || '-'}</td>
-                  <td style={{ padding: '10px', color: '#475569' }}>{r.movistar_status || '-'}</td>
-                  <td style={{ padding: '10px', color: '#475569' }}>
+                  <td style={{ color: '#cbd5e1' }}>{r.movistar_plan || '-'}</td>
+                  <td style={{ color: '#cbd5e1' }}>{r.movistar_status || '-'}</td>
+                  <td style={{ color: '#cbd5e1' }}>
                     {r.app_campaign ? `${r.app_campaign} (${r.app_status})` : 'N/A'}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
         </div>
       )}
+
     </div>
   );
 }
 
-const cardStyle = (color) => ({
-  backgroundColor: '#fff',
-  padding: '15px',
-  borderRadius: '8px',
-  borderLeft: `5px solid ${color}`,
-  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+// Estilos dinámicos auxiliares
+const kpiCardStyle = (borderColor, bgGlow) => ({
+  background: 'rgba(15, 23, 42, 0.65)',
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  padding: '18px 20px',
+  borderRadius: '14px',
+  border: `1px solid rgba(255, 255, 255, 0.08)`,
+  borderLeft: `4px solid ${borderColor}`,
+  boxShadow: `0 10px 25px rgba(0, 0, 0, 0.3), inset 0 0 15px ${bgGlow}`
 });
 
 const filterBtnStyle = (active) => ({
-  padding: '6px 12px',
-  borderRadius: '6px',
-  border: '1px solid #cbd5e1',
-  backgroundColor: active ? '#0284c7' : '#fff',
-  color: active ? '#fff' : '#475569',
-  cursor: 'pointer'
+  padding: '7px 14px',
+  borderRadius: '8px',
+  border: active ? '1px solid rgba(56, 189, 248, 0.5)' : '1px solid rgba(255, 255, 255, 0.08)',
+  backgroundColor: active ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+  color: active ? '#38bdf8' : '#94a3b8',
+  cursor: 'pointer',
+  fontSize: '12px',
+  fontWeight: '600',
+  transition: 'all 0.2s ease'
 });

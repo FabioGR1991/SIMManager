@@ -1,6 +1,6 @@
-export default function UserEditModal({ 
-  editingUser, 
-  setEditingUser, 
+export default function UserEditModal({
+  editingUser,
+  setEditingUser,
   handleUpdateUser,
   teamsList = []
 }) {
