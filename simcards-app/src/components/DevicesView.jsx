@@ -199,124 +199,119 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
     <div style={{ padding: '15px', color: '#f8fafc' }}>
 
       {/* ------------------------------------------------------------------ */}
-      {/* CABECERA FUTURISTA DE LA SECCIÓN                                   */}
+      {/* CABECERA FUTURISTA UNIFICADA (NUEVO ESTILO CARD - IMAGEN 2)         */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{
+        marginBottom: '24px',
+        width: '100%',
+        backgroundColor: 'rgba(15, 23, 42, 0.65)',
+        border: '1px solid rgba(56, 189, 248, 0.25)',
+        borderRadius: '16px',
+        padding: '20px 24px',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '20px',
+        boxSizing: 'border-box'
+      }}>
 
-        <div style={{ flex: '1 1 600px' }}>
-          {/* LÍNEA 1: Icono + Título + Badge */}
+        {/* LADO IZQUIERDO: Icono Neón + Título y Subtítulo apilados */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flex: '1 1 500px' }}>
+
+          {/* Icono Neón */}
           <div style={{
+            width: '52px',
+            height: '52px',
+            borderRadius: '14px',
+            backgroundColor: 'rgba(14, 165, 233, 0.12)',
+            border: '1.5px solid rgba(56, 189, 248, 0.5)',
+            boxShadow: '0 0 20px rgba(56, 189, 248, 0.2)',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
-            width: '100%',
-            flexWrap: 'nowrap'
+            justifyContent: 'center',
+            color: '#38bdf8',
+            flexShrink: 0
           }}>
+            <Smartphone size={26} />
+          </div>
 
-            {/* Icono Neón */}
-            <div style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(14, 165, 233, 0.12)',
-              border: '1.5px solid rgba(56, 189, 248, 0.6)',
-              boxShadow: '0 0 16px rgba(56, 189, 248, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justify: 'center',
-              color: '#38bdf8',
-              flexShrink: 0
-            }}>
-              <Smartphone size={24} />
-            </div>
-
-            {/* Título Principal con Gradiente */}
+          {/* Bloque Textos */}
+          <div>
             <h1 style={{
               margin: 0,
-              fontSize: '30px',
+              fontSize: '26px',
               fontWeight: '800',
               letterSpacing: '-0.5px',
-              whiteSpace: 'nowrap',
-              background: 'linear-gradient(180deg, #ffffff 30%, #38bdf8 100%)',
+              color: '#ffffff',
+              background: 'linear-gradient(180deg, #ffffff 30%, #e0f2fe 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.35))'
+              filter: 'drop-shadow(0 0 10px rgba(56, 189, 248, 0.25))'
             }}>
               Dispositivos Inventariados
             </h1>
-
-            {/* Badge Píldora */}
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '5px 14px',
-              borderRadius: '20px',
-              backgroundColor: 'rgba(15, 23, 42, 0.6)',
-              border: '1px solid rgba(56, 189, 248, 0.4)',
-              color: '#38bdf8',
-              fontSize: '13px',
-              fontWeight: '500',
-              whiteSpace: 'nowrap',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}>
-              <Cpu size={14} />
-              <span>Control de Hardware</span>
-            </div>
-
-          </div>
-
-          {/* LÍNEA 2: Subtítulo en contenedor traslúcido */}
-          <div style={{
-            marginTop: '12px',
-            padding: '10px 16px',
-            borderRadius: '10px',
-            backgroundColor: 'rgba(15, 23, 42, 0.45)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}>
             <p style={{
-              margin: 0,
-              fontSize: '14px',
+              margin: '4px 0 0 0',
+              fontSize: '13.5px',
               color: '#94a3b8',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              fontWeight: '400',
+              lineHeight: '1.4'
             }}>
               Administrá el parque de terminales, vinculación de líneas SIM y el estado operativo general del equipamiento.
             </p>
           </div>
         </div>
 
-        {/* BOTÓN ACCIÓN PRINCIPAL */}
-        <button
-          type="button"
-          onClick={() => {
-            setEditingDevice(null);
-            setShowModal(true);
-          }}
-          style={{
-            width: 'auto',
-            display: 'flex',
+        {/* LADO DERECHO: Badge Píldora + Botón de Acción Principal */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+
+          {/* Badge Píldora */}
+          <div style={{
+            display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            backgroundColor: '#0284c7',
-            color: '#ffffff',
-            padding: '10px 18px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: '600',
-            cursor: 'pointer',
-            marginTop: '4px',
-            boxShadow: '0 0 12px rgba(2, 132, 199, 0.35)'
-          }}
-        >
-          <Plus size={18} /> Nuevo Dispositivo
-        </button>
+            padding: '6px 16px',
+            borderRadius: '20px',
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            border: '1px solid rgba(56, 189, 248, 0.4)',
+            color: '#38bdf8',
+            fontSize: '13px',
+            fontWeight: '500',
+            whiteSpace: 'nowrap'
+          }}>
+            <Cpu size={14} />
+            <span>Control de Hardware</span>
+          </div>
+
+          {/* Botón Acción Principal */}
+          <button
+            type="button"
+            onClick={() => {
+              setEditingDevice(null);
+              setShowModal(true);
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#0284c7',
+              color: '#ffffff',
+              padding: '10px 18px',
+              borderRadius: '10px',
+              border: 'none',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              boxShadow: '0 0 16px rgba(2, 132, 199, 0.4)'
+            }}
+          >
+            <Plus size={18} /> Nuevo Dispositivo
+          </button>
+        </div>
 
       </div>
 
