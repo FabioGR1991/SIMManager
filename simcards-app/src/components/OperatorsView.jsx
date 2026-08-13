@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { UserCheck, Plus, Edit, Trash2, Smartphone, ShieldAlert, X } from 'lucide-react';
+import { UserCheck, Plus, Edit, Trash2, Smartphone, Shield, X } from 'lucide-react';
 
 const DEFAULT_TEAMS = ['Tokio', 'Roma', 'Madrid', 'Berlín', 'Buenos Aires'];
 
@@ -115,43 +115,155 @@ export default function OperatorsView({ API_URL, token, user }) {
   const isAdmin = user?.role === 'admin' || user?.role === 'Administrador';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '20px' }}>
+    <div className="view-animated">
 
-      {/* Header + Botón Crear */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-        <div>
-          <h2 style={{ margin: 0, color: '#f8fafc', fontSize: '24px' }}>Gestión de Operadores</h2>
-          <small style={{ color: '#94a3b8', fontSize: '14px' }}>
-            Administra los representantes asignados a los dispositivos
-          </small>
+      {/* ------------------------------------------------------------------ */}
+      {/* CABECERA EN 2 LÍNEAS INDEPENDIENTES                               */}
+      {/* ------------------------------------------------------------------ */}
+      <div style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+
+        <div style={{ flex: '1 1 600px' }}>
+          {/* LÍNEA 1: Icono + Título + Badge */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            width: '100%',
+            flexWrap: 'nowrap'
+          }}>
+
+            {/* Icono Neón */}
+            <div style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(14, 165, 233, 0.12)',
+              border: '1.5px solid rgba(56, 189, 248, 0.6)',
+              boxShadow: '0 0 16px rgba(56, 189, 248, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#38bdf8',
+              flexShrink: 0
+            }}>
+              <UserCheck size={24} />
+            </div>
+
+            {/* Título */}
+            <h1 style={{
+              margin: 0,
+              fontSize: '30px',
+              fontWeight: '800',
+              letterSpacing: '-0.5px',
+              whiteSpace: 'nowrap',
+              background: 'linear-gradient(180deg, #ffffff 30%, #38bdf8 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              filter: 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.35))'
+            }}>
+              Gestión de Operadores
+            </h1>
+
+            {/* Badge Píldora */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '5px 14px',
+              borderRadius: '20px',
+              backgroundColor: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              color: '#38bdf8',
+              fontSize: '13px',
+              fontWeight: '500',
+              whiteSpace: 'nowrap',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)'
+            }}>
+              <Shield size={14} />
+              <span>Representantes & Turnos</span>
+            </div>
+
+          </div>
+
+          {/* LÍNEA 2: Subtítulo */}
+          <div style={{
+            marginTop: '12px',
+            padding: '10px 16px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(15, 23, 42, 0.45)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <p style={{
+              margin: 0,
+              fontSize: '14px',
+              color: '#94a3b8',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              Administrá los representantes asignados a los dispositivos, controlá turnos y gestioná las campañas asociadas.
+            </p>
+          </div>
         </div>
+
+        {/* BOTÓN NUEVO OPERADOR */}
         <button
           type="button"
           onClick={() => handleOpenModal()}
           className="btn"
           style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            backgroundColor: '#0284c7', color: '#fff', border: 'none',
-            padding: '9px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', width: 'auto'
+            width: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: '#2563eb',
+            color: '#ffffff',
+            padding: '10px 18px',
+            borderRadius: '8px',
+            border: 'none',
+            fontWeight: '600',
+            cursor: 'pointer',
+            marginTop: '4px',
+            boxShadow: '0 0 12px rgba(37, 99, 235, 0.3)'
           }}
         >
           <Plus size={18} /> Nuevo Operador
         </button>
+
       </div>
 
-      {/* Ficha Destacada Superior */}
+      {/* FICHA DESTACADA SUPERIOR */}
       {selectedOperator ? (
         <div style={{
-          backgroundColor: '#0f172a', padding: '20px', borderRadius: '10px',
-          border: '1px solid #1e293b', borderLeft: '4px solid #38bdf8',
-          display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
+          backgroundColor: '#0f172a',
+          padding: '20px',
+          borderRadius: '10px',
+          border: '1px solid #1e293b',
+          borderLeft: '4px solid #38bdf8',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '20px',
+          flexWrap: 'wrap',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
+          marginBottom: '20px'
         }}>
           <div style={{
-            width: '56px', height: '56px', borderRadius: '50%',
-            backgroundColor: '#1e293b', color: '#38bdf8', border: '1px solid #38bdf8',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '22px', fontWeight: 'bold'
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            backgroundColor: '#1e293b',
+            color: '#38bdf8',
+            border: '1px solid #38bdf8',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '22px',
+            fontWeight: 'bold'
           }}>
             {selectedOperator.full_name.charAt(0).toUpperCase()}
           </div>
@@ -170,8 +282,13 @@ export default function OperatorsView({ API_URL, token, user }) {
               {selectedOperator.assigned_devices ? (
                 selectedOperator.assigned_devices.split(', ').map((dev, idx) => (
                   <span key={idx} style={{
-                    backgroundColor: '#1e293b', color: '#38bdf8', padding: '3px 10px',
-                    borderRadius: '12px', fontSize: '12px', border: '1px solid #334155', fontWeight: '500'
+                    backgroundColor: '#1e293b',
+                    color: '#38bdf8',
+                    padding: '3px 10px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    border: '1px solid #334155',
+                    fontWeight: '500'
                   }}>
                     {dev}
                   </span>
@@ -183,12 +300,12 @@ export default function OperatorsView({ API_URL, token, user }) {
           </div>
         </div>
       ) : (
-        <div style={{ padding: '16px', backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#94a3b8' }}>
+        <div style={{ padding: '16px', backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#94a3b8', marginBottom: '20px' }}>
           Selecciona un operador de la lista para ver sus detalles.
         </div>
       )}
 
-      {/* Tabla de Operadores */}
+      {/* TABLA DE OPERADORES */}
       <div className="table-container">
         <table>
           <thead>
@@ -273,7 +390,7 @@ export default function OperatorsView({ API_URL, token, user }) {
         </table>
       </div>
 
-      {/* Modal Crear / Editar */}
+      {/* MODAL CREAR / EDITAR */}
       {isModalOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
