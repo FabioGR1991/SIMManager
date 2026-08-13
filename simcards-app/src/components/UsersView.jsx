@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UserPlus, Pencil, Trash2 } from 'lucide-react';
+import { UserPlus, SquarePen, Trash2 } from 'lucide-react';
 
 export default function UsersView({
   usersList = [],
@@ -139,11 +139,11 @@ export default function UsersView({
           <thead>
             <tr>
               <th># ID</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Equipo</th>
-              <th>Acciones</th>
+              <th>NOMBRE</th>
+              <th>EMAIL</th>
+              <th>ROL</th>
+              <th>EQUIPO</th>
+              <th>ACCIONES</th>
             </tr>
           </thead>
           <tbody>
@@ -166,54 +166,31 @@ export default function UsersView({
                 </td>
                 <td style={{ color: '#cbd5e1' }}>{u.team || 'Sin asignar'}</td>
                 <td>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {/* Solo Editar y Eliminar (Sin fondo blanco) */}
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
 
-                    {/* Botón Editar - Estilo Imagen 1 */}
+                    {/* Botón Editar */}
                     <button
                       type="button"
                       onClick={() => setEditingUser({ ...u, password: '' })}
                       title="Editar usuario"
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        backgroundColor: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
-                        transition: 'transform 0.15s ease'
-                      }}
-                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      style={actionButtonStyle}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.15)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <Pencil size={15} color="#ea580c" />
+                      <SquarePen size={19} color="#3b82f6" />
                     </button>
 
-                    {/* Botón Eliminar - Estilo Imagen 1 */}
+                    {/* Botón Eliminar */}
                     <button
                       type="button"
                       onClick={() => handleDeleteUser(u)}
                       title="Eliminar usuario"
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        backgroundColor: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
-                        transition: 'transform 0.15s ease'
-                      }}
-                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      style={actionButtonStyle}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <Trash2 size={15} color="#ef4444" />
+                      <Trash2 size={19} color="#f87171" />
                     </button>
 
                   </div>
@@ -226,3 +203,16 @@ export default function UsersView({
     </div>
   );
 }
+
+// Estilo base para los botones de acción sin fondo
+const actionButtonStyle = {
+  background: 'transparent',
+  border: 'none',
+  padding: '6px',
+  borderRadius: '6px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  transition: 'background-color 0.2s ease, transform 0.1s ease',
+};
