@@ -27,10 +27,10 @@ export default function DeviceInfoModal({ device, onClose }) {
 
   const getStatusStyle = (status) => {
     const st = (status || 'ACTIVO').toUpperCase();
-    if (st.includes('REPARACION')) return { bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
-    if (st.includes('RESERVA')) return { bg: '#e0f2fe', color: '#0369a1', border: '#bae6fd' };
-    if (st.includes('INACTIVO') || st.includes('REPUESTO')) return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' };
-    return { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0' };
+    if (st.includes('REPARACION')) return { bg: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.4)' };
+    if (st.includes('RESERVA')) return { bg: 'rgba(14, 165, 233, 0.2)', color: '#38bdf8', border: 'rgba(14, 165, 233, 0.4)' };
+    if (st.includes('INACTIVO') || st.includes('REPUESTO')) return { bg: 'rgba(148, 163, 184, 0.2)', color: '#94a3b8', border: 'rgba(148, 163, 184, 0.4)' };
+    return { bg: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', border: 'rgba(34, 197, 94, 0.4)' };
   };
 
   const statusStyle = getStatusStyle(device.status);
@@ -38,43 +38,45 @@ export default function DeviceInfoModal({ device, onClose }) {
   return (
     <div style={overlayStyle}>
       <div style={modalStyle}>
-        
+
         {/* Cabecera */}
         <div style={headerStyle}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={iconBoxStyle}>
-              <Smartphone size={20} color="#0284c7" />
+              <Smartphone size={20} color="#38bdf8" />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#ffffff' }}>
                 Información del Dispositivo
               </h3>
-              <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>Ficha de solo lectura</p>
+              <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>Ficha de solo lectura</p>
             </div>
           </div>
           <button onClick={onClose} style={closeIconBtnStyle}>
-            <X size={18} color="#64748b" />
+            <X size={18} color="#94a3b8" />
           </button>
         </div>
 
         {/* Cuerpo / Formato a 2 Columnas */}
         <div style={bodyGridStyle}>
-          
+
           {/* Columna Izquierda */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
               <label style={labelStyle}>Modelo / Dispositivo</label>
-              <p style={{ margin: '2px 0 0', fontWeight: '700', fontSize: '15px', color: '#0f172a' }}>
+              <p style={{ margin: '2px 0 0', fontWeight: '700', fontSize: '15px', color: '#ffffff' }}>
                 {device.model || '—'}
               </p>
             </div>
 
             <div>
               <label style={labelStyle}>Entidad / Área</label>
-              <p style={{ margin: '2px 0 0', fontWeight: '600', color: '#0369a1' }}>
+              <p style={{ margin: '4px 0 0' }}>
                 {device.entity ? (
                   <span style={entityBadgeStyle}>{device.entity}</span>
-                ) : '—'}
+                ) : (
+                  <span style={{ color: '#64748b' }}>—</span>
+                )}
               </p>
             </div>
 
@@ -90,11 +92,11 @@ export default function DeviceInfoModal({ device, onClose }) {
               {waLink1 && (
                 <div style={waRowStyle}>
                   <a href={waLink1} target="_blank" rel="noreferrer" style={waLinkStyle}>
-                    <ExternalLink size={13} />
+                    <ExternalLink size={13} color="#4ade80" />
                     <span style={truncateStyle}>{waLink1}</span>
                   </a>
                   <button onClick={() => handleCopy(waLink1, 'sim1')} style={copyBtnStyle}>
-                    {copiedKey === 'sim1' ? <Check size={14} color="#16a34a" /> : <Copy size={14} color="#64748b" />}
+                    {copiedKey === 'sim1' ? <Check size={14} color="#4ade80" /> : <Copy size={14} color="#94a3b8" />}
                   </button>
                 </div>
               )}
@@ -112,11 +114,11 @@ export default function DeviceInfoModal({ device, onClose }) {
               {waLink2 && (
                 <div style={waRowStyle}>
                   <a href={waLink2} target="_blank" rel="noreferrer" style={waLinkStyle}>
-                    <ExternalLink size={13} />
+                    <ExternalLink size={13} color="#4ade80" />
                     <span style={truncateStyle}>{waLink2}</span>
                   </a>
                   <button onClick={() => handleCopy(waLink2, 'sim2')} style={copyBtnStyle}>
-                    {copiedKey === 'sim2' ? <Check size={14} color="#16a34a" /> : <Copy size={14} color="#64748b" />}
+                    {copiedKey === 'sim2' ? <Check size={14} color="#4ade80" /> : <Copy size={14} color="#94a3b8" />}
                   </button>
                 </div>
               )}
@@ -127,7 +129,7 @@ export default function DeviceInfoModal({ device, onClose }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
               <label style={labelStyle}>Nombre Interno</label>
-              <p style={{ margin: '2px 0 0', fontWeight: '500', color: '#334155' }}>
+              <p style={{ margin: '2px 0 0', fontWeight: '500', color: '#cbd5e1' }}>
                 {device.internal_name || '—'}
               </p>
             </div>
@@ -142,7 +144,8 @@ export default function DeviceInfoModal({ device, onClose }) {
                   fontWeight: '700',
                   backgroundColor: statusStyle.bg,
                   color: statusStyle.color,
-                  border: `1px solid ${statusStyle.border}`
+                  border: `1px solid ${statusStyle.border}`,
+                  display: 'inline-block'
                 }}>
                   {(device.status || 'ACTIVO').toUpperCase()}
                 </span>
@@ -153,7 +156,7 @@ export default function DeviceInfoModal({ device, onClose }) {
             <div style={cardSectionStyle}>
               <span style={cardSubTitleStyle}>Operador Asignado (SIM 1)</span>
               <p style={operatorTextStyle}>
-                <User size={14} color="#64748b" />
+                <User size={14} color="#38bdf8" />
                 {device.operator1_name || device.assigned_operator_name || device.operator_name || 'Sin Asignar'}
               </p>
             </div>
@@ -162,7 +165,7 @@ export default function DeviceInfoModal({ device, onClose }) {
             <div style={cardSectionStyle}>
               <span style={cardSubTitleStyle}>Operador Asignado (SIM 2)</span>
               <p style={operatorTextStyle}>
-                <User size={14} color="#64748b" />
+                <User size={14} color="#38bdf8" />
                 {device.operator2_name || device.assigned_operator2_name || 'Sin Asignar'}
               </p>
             </div>
@@ -182,11 +185,11 @@ export default function DeviceInfoModal({ device, onClose }) {
   );
 }
 
-// Estilos nativos en objeto
+// Estilos nativos en objeto (Oscuro / Slate Theme)
 const overlayStyle = {
   position: 'fixed',
   top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: 'rgba(15, 23, 42, 0.5)',
+  backgroundColor: 'rgba(15, 23, 42, 0.75)',
   backdropFilter: 'blur(4px)',
   display: 'flex',
   alignItems: 'center',
@@ -196,13 +199,13 @@ const overlayStyle = {
 };
 
 const modalStyle = {
-  backgroundColor: '#ffffff',
+  backgroundColor: '#1e293b',
   borderRadius: '12px',
   width: '100%',
   maxWidth: '560px',
-  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)',
   overflow: 'hidden',
-  border: '1px solid #e2e8f0',
+  border: '1px solid #334155',
   fontFamily: 'system-ui, -apple-system, sans-serif'
 };
 
@@ -211,17 +214,18 @@ const headerStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '16px 20px',
-  borderBottom: '1px solid #e2e8f0',
-  backgroundColor: '#f8fafc'
+  borderBottom: '1px solid #334155',
+  backgroundColor: '#0f172a'
 };
 
 const iconBoxStyle = {
   padding: '8px',
-  backgroundColor: '#e0f2fe',
+  backgroundColor: 'rgba(2, 132, 199, 0.2)',
   borderRadius: '8px',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  border: '1px solid rgba(2, 132, 199, 0.3)'
 };
 
 const closeIconBtnStyle = {
@@ -252,15 +256,15 @@ const labelStyle = {
 
 const cardSectionStyle = {
   padding: '10px 12px',
-  backgroundColor: '#f8fafc',
+  backgroundColor: '#0f172a',
   borderRadius: '8px',
-  border: '1px solid #e2e8f0'
+  border: '1px solid #334155'
 };
 
 const cardSubTitleStyle = {
   fontSize: '11px',
   fontWeight: '600',
-  color: '#64748b'
+  color: '#94a3b8'
 };
 
 const phoneTextStyle = {
@@ -268,14 +272,14 @@ const phoneTextStyle = {
   fontFamily: 'monospace',
   fontWeight: '600',
   fontSize: '13px',
-  color: '#0f172a'
+  color: '#f8fafc'
 };
 
 const operatorTextStyle = {
   margin: '4px 0 0',
   fontWeight: '600',
   fontSize: '13px',
-  color: '#0f172a',
+  color: '#f8fafc',
   display: 'flex',
   alignItems: 'center',
   gap: '6px'
@@ -290,25 +294,28 @@ const flexSpaceBetween = {
 const officialBadgeStyle = {
   fontSize: '10px',
   fontWeight: '700',
-  color: '#0284c7',
-  backgroundColor: '#e0f2fe',
+  color: '#38bdf8',
+  backgroundColor: 'rgba(2, 132, 199, 0.2)',
   padding: '1px 6px',
-  borderRadius: '4px'
+  borderRadius: '4px',
+  border: '1px solid rgba(2, 132, 199, 0.3)'
 };
 
 const entityBadgeStyle = {
-  backgroundColor: '#e0f2fe',
-  color: '#0369a1',
+  backgroundColor: 'rgba(2, 132, 199, 0.2)',
+  color: '#38bdf8',
   padding: '2px 8px',
   borderRadius: '6px',
   fontSize: '12px',
-  fontWeight: '700'
+  fontWeight: '700',
+  border: '1px solid rgba(2, 132, 199, 0.3)',
+  display: 'inline-block'
 };
 
 const waRowStyle = {
   marginTop: '8px',
   paddingTop: '6px',
-  borderTop: '1px solid #e2e8f0',
+  borderTop: '1px solid #334155',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -317,7 +324,7 @@ const waRowStyle = {
 
 const waLinkStyle = {
   fontSize: '11px',
-  color: '#16a34a',
+  color: '#4ade80',
   textDecoration: 'none',
   fontWeight: '600',
   display: 'flex',
@@ -343,18 +350,18 @@ const copyBtnStyle = {
 
 const footerStyle = {
   padding: '12px 20px',
-  borderTop: '1px solid #e2e8f0',
-  backgroundColor: '#f8fafc',
+  borderTop: '1px solid #334155',
+  backgroundColor: '#0f172a',
   display: 'flex',
-  justifyContent: 'flex-end'
+  justify: 'flex-end'
 };
 
 const closeBtnStyle = {
-  padding: '6px 16px',
+  padding: '8px 20px',
   fontSize: '13px',
   fontWeight: '600',
-  color: '#334155',
-  backgroundColor: '#e2e8f0',
+  color: '#ffffff',
+  backgroundColor: '#334155',
   border: 'none',
   borderRadius: '6px',
   cursor: 'pointer'

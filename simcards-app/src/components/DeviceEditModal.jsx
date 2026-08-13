@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Copy, Check, X, Search, ChevronDown } from 'lucide-react';
 
-// Componente de desplegable con buscador integrado
+// Componente de desplegable con buscador integrado (Dark Theme)
 function SearchableSimSelect({ name, value, onChange, options = [], placeholder = "-- Seleccionar SIM --" }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,7 +29,6 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
   });
 
   const handleSelect = (selectedId) => {
-    // Simula un evento sintético para que handleChange(e) del formulario funcione sin modificar tu estado
     onChange({
       target: {
         name: name,
@@ -49,18 +48,18 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
         style={{
           padding: '8px 10px',
           borderRadius: '6px',
-          border: '1px solid #cbd5e1',
-          backgroundColor: '#fff',
+          border: '1px solid #334155',
+          backgroundColor: '#0f172a',
           cursor: 'pointer',
           display: 'flex',
-          justifyContent: 'space-between',
+          justifySpaceBetween: 'space-between',
           alignItems: 'center',
           fontSize: '13px',
           minHeight: '35px',
           boxSizing: 'border-box'
         }}
       >
-        <span style={{ color: selectedSim ? '#0f172a' : '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ color: selectedSim ? '#ffffff' : '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {selectedSim
             ? `${selectedSim.phone_number} ${(selectedSim.entity || selectedSim.campaign) ? `(${selectedSim.entity || selectedSim.campaign})` : ''}`
             : placeholder}
@@ -77,7 +76,7 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
               style={{ cursor: 'pointer' }}
             />
           )}
-          <ChevronDown size={16} color="#64748b" />
+          <ChevronDown size={16} color="#94a3b8" />
         </div>
       </div>
 
@@ -89,17 +88,17 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
           left: 0,
           right: 0,
           marginTop: '4px',
-          backgroundColor: '#fff',
-          border: '1px solid #cbd5e1',
+          backgroundColor: '#0f172a',
+          border: '1px solid #334155',
           borderRadius: '6px',
-          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5), 0 8px 10px -6px rgba(0,0,0,0.5)',
           zIndex: 1050,
           maxHeight: '220px',
           display: 'flex',
           flexDirection: 'column'
         }}>
           {/* Carga de buscador dentro del menú */}
-          <div style={{ padding: '6px 8px', borderBottom: '1px solid #f1f5f9', position: 'relative' }}>
+          <div style={{ padding: '6px 8px', borderBottom: '1px solid #334155', position: 'relative' }}>
             <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
@@ -112,7 +111,9 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
                 width: '100%',
                 padding: '5px 8px 5px 26px',
                 fontSize: '12px',
-                border: '1px solid #cbd5e1',
+                backgroundColor: '#1e293b',
+                color: '#ffffff',
+                border: '1px solid #334155',
                 borderRadius: '4px',
                 outline: 'none',
                 boxSizing: 'border-box'
@@ -128,9 +129,9 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
                 padding: '8px 10px',
                 fontSize: '13px',
                 cursor: 'pointer',
-                color: '#64748b',
-                borderBottom: '1px solid #f8fafc',
-                backgroundColor: !value ? '#f1f5f9' : 'transparent'
+                color: '#94a3b8',
+                borderBottom: '1px solid #1e293b',
+                backgroundColor: !value ? '#1e293b' : 'transparent'
               }}
             >
               {placeholder}
@@ -149,12 +150,12 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
                       padding: '8px 10px',
                       fontSize: '13px',
                       cursor: 'pointer',
-                      backgroundColor: isSelected ? '#e0f2fe' : 'transparent',
-                      color: isSelected ? '#0369a1' : '#1e293b',
+                      backgroundColor: isSelected ? 'rgba(2, 132, 199, 0.25)' : 'transparent',
+                      color: isSelected ? '#38bdf8' : '#e2e8f0',
                       fontWeight: isSelected ? 'bold' : 'normal'
                     }}
                     onMouseEnter={(e) => {
-                      if (!isSelected) e.currentTarget.style.backgroundColor = '#f8fafc';
+                      if (!isSelected) e.currentTarget.style.backgroundColor = '#1e293b';
                     }}
                     onMouseLeave={(e) => {
                       if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
@@ -165,7 +166,7 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
                 );
               })
             ) : (
-              <div style={{ padding: '10px', fontSize: '12px', color: '#94a3b8', textAlign: 'center' }}>
+              <div style={{ padding: '10px', fontSize: '12px', color: '#64748b', textAlign: 'center' }}>
                 No se encontraron coincidencias
               </div>
             )}
@@ -176,13 +177,13 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
   );
 }
 
-export default function DeviceEditModal({ 
-  isOpen, 
-  onClose, 
-  onSave, 
-  device, 
-  simcards = [], 
-  operators = [] 
+export default function DeviceEditModal({
+  isOpen,
+  onClose,
+  onSave,
+  device,
+  simcards = [],
+  operators = []
 }) {
   const [formData, setFormData] = useState({
     id: null,
@@ -302,21 +303,21 @@ export default function DeviceEditModal({
   return (
     <div style={modalOverlayStyle}>
       <div style={modalContentStyle}>
-        
+
         {/* CABECERA */}
         <div style={headerStyle}>
-          <h3 style={{ margin: 0, color: '#0f172a' }}>
+          <h3 style={{ margin: 0, color: '#ffffff', fontSize: '16px', fontWeight: '700' }}>
             {formData.id ? `Editar Dispositivo #${formData.id}` : 'Nuevo Dispositivo'}
           </h3>
           <button type="button" onClick={onClose} style={closeBtnStyle}>
-            <X size={20} color="#64748b" />
+            <X size={20} color="#94a3b8" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* GRID DE 2 COLUMNAS */}
           <div style={gridStyle}>
-            
+
             {/* COLUMNA IZQUIERDA: Identificación & SIMs */}
             <div style={columnStyle}>
               <h4 style={sectionTitleStyle}>General & Líneas</h4>
@@ -346,10 +347,10 @@ export default function DeviceEditModal({
                 />
               </div>
 
-              {/* SIM SLOT 1 (CON BÚSQUEDA AGREGADA) */}
+              {/* SIM SLOT 1 */}
               <div style={simBoxStyle}>
                 <label style={labelStyle}>SIM Card Slot 1</label>
-                
+
                 <SearchableSimSelect
                   name="sim1_id"
                   value={formData.sim1_id}
@@ -364,6 +365,7 @@ export default function DeviceEditModal({
                     name="sim1_is_official"
                     checked={formData.sim1_is_official}
                     onChange={handleChange}
+                    style={{ accentColor: '#0284c7' }}
                   />
                   Línea Oficial
                 </label>
@@ -371,10 +373,10 @@ export default function DeviceEditModal({
                 {selectedSim1?.wa_link && (
                   <div style={waLinkCardStyle}>
                     <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      <span style={{ fontSize: '11px', color: '#166534', fontWeight: 'bold' }}>
+                      <span style={{ fontSize: '11px', color: '#4ade80', fontWeight: 'bold' }}>
                         WA ({selectedSim1.wa_type || 'Estándar'}):
                       </span>
-                      <div style={{ fontSize: '12px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '12px', color: '#86efac', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {selectedSim1.wa_link}
                       </div>
                     </div>
@@ -384,16 +386,16 @@ export default function DeviceEditModal({
                       style={copyBtnStyle}
                       title="Copiar link"
                     >
-                      {copiedSim1 ? <Check size={14} color="#166534" /> : <Copy size={14} color="#15803d" />}
+                      {copiedSim1 ? <Check size={14} color="#4ade80" /> : <Copy size={14} color="#86efac" />}
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* SIM SLOT 2 (CON BÚSQUEDA AGREGADA) */}
+              {/* SIM SLOT 2 */}
               <div style={simBoxStyle}>
                 <label style={labelStyle}>SIM Card Slot 2</label>
-                
+
                 <SearchableSimSelect
                   name="sim2_id"
                   value={formData.sim2_id}
@@ -408,6 +410,7 @@ export default function DeviceEditModal({
                     name="sim2_is_official"
                     checked={formData.sim2_is_official}
                     onChange={handleChange}
+                    style={{ accentColor: '#0284c7' }}
                   />
                   Línea Oficial
                 </label>
@@ -415,10 +418,10 @@ export default function DeviceEditModal({
                 {selectedSim2?.wa_link && (
                   <div style={waLinkCardStyle}>
                     <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      <span style={{ fontSize: '11px', color: '#166534', fontWeight: 'bold' }}>
+                      <span style={{ fontSize: '11px', color: '#4ade80', fontWeight: 'bold' }}>
                         WA ({selectedSim2.wa_type || 'Estándar'}):
                       </span>
-                      <div style={{ fontSize: '12px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '12px', color: '#86efac', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {selectedSim2.wa_link}
                       </div>
                     </div>
@@ -428,7 +431,7 @@ export default function DeviceEditModal({
                       style={copyBtnStyle}
                       title="Copiar link"
                     >
-                      {copiedSim2 ? <Check size={14} color="#166534" /> : <Copy size={14} color="#15803d" />}
+                      {copiedSim2 ? <Check size={14} color="#4ade80" /> : <Copy size={14} color="#86efac" />}
                     </button>
                   </div>
                 )}
@@ -458,12 +461,12 @@ export default function DeviceEditModal({
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  style={inputStyle}
+                  style={selectStyle}
                 >
-                  <option value="ACTIVO">ACTIVO</option>
-                  <option value="INACTIVO">INACTIVO / REPUESTO</option>
-                  <option value="REPARACION">EN REPARACIÓN</option>
-                  <option value="RESERVA">EN RESERVA</option>
+                  <option value="ACTIVO" style={optionStyle}>ACTIVO</option>
+                  <option value="INACTIVO" style={optionStyle}>INACTIVO / REPUESTO</option>
+                  <option value="REPARACION" style={optionStyle}>EN REPARACIÓN</option>
+                  <option value="RESERVA" style={optionStyle}>EN RESERVA</option>
                 </select>
               </div>
 
@@ -473,11 +476,11 @@ export default function DeviceEditModal({
                   name="assigned_operator_id"
                   value={formData.assigned_operator_id}
                   onChange={handleChange}
-                  style={inputStyle}
+                  style={selectStyle}
                 >
-                  <option value="">-- Sin Operador SIM 1 --</option>
+                  <option value="" style={optionStyle}>-- Sin Operador SIM 1 --</option>
                   {operators.map((op) => (
-                    <option key={op.id} value={op.id}>
+                    <option key={op.id} value={op.id} style={optionStyle}>
                       {op.full_name || op.name}
                     </option>
                   ))}
@@ -490,11 +493,11 @@ export default function DeviceEditModal({
                   name="assigned_operator2_id"
                   value={formData.assigned_operator2_id}
                   onChange={handleChange}
-                  style={inputStyle}
+                  style={selectStyle}
                 >
-                  <option value="">-- Sin Operador SIM 2 --</option>
+                  <option value="" style={optionStyle}>-- Sin Operador SIM 2 --</option>
                   {operators.map((op) => (
-                    <option key={op.id} value={op.id}>
+                    <option key={op.id} value={op.id} style={optionStyle}>
                       {op.full_name || op.name}
                     </option>
                   ))}
@@ -520,21 +523,23 @@ export default function DeviceEditModal({
   );
 }
 
+// Estilos Nativos adaptados a Tema Oscuro (Slate Dark Theme)
 const modalOverlayStyle = {
   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(4px)',
+  backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
   display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
 };
 
 const modalContentStyle = {
-  backgroundColor: '#fff', padding: '24px', borderRadius: '12px',
+  backgroundColor: '#1e293b', padding: '24px', borderRadius: '12px',
   width: '720px', maxWidth: '95vw', maxHeight: '90vh', overflowY: 'auto',
-  boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
+  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)',
+  border: '1px solid #334155', fontFamily: 'system-ui, -apple-system, sans-serif'
 };
 
 const headerStyle = {
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-  paddingBottom: '12px', marginBottom: '15px', borderBottom: '1px solid #e2e8f0'
+  paddingBottom: '12px', marginBottom: '15px', borderBottom: '1px solid #334155'
 };
 
 const closeBtnStyle = { border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px' };
@@ -543,36 +548,46 @@ const gridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px'
 
 const columnStyle = { display: 'flex', flexDirection: 'column', gap: '12px' };
 
-const sectionTitleStyle = { margin: '0 0 5px 0', fontSize: '13px', fontWeight: 'bold', color: '#0284c7', textTransform: 'uppercase' };
+const sectionTitleStyle = { margin: '0 0 5px 0', fontSize: '13px', fontWeight: 'bold', color: '#38bdf8', textTransform: 'uppercase' };
 
-const labelStyle = { fontSize: '12px', fontWeight: '600', color: '#475569', display: 'block' };
+const labelStyle = { fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block' };
 
 const inputStyle = {
-  padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1',
-  width: '100%', boxSizing: 'border-box', marginTop: '4px', fontSize: '13px'
+  padding: '8px 10px', borderRadius: '6px', border: '1px solid #334155',
+  width: '100%', boxSizing: 'border-box', marginTop: '4px', fontSize: '13px',
+  backgroundColor: '#0f172a', color: '#ffffff', outline: 'none'
+};
+
+const selectStyle = {
+  ...inputStyle,
+  cursor: 'pointer'
+};
+
+const optionStyle = {
+  backgroundColor: '#0f172a', color: '#ffffff'
 };
 
 const simBoxStyle = {
-  backgroundColor: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0'
+  backgroundColor: '#0f172a', padding: '10px', borderRadius: '8px', border: '1px solid #334155'
 };
 
 const checkboxLabelStyle = {
-  fontSize: '12px', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', cursor: 'pointer'
+  fontSize: '12px', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', cursor: 'pointer'
 };
 
 const waLinkCardStyle = {
-  marginTop: '8px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0',
+  marginTop: '8px', backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)',
   padding: '6px 10px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
 };
 
 const copyBtnStyle = {
-  border: 'none', background: '#dcfce7', padding: '4px 6px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center'
+  border: 'none', background: 'rgba(34, 197, 94, 0.2)', padding: '4px 6px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center'
 };
 
 const cancelBtnStyle = {
-  padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#fff', cursor: 'pointer', fontWeight: '500'
+  padding: '8px 16px', borderRadius: '6px', border: '1px solid #475569', backgroundColor: '#334155', color: '#ffffff', cursor: 'pointer', fontWeight: '500'
 };
 
 const saveBtnStyle = {
-  padding: '8px 16px', borderRadius: '6px', backgroundColor: '#0284c7', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold'
+  padding: '8px 16px', borderRadius: '6px', backgroundColor: '#0284c7', color: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: 'bold'
 };
