@@ -31,7 +31,6 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data && res.data.length > 0) {
-        // Soporta respuesta array de strings o array de objetos { id, name }
         const teamList = res.data.map(t => typeof t === 'object' ? t.name : t);
         setTeams(teamList);
       }
@@ -66,15 +65,12 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Limpiar y cerrar modal
       setNewTeamName('');
       setIsModalOpen(false);
 
-      // Refrescar lista de equipos y seleccionar el recién creado
       await fetchTeams();
       setSelectedTeam(formattedName);
 
-      // Notificar cambio al componente padre (App.jsx / Sidebar)
       if (typeof onTeamsChange === 'function') {
         onTeamsChange();
       }
@@ -96,7 +92,6 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
       return;
     }
 
-    // Popup de advertencia/confirmación
     const confirmRename = window.confirm(
       `⚠️ ¿ESTÁS SEGURO DE RENOMBRAR EL EQUIPO?\n\n` +
       `Vas a cambiar el nombre de "${selectedTeam}" a "${formattedName}".\n\n` +
@@ -142,25 +137,22 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         { team: newTeam },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
-      // Actualizar localStorage si el usuario reasignado es el mismo que tiene la sesión activa
+
       try {
         const loggedUser = JSON.parse(localStorage.getItem('user') || '{}');
         if (loggedUser && loggedUser.id === userId) {
           const updatedUser = { ...loggedUser, team: newTeam };
           localStorage.setItem('user', JSON.stringify(updatedUser));
-          window.location.reload(); // Recargar para forzar actualización del Sidebar
+          window.location.reload();
           return;
         }
       } catch (e) {
         console.error('Error al actualizar la sesión local:', e);
       }
 
-      // Re-obtener datos locales
       await fetchUsers();
       await fetchTeams();
 
-      // Notificar al componente superior (App.jsx) si se proporcionó la prop
       if (typeof onTeamsChange === 'function') {
         onTeamsChange();
       }
@@ -175,13 +167,13 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
       {/* HEADER DE LA SECCIÓN */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: '24px' }}>Gestión de Equipos</h2>
-          <p style={{ color: '#64748b', margin: '5px 0 0 0', fontSize: '14px' }}>
+          <h2 style={{ margin: 0, fontSize: '24px', color: '#f8fafc' }}>Gestión de Equipos</h2>
+          <p style={{ color: '#94a3b8', margin: '5px 0 0 0', fontSize: '14px' }}>
             Organizá a los Team Leaders por ciudades. La información de SIMs y Dispositivos permanecerá vinculada al equipo.
           </p>
         </div>
 
-        {/* BOTÓN MÁS CREAR EQUIPO */}
+        {/* BOTÓN CREAR EQUIPO */}
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
@@ -204,7 +196,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         </button>
       </div>
 
-      {/* SELECTOR DE EQUIPOS (BADGES/BOTONES) */}
+      {/* SELECTOR DE EQUIPOS (BADGES EN TEMA OSCURO) */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap' }}>
         {teams.map((team) => {
           const count = users.filter(u => u.team === team).length;
@@ -214,25 +206,27 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
               key={team}
               onClick={() => setSelectedTeam(team)}
               style={{
-                padding: '10px 18px',
+                padding: '8px 16px',
                 borderRadius: '8px',
-                border: isActive ? '2px solid #0284c7' : '1px solid #cbd5e1',
-                backgroundColor: isActive ? '#e0f2fe' : '#fff',
-                color: isActive ? '#0369a1' : '#334155',
+                border: isActive ? '1px solid #38bdf8' : '1px solid #334155',
+                backgroundColor: isActive ? 'rgba(56, 189, 248, 0.15)' : '#1e293b',
+                color: isActive ? '#38bdf8' : '#cbd5e1',
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                transition: 'all 0.2s ease'
               }}
             >
               <span>{team}</span>
               <span style={{
-                backgroundColor: isActive ? '#0284c7' : '#94a3b8',
-                color: '#fff',
+                backgroundColor: isActive ? '#38bdf8' : '#334155',
+                color: isActive ? '#0f172a' : '#94a3b8',
                 borderRadius: '12px',
                 padding: '2px 8px',
-                fontSize: '12px'
+                fontSize: '12px',
+                fontWeight: '700'
               }}>
                 {count}
               </span>
@@ -241,13 +235,13 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         })}
       </div>
 
-      {/* TABLA DE INTEGRANTES DEL EQUIPO SELECCIONADO */}
+      {/* TABLA DE INTEGRANTES */}
       <div className="table-container">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 0 10px 0', flexWrap: 'wrap', gap: '10px' }}>
-          <h3 style={{ color: '#0f172a', margin: 0 }}>
-            Integrantes del Equipo: <strong>{selectedTeam}</strong>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 0 15px 0', flexWrap: 'wrap', gap: '10px' }}>
+          <h3 style={{ color: '#ffffff', margin: 0, fontSize: '18px' }}>
+            Integrantes del Equipo: <span style={{ color: '#38bdf8' }}>{selectedTeam}</span>
           </h3>
-          
+
           <button
             type="button"
             onClick={() => {
@@ -258,17 +252,17 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '6px 12px',
+              padding: '6px 14px',
               borderRadius: '6px',
-              border: '1px solid #cbd5e1',
-              backgroundColor: '#ffffff',
+              border: '1px solid #334155',
+              backgroundColor: '#1e293b',
               cursor: 'pointer',
               fontSize: '13px',
-              color: '#334155',
+              color: '#f8fafc',
               fontWeight: '600'
             }}
           >
-            <Pencil size={14} /> Editar Nombre
+            <Pencil size={14} style={{ color: '#38bdf8' }} /> Editar Nombre
           </button>
         </div>
 
@@ -289,27 +283,28 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
               .map((u) => (
                 <tr key={u.id}>
                   <td>#{u.id}</td>
-                  <td style={{ fontWeight: 'bold' }}>{u.name}</td>
-                  <td>{u.email}</td>
+                  <td style={{ fontWeight: 'bold', color: '#f8fafc' }}>{u.name}</td>
+                  <td style={{ color: '#cbd5e1' }}>{u.email}</td>
                   <td>
                     <span className="status-badge badge-activo">
                       {u.role}
                     </span>
                   </td>
-                  <td style={{ fontWeight: '600', color: '#0369a1' }}>
+                  <td style={{ fontWeight: '600', color: '#38bdf8' }}>
                     {u.team || 'Tokio'}
                   </td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <ArrowRightLeft size={16} color="#64748b" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <ArrowRightLeft size={16} color="#94a3b8" />
                       <select
                         value={u.team || 'Tokio'}
                         onChange={(e) => handleTeamChange(u.id, e.target.value)}
+                        className="form-control"
                         style={{
                           padding: '6px 10px',
                           borderRadius: '6px',
-                          border: '1px solid #cbd5e1',
-                          fontSize: '13px'
+                          fontSize: '13px',
+                          maxWidth: '200px'
                         }}
                       >
                         {teams.map(t => (
@@ -322,7 +317,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
               ))}
             {users.filter(u => (u.team || 'Tokio') === selectedTeam).length === 0 && (
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
+                <td colSpan="6" style={{ textAlign: 'center', color: '#94a3b8', padding: '24px' }}>
                   No hay usuarios asignados actualmente al Equipo {selectedTeam}.
                 </td>
               </tr>
@@ -331,35 +326,29 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         </table>
       </div>
 
-      {/* MODAL FLOTANTE PARA CREAR EQUIPO */}
+      {/* MODAL PARA CREAR EQUIPO */}
       {isModalOpen && (
         <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.55)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-          backdropFilter: 'blur(2px)'
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          zIndex: 1000, backdropFilter: 'blur(4px)'
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '10px',
+            backgroundColor: '#0f172a',
+            border: '1px solid #1e293b',
+            borderRadius: '12px',
             padding: '24px',
-            width: '100%',
+            width: '90%',
             maxWidth: '420px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', color: '#0f172a' }}>Crear Nuevo Equipo</h3>
-              <button 
+              <h3 style={{ margin: 0, fontSize: '18px', color: '#ffffff' }}>Crear Nuevo Equipo</h3>
+              <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
               >
                 <X size={20} />
               </button>
@@ -367,7 +356,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
 
             <form onSubmit={handleCreateTeam}>
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', fontWeight: '500', color: '#334155' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 'bold', color: '#94a3b8' }}>
                   Nombre del Equipo / Ciudad
                 </label>
                 <input
@@ -378,7 +367,6 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
                   onChange={(e) => setNewTeamName(e.target.value)}
                   autoFocus
                   required
-                  style={{ width: '100%', padding: '9px 12px', fontSize: '14px' }}
                 />
               </div>
 
@@ -389,19 +377,19 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '6px',
-                    border: '1px solid #cbd5e1',
-                    background: '#ffffff',
-                    color: '#475569',
+                    border: '1px solid #334155',
+                    background: '#1e293b',
+                    color: '#f8fafc',
                     fontSize: '14px',
                     cursor: 'pointer'
                   }}
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSubmitting}
-                  className="btn" 
+                  className="btn"
                   style={{ width: 'auto', padding: '8px 18px', fontSize: '14px' }}
                 >
                   {isSubmitting ? 'Guardando...' : 'Guardar Equipo'}
@@ -412,35 +400,29 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         </div>
       )}
 
-      {/* MODAL FLOTANTE PARA EDITAR / RENOMBRAR EQUIPO */}
+      {/* MODAL PARA EDITAR / RENOMBRAR EQUIPO */}
       {isEditModalOpen && (
         <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.55)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-          backdropFilter: 'blur(2px)'
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          zIndex: 1000, backdropFilter: 'blur(4px)'
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '10px',
+            backgroundColor: '#0f172a',
+            border: '1px solid #1e293b',
+            borderRadius: '12px',
             padding: '24px',
-            width: '100%',
+            width: '90%',
             maxWidth: '420px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', color: '#0f172a' }}>Renombrar Equipo</h3>
-              <button 
+              <h3 style={{ margin: 0, fontSize: '18px', color: '#ffffff' }}>Renombrar Equipo</h3>
+              <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
               >
                 <X size={20} />
               </button>
@@ -448,7 +430,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
 
             <form onSubmit={handleRenameTeam}>
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', fontWeight: '500', color: '#334155' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 'bold', color: '#94a3b8' }}>
                   Nuevo nombre para "{selectedTeam}"
                 </label>
                 <input
@@ -458,12 +440,11 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
                   onChange={(e) => setEditTeamName(e.target.value)}
                   autoFocus
                   required
-                  style={{ width: '100%', padding: '9px 12px', fontSize: '14px' }}
                 />
               </div>
 
-              <p style={{ fontSize: '12px', color: '#dc2626', backgroundColor: '#fef2f2', padding: '8px 12px', borderRadius: '6px', marginBottom: '20px' }}>
-                ⚠️ Al guardar se abrirá un mensaje de confirmación para actualizar en cascada todas las SIMs, dispositivos y usuarios asociados.
+              <p style={{ fontSize: '12px', color: '#f87171', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '10px', borderRadius: '6px', marginBottom: '20px' }}>
+                ⚠️ Al guardar se solicitará confirmación para actualizar en cascada todas las SIMs, dispositivos y usuarios asociados.
               </p>
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
@@ -473,19 +454,19 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '6px',
-                    border: '1px solid #cbd5e1',
-                    background: '#ffffff',
-                    color: '#475569',
+                    border: '1px solid #334155',
+                    background: '#1e293b',
+                    color: '#f8fafc',
                     fontSize: '14px',
                     cursor: 'pointer'
                   }}
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isRenaming}
-                  className="btn" 
+                  className="btn"
                   style={{ width: 'auto', padding: '8px 18px', fontSize: '14px', backgroundColor: '#0284c7' }}
                 >
                   {isRenaming ? 'Actualizando...' : 'Cambiar Nombre'}
