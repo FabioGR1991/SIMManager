@@ -16,7 +16,8 @@ import {
   Download,
   SquarePen,
   ClipboardList,
-  Trash2
+  Trash2,
+  Cpu
 } from 'lucide-react';
 
 export default function DashboardView({
@@ -206,7 +207,107 @@ export default function DashboardView({
 
   return (
     <div>
-      <h1 style={{ marginTop: 0, fontSize: '24px' }}>Inventario de SIMCards</h1>
+      {/* HEADER FUTURISTA / NEÓN */}
+      <div style={{
+        position: 'relative',
+        marginBottom: '28px',
+        padding: '24px 28px',
+        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.70) 100%)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderRadius: '16px',
+        border: '1px solid rgba(56, 189, 248, 0.2)',
+        boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+        overflow: 'hidden'
+      }}>
+        {/* Efectos de luz traseros */}
+        <div style={{
+          position: 'absolute',
+          top: '-50px',
+          right: '-50px',
+          width: '220px',
+          height: '220px',
+          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(0, 0, 0, 0) 70%)',
+          pointerEvents: 'none'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '-40px',
+          left: '15%',
+          width: '180px',
+          height: '180px',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0, 0, 0, 0) 70%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* Contenedor del Icono Neón */}
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 15px rgba(56, 189, 248, 0.3)'
+            }}>
+              <Cpu size={26} color="#38bdf8" />
+            </div>
+
+            {/* Título y Subtítulo */}
+            <div>
+              <h1 style={{
+                margin: 0,
+                fontSize: '26px',
+                fontWeight: '800',
+                letterSpacing: '-0.5px',
+                background: 'linear-gradient(90deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 2px 10px rgba(56, 189, 248, 0.2)'
+              }}>
+                Inventario de SIMCards
+              </h1>
+              <p style={{
+                margin: '4px 0 0 0',
+                fontSize: '13px',
+                color: '#94a3b8',
+                fontWeight: '400',
+                letterSpacing: '0.2px'
+              }}>
+                Gestión centralizada de líneas, operadoras, estados y vinculación de WhatsApp
+              </p>
+            </div>
+          </div>
+
+          {/* Badge Indicador de Red */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 14px',
+            borderRadius: '20px',
+            background: 'rgba(15, 23, 42, 0.6)',
+            border: '1px solid rgba(56, 189, 248, 0.3)',
+            fontSize: '12px',
+            color: '#38bdf8',
+            fontWeight: '600',
+            backdropFilter: 'blur(4px)'
+          }}>
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#10b981',
+              boxShadow: '0 0 8px #10b981'
+            }} />
+            Red de Chips Activa
+          </div>
+        </div>
+      </div>
 
       {/* Tarjetas de Métricas */}
       <div className="card-grid" style={{ marginBottom: '25px' }}>
