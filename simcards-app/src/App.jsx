@@ -1,16 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  LogOut, 
-  Users, 
-  LayoutDashboard, 
-  RefreshCw, 
-  Smartphone, 
-  MapPin, 
-  UserCheck, 
-  Home 
-} from 'lucide-react';
 
+// Componente Sidebar importado
+import Sidebar from './components/Sidebar';
+
+// Vistas
 import LoginView from './components/LoginView';
 import DashboardView from './components/DashboardView';
 import DevicesView from './components/DevicesView';
@@ -20,6 +14,7 @@ import TeamsView from './components/TeamsView';
 import OperatorsView from './components/OperatorsView';
 import PanelControlView from './components/PanelControlView';
 
+// Modales
 import UserEditModal from './components/UserEditModal';
 import HistoryModal from './components/HistoryModal';
 import SimEditModal from './components/SimEditModal';
@@ -55,7 +50,7 @@ export default function App() {
   const [selectedLogs, setSelectedLogs] = useState(null);
   const [selectedPhone, setSelectedPhone] = useState('');
 
-  // Helper para verificar si es administrador sin importar minusculas/mayusculas
+  // Helper para verificar si es administrador sin importar minúsculas/mayúsculas
   const isAdmin = user?.role === 'admin' || user?.role === 'Administrador';
 
   useEffect(() => {
@@ -337,166 +332,17 @@ export default function App() {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: '#f8fafc' }}>
       
-      {/* Sidebar Fijo */}
-      <aside style={{
-        width: '250px',
-        minWidth: '250px',
-        backgroundColor: '#1e293b',
-        color: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '20px',
-        height: '100vh',
-        boxSizing: 'border-box'
-      }}>
-        {/* Sección Superior Navegación */}
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-          <div style={{ paddingBottom: '20px', borderBottom: '1px solid #334155', marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '18px', margin: 0, color: '#38bdf8' }}>SIMManager</h2>
-            <small style={{ color: '#94a3b8' }}>
-              {isAdmin 
-                ? 'Administrador' 
-                : (user?.role === 'pl' || user?.role === 'Planificador')
-                  ? `PL - ${user?.team || 'Sin Equipo'}`
-                  : `TL - ${user?.team || 'Sin Equipo'}`}
-            </small>
-          </div>
+      {/* Sidebar Aislado */}
+      <Sidebar
+        user={user}
+        isAdmin={isAdmin}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        setTargetDeviceId={setTargetDeviceId}
+        handleLogout={handleLogout}
+      />
 
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
-            
-            {/* OPCIÓN: PANEL DE CONTROL */}
-            <button
-              onClick={() => {
-                setActiveTab('panel');
-                setTargetDeviceId(null);
-              }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
-                backgroundColor: activeTab === 'panel' ? '#0284c7' : 'transparent',
-                color: activeTab === 'panel' ? '#fff' : '#cbd5e1', fontWeight: '500'
-              }}
-            >
-              <Home size={18} /> Panel de Control
-            </button>
-
-            {/* OPCIÓN: INVENTARIO SIMS */}
-            <button
-              onClick={() => {
-                setActiveTab('dashboard');
-                setTargetDeviceId(null);
-              }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
-                backgroundColor: activeTab === 'dashboard' ? '#0284c7' : 'transparent',
-                color: activeTab === 'dashboard' ? '#fff' : '#cbd5e1', fontWeight: '500'
-              }}
-            >
-              <LayoutDashboard size={18} /> Inventario SIMs
-            </button>
-
-            {/* OPCIÓN: DISPOSITIVOS */}
-            <button
-              onClick={() => setActiveTab('devices')}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
-                backgroundColor: activeTab === 'devices' ? '#0284c7' : 'transparent',
-                color: activeTab === 'devices' ? '#fff' : '#cbd5e1', fontWeight: '500'
-              }}
-            >
-              <Smartphone size={18} /> Dispositivos
-            </button>
-
-            {/* OPCIÓN: OPERADORES */}
-            <button
-              onClick={() => setActiveTab('operators')}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
-                backgroundColor: activeTab === 'operators' ? '#0284c7' : 'transparent',
-                color: activeTab === 'operators' ? '#fff' : '#cbd5e1', fontWeight: '500'
-              }}
-            >
-              <UserCheck size={18} /> Operadores
-            </button>
-
-            {/* OPCIONES EXCLUSIVAS ADMIN */}
-            {isAdmin && (
-              <button
-                onClick={() => setActiveTab('teams')}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                  borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
-                  backgroundColor: activeTab === 'teams' ? '#0284c7' : 'transparent',
-                  color: activeTab === 'teams' ? '#fff' : '#cbd5e1', fontWeight: '500'
-                }}
-              >
-                <MapPin size={18} /> Equipos / Ciudades
-              </button>
-            )}
-
-            {isAdmin && (
-              <button
-                onClick={() => setActiveTab('users')}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                  borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
-                  backgroundColor: activeTab === 'users' ? '#0284c7' : 'transparent',
-                  color: activeTab === 'users' ? '#fff' : '#cbd5e1', fontWeight: '500'
-                }}
-              >
-                <Users size={18} /> Usuarios y Permisos
-              </button>
-            )}
-
-            {isAdmin && (
-              <button
-                onClick={() => setActiveTab('sync')}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-                  borderRadius: '6px', border: 'none', cursor: 'pointer', textAlign: 'left',
-                  backgroundColor: activeTab === 'sync' ? '#0284c7' : 'transparent',
-                  color: activeTab === 'sync' ? '#fff' : '#cbd5e1', fontWeight: '500'
-                }}
-              >
-                <RefreshCw size={18} /> Conciliación Movistar
-              </button>
-            )}
-          </nav>
-        </div>
-
-        {/* Sección Inferior Sticky */}
-        <div style={{
-          borderTop: '1px solid #334155',
-          paddingTop: '15px',
-          marginTop: '15px',
-          backgroundColor: '#1e293b'
-        }}>
-          <div style={{ fontSize: '13px', marginBottom: '10px', color: '#cbd5e1' }}>
-            Conectado como:<br /><strong>{user?.name}</strong>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="btn"
-            style={{
-              width: '100%',
-              backgroundColor: '#ef4444',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              padding: '8px'
-            }}
-          >
-            <LogOut size={16} /> Salir
-          </button>
-        </div>
-      </aside>
-
-      {/* Contenido Principal con Transición Suave */}
+      {/* Contenido Principal */}
       <main style={{ flex: 1, padding: '30px', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
         
         <div key={activeTab} className="view-animated">
