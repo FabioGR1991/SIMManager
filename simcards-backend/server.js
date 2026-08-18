@@ -34,5 +34,5 @@ app.use('/api/operators', authenticateToken, require('./routes/operators'));
 // INICIAR SERVIDOR
 // =========================================================================
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Servidor backend corriendo en red local: http://192.168.1.101:${PORT}`);
+  console.log(`🚀 Servidor backend corriendo en red local: http://192.168.1.81:${PORT}`);
 });
