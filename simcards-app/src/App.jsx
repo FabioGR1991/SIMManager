@@ -21,7 +21,8 @@ import SimEditModal from './components/SimEditModal';
 
 import './App.css';
 
-const API_URL = 'http://192.168.1.101:3001/api';
+// URL relativa unificada para producción
+const API_URL = '/api';
 
 const getInitialUser = () => {
   try {

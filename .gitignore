@@ -1,3 +1,28 @@
+# Dependencias
+node_modules/
+
+# Compilación y Builds
+dist/
+dist-ssr/
+build/
+
+# Base de datos SQLite y datos sensibles
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+data/
+simcards-backend/data/
+
+# Archivos de entorno y credenciales
+.env
+.env.local
+.env.*.local
+
+# Archivos exportados o temporales
+*.csv
+lineas_exportadas.csv
+
 # Logs
 logs
 *.log
@@ -7,12 +32,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# Editores e IDEs
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,9 +42,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-node_modules/
-dist/
-build/
-.env
-*.log

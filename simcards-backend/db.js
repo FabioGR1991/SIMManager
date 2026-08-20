@@ -1,7 +1,30 @@
 const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
+const path = require('path');
+const fs = require('fs');
 
-const db = new Database('simcards.db');
+// =========================================================================
+// AISLAMIENTO Y RUTA SEGURA DE BASE DE DATOS
+// =========================================================================
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const legacyDbPath = path.join(__dirname, 'simcards.db');
+const targetDbPath = path.join(dataDir, 'simcards.db');
+
+// Migración automática de ubicación si el archivo db existía en la raíz
+if (fs.existsSync(legacyDbPath) && !fs.existsSync(targetDbPath)) {
+  try {
+    fs.renameSync(legacyDbPath, targetDbPath);
+    console.log("📦 Archivo de base de datos movido a carpeta segura /data");
+  } catch (err) {
+    console.error("⚠️ No se pudo mover simcards.db a /data:", err.message);
+  }
+}
+
+const db = new Database(targetDbPath);
 db.pragma('foreign_keys = ON');
 
 db.exec(`
@@ -148,7 +171,7 @@ try { db.exec("ALTER TABLE devices ADD COLUMN sim1_is_official INTEGER DEFAULT 0
 try { db.exec("ALTER TABLE devices ADD COLUMN sim2_is_official INTEGER DEFAULT 0;"); } catch (e) { }
 try { db.exec("ALTER TABLE operators ADD COLUMN team TEXT;"); } catch (e) { }
 
-console.log("✅ Base de datos, tablas e índices creados/actualizados exitosamente.");
+console.log("✅ Base de datos, tablas e índices creados/actualizados exitosamente en /data.");
 
 const seedAdmin = () => {
   const adminExists = db.prepare('SELECT * FROM users WHERE email = ?').get('admin@tandem.com');
