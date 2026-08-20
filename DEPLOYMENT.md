@@ -63,3 +63,19 @@ Para realizar una copia de seguridad manual de los datos, copia el archivo SQLit
 
 * **Si la red no accede:** Comprueba que la red de Windows esté en perfil **Privado** y que el puerto **3001** esté habilitado en el Firewall.
 * **Si la PC servidor se reinicia:** PM2 está configurado para levantar `SIMfinity` automáticamente en el arranque de Windows. Verifica el estado con `npx pm2 status`.
+
+
+
+### Estrategia de Compilación y Despliegue (Frontend)
+
+El archivo `vite.config.js` está configurado con una ruta de salida dinámica para garantizar la compatibilidad multi-entorno y evitar bloqueos por cifrado EFS.
+
+* **Entorno de Trabajo (Intranet Corporativa):**
+  * **Comando:** `npm run build`
+  * **Salida:** `C:/ServiciosLocal/simcards-app/dist`
+  * **Detalle:** Mantiene el código fuente resguardado en la carpeta de desarrollo cifrada, mientras genera la versión pública del frontend en una ruta no cifrada para que el servidor web la entregue a la red sin errores de permisos (`EPERM`).
+
+* **Entorno Externo (Casa, Desarrollo Personal o Servidor en la Nube):**
+  * **Comando:** `npx vite build --outDir ./dist` *(o definiendo la variable `BUILD_OUT_DIR=./dist`)*
+  * **Salida:** `./dist` (carpeta local dentro del proyecto)
+  * **Detalle:** Permite clonar y compilar el proyecto en cualquier sistema operativo (Windows, Linux, macOS) de forma portátil sin necesidad de modificar el código ni la configuración base.

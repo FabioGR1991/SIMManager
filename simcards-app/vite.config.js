@@ -1,12 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Plugin para registrar las IPs que se conectan
 const networkLogger = () => ({
   name: 'network-logger',
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
-      // Ignorar archivos internos para no saturar la consola
       if (
         !req.url.includes('/@vite/') && 
         !req.url.includes('/node_modules/') && 
@@ -24,11 +22,15 @@ const networkLogger = () => ({
   }
 });
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), networkLogger()],
   server: {
-    host: '0.0.0.0', // Escucha en todas las interfaces de red
-    port: 3000,      // Mantiene el puerto 3000 por defecto
+    host: '0.0.0.0',
+    port: 3000,
   },
+  build: {
+    // Si la variable de entorno existe la usa, si no, compila en la carpeta local './dist'
+    outDir: process.env.BUILD_OUT_DIR || 'C:/ServiciosLocal/simcards-app/dist',
+    emptyOutDir: true
+  }
 });

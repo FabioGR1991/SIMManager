@@ -78,7 +78,8 @@ app.use('/api/operators', authenticateToken, require('./routes/operators'));
 // =========================================================================
 // ENTREGA DEL FRONTEND COMPILADO (REACT / VITE)
 // =========================================================================
-const distPath = path.join(__dirname, '../simcards-app/dist');
+// Ruta hacia la carpeta fuera de EFS (con fallback si usas variable de entorno)
+const distPath = process.env.DIST_PATH || 'C:/ServiciosLocal/simcards-app/dist';
 
 // Servir archivos estáticos del build de React
 app.use(express.static(distPath));
