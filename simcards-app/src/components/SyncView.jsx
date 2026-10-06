@@ -162,70 +162,31 @@ export default function SyncView({ API_URL, token }) {
   const filteredResults = results.filter(r => filter === 'ALL' || r.status === filter);
 
   return (
-    <div className="view-animated" style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px 0' }}>
+    <div className="view-animated sync-view">
+      <div className="sync-ambient" aria-hidden="true">
+        <span className="sync-ambient-orb" />
+      </div>
 
       {/* ------------------------------------------------------------------ */}
       {/* CABECERA ESTRICTA EN 2 LÍNEAS INDEPENDIENTES                      */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ marginBottom: '28px', width: '100%' }}>
+      <div className="sync-header">
 
         {/* LÍNEA 1: Icono + Título (1 sola línea) + Píldora */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          width: '100%',
-          flexWrap: 'nowrap'
-        }}>
+        <div className="sync-title-row">
 
           {/* Icono Neón */}
-          <div style={{
-            width: '46px',
-            height: '46px',
-            borderRadius: '12px',
-            backgroundColor: 'rgba(14, 165, 233, 0.12)',
-            border: '1.5px solid rgba(56, 189, 248, 0.6)',
-            boxShadow: '0 0 16px rgba(56, 189, 248, 0.25)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#38bdf8',
-            flexShrink: 0
-          }}>
+          <div className="sync-title-icon">
             <GitCompare size={24} />
           </div>
 
           {/* Título (forzado a 1 sola línea continua con degradé) */}
-          <h1 style={{
-            margin: 0,
-            fontSize: '30px',
-            fontWeight: '800',
-            letterSpacing: '-0.5px',
-            whiteSpace: 'nowrap',
-            background: 'linear-gradient(180deg, #ffffff 30%, #38bdf8 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.35))'
-          }}>
+          <h1 className="sync-title">
             Conciliación Masiva
           </h1>
 
           {/* Badge Píldora */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '5px 14px',
-            borderRadius: '20px',
-            backgroundColor: 'rgba(15, 23, 42, 0.6)',
-            border: '1px solid rgba(56, 189, 248, 0.4)',
-            color: '#38bdf8',
-            fontSize: '13px',
-            fontWeight: '500',
-            whiteSpace: 'nowrap',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)'
-          }}>
+          <div className="sync-route-badge">
             <span>Movistar</span>
             <ArrowRight size={13} />
             <span>Base App</span>
@@ -234,25 +195,8 @@ export default function SyncView({ API_URL, token }) {
         </div>
 
         {/* LÍNEA 2: Subtítulo (texto exacto original, 1 sola línea en su caja) */}
-        <div style={{
-          marginTop: '12px',
-          padding: '10px 16px',
-          borderRadius: '10px',
-          backgroundColor: 'rgba(15, 23, 42, 0.45)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          width: '100%',
-          boxSizing: 'border-box'
-        }}>
-          <p style={{
-            margin: 0,
-            fontSize: '14px',
-            color: '#94a3b8',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}>
+        <div className="sync-description">
+          <p>
             Realizá un crosscheck en tiempo real entre el listado exportado del operador y la base de datos interna.
           </p>
         </div>
@@ -263,63 +207,29 @@ export default function SyncView({ API_URL, token }) {
       {/* 2. DROPZONE DE CARGA Y EJECUCIÓN DEL CROSSCHECK                   */}
       {/* ------------------------------------------------------------------ */}
       <div
+        className={`sync-dropzone ${isDragging ? 'is-dragging' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        style={{
-          background: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          padding: '32px 24px',
-          borderRadius: '16px',
-          border: isDragging ? '2px dashed #38bdf8' : '1px dashed rgba(255, 255, 255, 0.15)',
-          boxShadow: isDragging ? '0 0 25px rgba(56, 189, 248, 0.2)' : '0 10px 25px rgba(0, 0, 0, 0.3)',
-          marginBottom: '28px',
-          transition: 'all 0.2s ease',
-          textAlign: 'center'
-        }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
+        <div className="sync-dropzone-content">
 
-          <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(56, 189, 248, 0.08)',
-            border: '1px solid rgba(56, 189, 248, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#38bdf8'
-          }}>
+          <div className="sync-upload-icon">
             <UploadCloud size={28} />
           </div>
 
-          <div>
-            <h3 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '600', color: '#f8fafc' }}>
+          <div className="sync-dropzone-copy">
+            <h3>
               Seleccioná o arrastrá el archivo CSV
             </h3>
-            <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>
+            <p>
               Exportado directamente desde la plataforma de Movistar
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
+          <div className="sync-actions">
 
-            <label style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(56, 189, 248, 0.4)',
-              color: '#38bdf8',
-              padding: '9px 16px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: '600',
-              transition: 'all 0.2s ease'
-            }}>
+            <label className="sync-file-button">
               <FileSpreadsheet size={16} />
               {fileName ? 'Cambiar archivo CSV' : 'Buscar archivo CSV'}
               <input
@@ -357,25 +267,9 @@ export default function SyncView({ API_URL, token }) {
             )}
 
             <button
+              className="sync-run-button"
               onClick={handleProcessSync}
               disabled={parsedLines.length === 0 || loading}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: parsedLines.length === 0
-                  ? 'rgba(255, 255, 255, 0.08)'
-                  : 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)',
-                color: parsedLines.length === 0 ? '#64748b' : '#ffffff',
-                border: 'none',
-                padding: '9px 20px',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: parsedLines.length === 0 || loading ? 'not-allowed' : 'pointer',
-                boxShadow: parsedLines.length > 0 ? '0 4px 14px rgba(2, 132, 199, 0.35)' : 'none',
-                transition: 'all 0.2s ease'
-              }}
             >
               <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
               {loading ? 'Procesando...' : 'Iniciar Crosscheck'}

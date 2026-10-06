@@ -48,37 +48,13 @@ export default function UsersView({
     });
   };
 
-  // Helper para badge de rol neón
-  const getRoleBadgeStyle = (role) => {
-    switch (role) {
-      case 'admin':
-        return {
-          backgroundColor: 'rgba(56, 189, 248, 0.12)',
-          color: '#38bdf8',
-          border: '1px solid rgba(56, 189, 248, 0.3)'
-        };
-      case 'pl':
-        return {
-          backgroundColor: 'rgba(168, 85, 247, 0.12)',
-          color: '#c084fc',
-          border: '1px solid rgba(168, 85, 247, 0.3)'
-        };
-      default: // 'tl'
-        return {
-          backgroundColor: 'rgba(148, 163, 184, 0.12)',
-          color: '#cbd5e1',
-          border: '1px solid rgba(148, 163, 184, 0.25)'
-        };
-    }
-  };
-
   return (
-    <div className="view-animated">
+    <div className="view-animated users-view">
 
       {/* ------------------------------------------------------------------ */}
       {/* CABECERA EN 2 LÍNEAS INDEPENDIENTES                               */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ marginBottom: '28px', width: '100%' }}>
+      <div className="users-header" style={{ marginBottom: '28px', width: '100%' }}>
 
         {/* LÍNEA 1: Icono + Título (1 sola línea) + Píldora */}
         <div style={{
@@ -170,11 +146,11 @@ export default function UsersView({
       </div>
 
       {/* Formulario de Alta */}
-      <div className="table-container" style={{ marginBottom: '25px' }}>
-        <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: '#ffffff' }}>
+      <div className="table-container users-form-panel" style={{ marginBottom: '25px' }}>
+        <h3 className="users-panel-title" style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: '#ffffff' }}>
           <UserPlus size={18} className="text-cyan-400" /> Crear Nuevo Usuario
         </h3>
-        <form onSubmit={onSubmitUser} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <form className="users-create-form" onSubmit={onSubmitUser} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
           <div>
             <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '6px' }}>Nombre Completo</label>
             <input type="text" className="form-control" value={uName} onChange={(e) => setUName(e.target.value)} placeholder="Ej: Juan Pérez" required />
@@ -218,15 +194,15 @@ export default function UsersView({
           </div>
 
           <div style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
-            <button type="submit" className="btn-primary">Guardar Usuario</button>
+            <button type="submit" className="btn-primary users-save-button">Guardar Usuario</button>
           </div>
         </form>
       </div>
 
       {/* Tabla de Usuarios Registrados */}
-      <div className="table-container">
-        <h3 style={{ margin: '0 0 15px 0', color: '#ffffff' }}>Usuarios Registrados</h3>
-        <table>
+      <div className="table-container users-table-panel">
+        <h3 className="users-panel-title" style={{ margin: '0 0 15px 0', color: '#ffffff' }}>Usuarios Registrados</h3>
+        <table className="users-table">
           <thead>
             <tr>
               <th># ID</th>
@@ -240,18 +216,11 @@ export default function UsersView({
           <tbody>
             {usersList.map((u) => (
               <tr key={u.id}>
-                <td style={{ fontWeight: '700', color: '#ffffff' }}>#{u.id}</td>
+                <td className="users-id-cell">#{u.id}</td>
                 <td style={{ color: '#ffffff', fontWeight: '500' }}>{u.name}</td>
                 <td style={{ color: '#cbd5e1' }}>{u.email}</td>
                 <td>
-                  <span style={{
-                    padding: '4px 10px',
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    display: 'inline-block',
-                    ...getRoleBadgeStyle(u.role)
-                  }}>
+                  <span className={`users-role-badge users-role-${u.role === 'admin' ? 'admin' : u.role === 'pl' ? 'planner' : 'leader'}`}>
                     {u.role === 'admin' ? 'Administrador' : u.role === 'pl' ? 'Planificador' : 'Team Leader'}
                   </span>
                 </td>
@@ -265,11 +234,10 @@ export default function UsersView({
                       type="button"
                       onClick={() => setEditingUser({ ...u, password: '' })}
                       title="Editar usuario"
+                      className="users-action-button users-edit-button"
                       style={actionButtonStyle}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.15)'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <SquarePen size={19} color="#3b82f6" />
+                      <SquarePen size={19} />
                     </button>
 
                     {/* Botón Eliminar */}
@@ -277,11 +245,10 @@ export default function UsersView({
                       type="button"
                       onClick={() => handleDeleteUser(u)}
                       title="Eliminar usuario"
+                      className="users-action-button users-delete-button"
                       style={actionButtonStyle}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <Trash2 size={19} color="#f87171" />
+                      <Trash2 size={19} />
                     </button>
 
                   </div>
@@ -305,5 +272,5 @@ const actionButtonStyle = {
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
-  transition: 'background-color 0.2s ease, transform 0.1s ease',
+  transition: 'color 0.2s ease, background-color 0.2s ease, transform 0.2s ease',
 };

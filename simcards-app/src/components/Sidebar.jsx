@@ -1,5 +1,4 @@
 import React from 'react';
-import faviconLogo from '../assets/simfinity-favicon.png';
 import {
   LogOut,
   Users,
@@ -46,7 +45,7 @@ export default function Sidebar({
   };
 
   return (
-    <aside style={{
+    <aside className="app-sidebar" style={{
       width: '260px',
       minWidth: '260px',
       // Fondo "Cielo Universal": Azul cósmico profundo
@@ -69,7 +68,7 @@ export default function Sidebar({
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
 
         {/* Branding SIMFinity */}
-        <div style={{
+        <div className="sidebar-brand" style={{
           paddingBottom: '16px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           marginBottom: '20px',
@@ -78,19 +77,16 @@ export default function Sidebar({
           gap: '12px'
         }}>
           {/* Favicon */}
-          <div style={{
+          <div className="sidebar-chip-mark" style={{
             width: '38px',
             height: '38px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden'
           }}>
-            <img
-              src={faviconLogo}
-              alt="SIMFinity Logo"
-              style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '10px' }}
-            />
+            <span />
+            <span />
+            <span />
           </div>
 
           <div>
@@ -132,6 +128,7 @@ export default function Sidebar({
               setActiveTab('panel');
               setTargetDeviceId(null);
             }}
+            className={`sidebar-nav-item ${activeTab === 'panel' ? 'is-active' : ''}`}
             style={getButtonStyle('panel')}
           >
             {activeTab === 'panel' && (
@@ -155,6 +152,7 @@ export default function Sidebar({
               setActiveTab('dashboard');
               setTargetDeviceId(null);
             }}
+            className={`sidebar-nav-item ${activeTab === 'dashboard' ? 'is-active' : ''}`}
             style={getButtonStyle('dashboard')}
           >
             {activeTab === 'dashboard' && (
@@ -175,6 +173,7 @@ export default function Sidebar({
           {/* Item: Dispositivos */}
           <button
             onClick={() => setActiveTab('devices')}
+            className={`sidebar-nav-item ${activeTab === 'devices' ? 'is-active' : ''}`}
             style={getButtonStyle('devices')}
           >
             {activeTab === 'devices' && (
@@ -195,6 +194,7 @@ export default function Sidebar({
           {/* Item: Operadores */}
           <button
             onClick={() => setActiveTab('operators')}
+            className={`sidebar-nav-item ${activeTab === 'operators' ? 'is-active' : ''}`}
             style={getButtonStyle('operators')}
           >
             {activeTab === 'operators' && (
@@ -224,6 +224,7 @@ export default function Sidebar({
               {/* Item: Equipos / Ciudades */}
               <button
                 onClick={() => setActiveTab('teams')}
+                className={`sidebar-nav-item ${activeTab === 'teams' ? 'is-active' : ''}`}
                 style={getButtonStyle('teams')}
               >
                 {activeTab === 'teams' && (
@@ -244,6 +245,7 @@ export default function Sidebar({
               {/* Item: Usuarios y Permisos */}
               <button
                 onClick={() => setActiveTab('users')}
+                className={`sidebar-nav-item ${activeTab === 'users' ? 'is-active' : ''}`}
                 style={getButtonStyle('users')}
               >
                 {activeTab === 'users' && (
@@ -264,6 +266,7 @@ export default function Sidebar({
               {/* Item: Conciliación Movistar */}
               <button
                 onClick={() => setActiveTab('sync')}
+                className={`sidebar-nav-item ${activeTab === 'sync' ? 'is-active' : ''}`}
                 style={getButtonStyle('sync')}
               >
                 {activeTab === 'sync' && (
@@ -302,6 +305,7 @@ export default function Sidebar({
 
         <button
           onClick={handleLogout}
+          className="sidebar-logout"
           style={{
             width: '100%',
             backgroundColor: 'rgba(239, 68, 68, 0.08)',

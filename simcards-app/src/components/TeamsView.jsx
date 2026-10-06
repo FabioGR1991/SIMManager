@@ -163,12 +163,12 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
   };
 
   return (
-    <div className="view-animated">
+    <div className="view-animated teams-view">
 
       {/* ------------------------------------------------------------------ */}
       {/* CABECERA EN 2 LÍNEAS INDEPENDIENTES                               */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="teams-header" style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
 
         <div style={{ flex: '1 1 600px' }}>
           {/* LÍNEA 1: Icono + Título + Badge */}
@@ -263,7 +263,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="btn"
+          className="btn teams-create-button"
           style={{
             width: 'auto',
             display: 'flex',
@@ -286,7 +286,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
       </div>
 
       {/* SELECTOR DE EQUIPOS (BADGES EN TEMA OSCURO) */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap' }}>
+      <div className="teams-tabs" style={{ display: 'flex', gap: '10px', marginBottom: '25px', flexWrap: 'wrap' }}>
         {teams.map((team) => {
           const count = users.filter(u => u.team === team).length;
           const isActive = selectedTeam === team;
@@ -294,6 +294,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
             <button
               key={team}
               onClick={() => setSelectedTeam(team)}
+              className={`teams-tab ${isActive ? 'is-active' : ''}`}
               style={{
                 padding: '8px 16px',
                 borderRadius: '8px',
@@ -309,7 +310,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
               }}
             >
               <span>{team}</span>
-              <span style={{
+              <span className="teams-tab-count" style={{
                 backgroundColor: isActive ? '#38bdf8' : '#334155',
                 color: isActive ? '#0f172a' : '#94a3b8',
                 borderRadius: '12px',
@@ -325,9 +326,9 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
       </div>
 
       {/* TABLA DE INTEGRANTES */}
-      <div className="table-container">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 0 15px 0', flexWrap: 'wrap', gap: '10px' }}>
-          <h3 style={{ color: '#ffffff', margin: 0, fontSize: '18px' }}>
+      <div className="table-container teams-table-panel">
+        <div className="teams-table-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 0 15px 0', flexWrap: 'wrap', gap: '10px' }}>
+          <h3 className="teams-table-title" style={{ color: '#ffffff', margin: 0, fontSize: '18px' }}>
             Integrantes del Equipo: <span style={{ color: '#38bdf8' }}>{selectedTeam}</span>
           </h3>
 
@@ -337,6 +338,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
               setEditTeamName(selectedTeam);
               setIsEditModalOpen(true);
             }}
+            className="teams-rename-button"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -355,7 +357,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
           </button>
         </div>
 
-        <table>
+        <table className="teams-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -371,11 +373,11 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
               .filter(u => (u.team || 'Tokio') === selectedTeam)
               .map((u) => (
                 <tr key={u.id}>
-                  <td>#{u.id}</td>
+                  <td className="teams-id-cell">#{u.id}</td>
                   <td style={{ fontWeight: 'bold', color: '#f8fafc' }}>{u.name}</td>
                   <td style={{ color: '#cbd5e1' }}>{u.email}</td>
                   <td>
-                    <span className="status-badge badge-activo">
+                    <span className={`teams-role-badge ${u.role === 'tl' ? 'teams-role-tl' : u.role === 'admin' ? 'teams-role-admin' : 'teams-role-pl'}`}>
                       {u.role}
                     </span>
                   </td>
@@ -388,7 +390,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
                       <select
                         value={u.team || 'Tokio'}
                         onChange={(e) => handleTeamChange(u.id, e.target.value)}
-                        className="form-control"
+                        className="form-control teams-reassign-select"
                         style={{
                           padding: '6px 10px',
                           borderRadius: '6px',
