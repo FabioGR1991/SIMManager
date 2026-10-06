@@ -74,9 +74,9 @@ function DonutChart({ percentage, color = '#38bdf8', label, sublabel }) {
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <div style={{ position: 'relative', width: '90px', height: '90px' }}>
-                <svg width="90" height="90" viewBox="0 0 90 90">
+        <div className="control-donut">
+            <div className="control-donut-visual">
+                <svg className="control-donut-chart" width="90" height="90" viewBox="0 0 90 90">
                     <circle
                         cx="45"
                         cy="45"
@@ -99,17 +99,13 @@ function DonutChart({ percentage, color = '#38bdf8', label, sublabel }) {
                         style={{ transition: 'stroke-dashoffset 0.5s ease' }}
                     />
                 </svg>
-                <div style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 'bold', fontSize: '14px', color: '#ffffff'
-                }}>
+                <div className="control-donut-value">
                     {percentage}%
                 </div>
             </div>
-            <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#f1f5f9' }}>{label}</div>
-                {sublabel && <div style={{ fontSize: '11px', color: '#94a3b8' }}>{sublabel}</div>}
+            <div className="control-donut-label">
+                <div>{label}</div>
+                {sublabel && <div>{sublabel}</div>}
             </div>
         </div>
     );
@@ -172,41 +168,33 @@ export default function PanelControlView({
     const quickWaList = simcards.filter(s => s.wa_link || s.phone_number || s.phone).slice(0, 4);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '10px 0' }}>
+        <div className="control-dashboard">
 
             {/* 1. CABECERA DE BIENVENIDA */}
-            <div style={{
-                backgroundColor: '#0284c7',
-                backgroundImage: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                color: '#fff',
-                padding: '20px 24px',
-                borderRadius: '12px',
-                border: '1px solid #0369a1',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-            }}>
-                <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 'bold' }}>
+            <div className="control-welcome">
+                <h2>
                     {getWelcomePrefix(user.gender)}, {user.name || 'Usuario'}! 👋
                 </h2>
-                <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: '#e0f2fe', opacity: 0.95 }}>
+                <p>
                     💬 "{randomQuote}"
                 </p>
             </div>
 
             {/* 2. KPIS SUPERIORES (FILA DE TARJETAS) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+            <div className="control-kpi-grid">
 
                 {/* Tarjeta Dispositivos */}
-                <div style={kpiCardStyle}>
+                <div className="control-kpi-card control-kpi-devices">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <span style={kpiTitleStyle}>DISPOSITIVOS TOTALES</span>
-                            <div style={kpiValueStyle}>{activeDevices} <span style={{ fontSize: '14px', color: '#64748b' }}>/ {totalDevices}</span></div>
+                            <span className="control-kpi-title">DISPOSITIVOS TOTALES</span>
+                            <div className="control-kpi-value">{activeDevices} <span>/ {totalDevices}</span></div>
                         </div>
-                        <div style={{ ...kpiIconBoxStyle, backgroundColor: 'rgba(2, 132, 199, 0.15)', color: '#38bdf8' }}>
+                        <div className="control-kpi-icon">
                             <Smartphone size={20} />
                         </div>
                     </div>
-                    <div style={kpiSubtextStyle}>
+                    <div className="control-kpi-subtext">
                         <span style={{ color: '#4ade80', fontWeight: 'bold' }}>{activeDevicePct}% Activos</span>
                         {repairDevices > 0 && <span> • 🛠️ {repairDevices} Reparación</span>}
                         {reserveDevices > 0 && <span> • 📦 {reserveDevices} Reserva</span>}
@@ -214,49 +202,49 @@ export default function PanelControlView({
                 </div>
 
                 {/* Tarjeta Líneas Oficiales */}
-                <div style={kpiCardStyle}>
+                <div className="control-kpi-card control-kpi-lines">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <span style={kpiTitleStyle}>LÍNEAS OFICIALES</span>
-                            <div style={kpiValueStyle}>{officialPct}%</div>
+                            <span className="control-kpi-title">LÍNEAS OFICIALES</span>
+                            <div className="control-kpi-value">{officialPct}%</div>
                         </div>
-                        <div style={{ ...kpiIconBoxStyle, backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#4ade80' }}>
+                        <div className="control-kpi-icon">
                             <ShieldCheck size={20} />
                         </div>
                     </div>
-                    <div style={kpiSubtextStyle}>
+                    <div className="control-kpi-subtext">
                         <span>{officialSimsCount} de {totalSims} SIMs oficiales</span>
                     </div>
                 </div>
 
                 {/* Tarjeta Ocupación SIMs */}
-                <div style={kpiCardStyle}>
+                <div className="control-kpi-card control-kpi-sims">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <span style={kpiTitleStyle}>OCUPACIÓN DE SIMS</span>
-                            <div style={kpiValueStyle}>{simOccupancyPct}%</div>
+                            <span className="control-kpi-title">OCUPACIÓN DE SIMS</span>
+                            <div className="control-kpi-value">{simOccupancyPct}%</div>
                         </div>
-                        <div style={{ ...kpiIconBoxStyle, backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' }}>
+                        <div className="control-kpi-icon">
                             <CreditCard size={20} />
                         </div>
                     </div>
-                    <div style={kpiSubtextStyle}>
+                    <div className="control-kpi-subtext">
                         <span>{assignedSimsCount} Asignadas</span> • <span style={{ color: freeSimsCount > 0 ? '#fbbf24' : '#94a3b8', fontWeight: 'bold' }}>{freeSimsCount} Libres</span>
                     </div>
                 </div>
 
                 {/* Tarjeta Operadores */}
-                <div style={kpiCardStyle}>
+                <div className="control-kpi-card control-kpi-operators">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <span style={kpiTitleStyle}>OPERADORES ACTIVOS</span>
-                            <div style={kpiValueStyle}>{activeOperatorsCount} <span style={{ fontSize: '14px', color: '#64748b' }}>/ {totalOperators}</span></div>
+                            <span className="control-kpi-title">OPERADORES ACTIVOS</span>
+                            <div className="control-kpi-value">{activeOperatorsCount} <span>/ {totalOperators}</span></div>
                         </div>
-                        <div style={{ ...kpiIconBoxStyle, backgroundColor: 'rgba(168, 85, 247, 0.15)', color: '#c084fc' }}>
+                        <div className="control-kpi-icon">
                             <Users size={20} />
                         </div>
                     </div>
-                    <div style={kpiSubtextStyle}>
+                    <div className="control-kpi-subtext">
                         <span>{totalOperators - activeOperatorsCount} sin dispositivo asignado</span>
                     </div>
                 </div>
@@ -264,11 +252,11 @@ export default function PanelControlView({
             </div>
 
             {/* 3. FILA CENTRAL: GRÁFICOS Y AUDITORÍA */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="control-content-grid">
 
                 {/* Métrica Visual (Donas) */}
-                <div style={panelBoxStyle}>
-                    <h4 style={panelTitleStyle}>📊 Distribución y Salud de Flota</h4>
+                <div className="control-panel control-fleet-panel">
+                    <h4 className="control-panel-title">📊 Distribución y Salud de Flota</h4>
                     <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '10px 0' }}>
                         <DonutChart
                             percentage={activeDevicePct}
@@ -292,33 +280,33 @@ export default function PanelControlView({
                 </div>
 
                 {/* Panel de Auditoría / Alertas */}
-                <div style={panelBoxStyle}>
-                    <h4 style={{ ...panelTitleStyle, color: '#f87171', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <AlertTriangle size={16} /> Auditoría e Inconsistencias
+                <div className="control-panel control-audit-panel">
+                    <h4 className="control-panel-title control-audit-title">
+                        <AlertTriangle className="control-audit-icon" size={16} /> Auditoría e Inconsistencias
                     </h4>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         {unassignedSims.length > 0 ? (
-                            <div style={alertItemStyle('rgba(239, 68, 68, 0.12)', '#ef4444')}>
-                                <span style={{ fontWeight: 'bold', color: '#fca5a5' }}>🔴 {unassignedSims.length} SIM Cards activas sin dispositivo</span>
+                            <div className="control-audit-alert">
+                                <span className="control-audit-alert-title"><span className="control-alert-pulse">●</span> {unassignedSims.length} SIM Cards activas sin dispositivo</span>
                                 <span style={{ fontSize: '11px', color: '#f87171' }}>Tienen número pero no figuran en ningún Slot 1 o Slot 2.</span>
                             </div>
                         ) : (
-                            <div style={alertItemStyle('rgba(34, 197, 94, 0.12)', '#22c55e')}>
-                                <span style={{ fontWeight: 'bold', color: '#86efac' }}>🟢 Todas las SIMs están correctamente asignadas.</span>
+                            <div className="control-audit-ok">
+                                <span className="control-audit-alert-title">Todas las SIMs están correctamente asignadas.</span>
                             </div>
                         )}
 
                         {repairDevices > 0 && (
-                            <div style={alertItemStyle('rgba(245, 158, 11, 0.12)', '#f59e0b')}>
-                                <span style={{ fontWeight: 'bold', color: '#fcd34d' }}>🟡 {repairDevices} Dispositivos en estado "EN REPARACIÓN"</span>
+                            <div className="control-audit-warning">
+                                <span className="control-audit-alert-title">{repairDevices} Dispositivos en estado "EN REPARACIÓN"</span>
                                 <span style={{ fontSize: '11px', color: '#fbbf24' }}>Verifica si requieren devolución o reasignación de SIM.</span>
                             </div>
                         )}
 
                         {dualSimMissingOp.length > 0 && (
-                            <div style={alertItemStyle('rgba(59, 130, 246, 0.12)', '#3b82f6')}>
-                                <span style={{ fontWeight: 'bold', color: '#93c5fd' }}>🔵 {dualSimMissingOp.length} Dispositivos Dual-SIM sin Operador 2</span>
+                            <div className="control-audit-info">
+                                <span className="control-audit-alert-title">{dualSimMissingOp.length} Dispositivos Dual-SIM sin Operador 2</span>
                                 <span style={{ fontSize: '11px', color: '#60a5fa' }}>El Slot 2 tiene SIM pero no tiene un operador vinculado.</span>
                             </div>
                         )}
@@ -326,19 +314,7 @@ export default function PanelControlView({
                         {typeof onNavigate === 'function' && (
                             <button
                                 onClick={() => onNavigate('devices')}
-                                style={{
-                                    marginTop: '4px',
-                                    alignSelf: 'flex-start',
-                                    border: 'none',
-                                    background: 'transparent',
-                                    color: '#38bdf8',
-                                    fontWeight: 'bold',
-                                    fontSize: '12px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px'
-                                }}
+                                className="control-audit-link"
                             >
                                 Ir a gestionar dispositivos <ArrowRight size={14} />
                             </button>
@@ -349,28 +325,20 @@ export default function PanelControlView({
             </div>
 
             {/* 4. FILA INFERIOR: ACCESOS RÁPIDOS & ACTIVIDAD */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="control-content-grid">
 
                 {/* Accesos Rápidos a WhatsApp */}
-                <div style={panelBoxStyle}>
-                    <h4 style={panelTitleStyle}>📲 Enlaces Express a WhatsApp</h4>
+                <div className="control-panel control-quick-panel">
+                    <h4 className="control-panel-title">📲 Enlaces Express a WhatsApp</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {quickWaList.length > 0 ? (
                             quickWaList.map((sim) => (
                                 <div
                                     key={sim.id}
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '8px 12px',
-                                        backgroundColor: '#111827',
-                                        borderRadius: '6px',
-                                        border: '1px solid #233147'
-                                    }}
+                                    className="control-quick-row"
                                 >
                                     <div>
-                                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f8fafc' }}>
+                                        <span className="control-quick-phone">
                                             {sim.phone_number || sim.phone}
                                         </span>
                                         <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
@@ -383,18 +351,7 @@ export default function PanelControlView({
                                             href={sim.wa_link}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '4px',
-                                                backgroundColor: '#16a34a',
-                                                color: '#fff',
-                                                padding: '4px 10px',
-                                                borderRadius: '4px',
-                                                fontSize: '11px',
-                                                fontWeight: 'bold',
-                                                textDecoration: 'none'
-                                            }}
+                                            className="control-quick-link"
                                         >
                                             <MessageSquare size={12} /> Chat <ExternalLink size={10} />
                                         </a>
@@ -410,23 +367,23 @@ export default function PanelControlView({
                 </div>
 
                 {/* Registro de Actividad Reciente */}
-                <div style={panelBoxStyle}>
-                    <h4 style={panelTitleStyle}>⏱️ Actividad del Sistema</h4>
+                <div className="control-panel control-activity-panel">
+                    <h4 className="control-panel-title">⏱️ Actividad del Sistema</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <div className="control-activity-row">
                             <Activity size={16} color="#38bdf8" style={{ marginTop: '2px' }} />
                             <div>
-                                <div style={{ fontSize: '12px', color: '#e2e8f0', fontWeight: '500' }}>
+                                <div className="control-activity-message">
                                     Panel de Control cargado correctamente
                                 </div>
                                 <div style={{ fontSize: '10px', color: '#64748b' }}>Hace un momento</div>
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <div className="control-activity-row is-success">
                             <Activity size={16} color="#34d399" style={{ marginTop: '2px' }} />
                             <div>
-                                <div style={{ fontSize: '12px', color: '#e2e8f0', fontWeight: '500' }}>
+                                <div className="control-activity-message">
                                     Métricas sincronizadas ({totalDevices} dispositivos / {totalSims} SIMs)
                                 </div>
                                 <div style={{ fontSize: '10px', color: '#64748b' }}>Hace un momento</div>
@@ -440,72 +397,3 @@ export default function PanelControlView({
         </div>
     );
 }
-
-// ESTILOS DEL PANEL (MODO OSCURO)
-const kpiCardStyle = {
-    backgroundColor: '#17202e',
-    padding: '16px',
-    borderRadius: '10px',
-    border: '1px solid #233147',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
-};
-
-const kpiTitleStyle = {
-    fontSize: '11px',
-    fontWeight: 'bold',
-    color: '#94a3b8',
-    letterSpacing: '0.5px'
-};
-
-const kpiValueStyle = {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginTop: '4px'
-};
-
-const kpiIconBoxStyle = {
-    padding: '8px',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-};
-
-const kpiSubtextStyle = {
-    fontSize: '11px',
-    color: '#94a3b8',
-    marginTop: '10px',
-    borderTop: '1px solid #233147',
-    paddingTop: '6px'
-};
-
-const panelBoxStyle = {
-    backgroundColor: '#17202e',
-    padding: '18px',
-    borderRadius: '10px',
-    border: '1px solid #233147',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
-};
-
-const panelTitleStyle = {
-    margin: '0 0 14px 0',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    color: '#f8fafc',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px'
-};
-
-const alertItemStyle = (bgColor, borderColor) => ({
-    backgroundColor: bgColor,
-    borderLeft: `4px solid ${borderColor}`,
-    padding: '8px 12px',
-    borderRadius: '4px',
-    display: 'flex',
-    flexDirection: 'column',
-    fontSize: '12px'
-});

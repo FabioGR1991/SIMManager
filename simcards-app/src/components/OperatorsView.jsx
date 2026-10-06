@@ -115,12 +115,12 @@ export default function OperatorsView({ API_URL, token, user }) {
   const isAdmin = user?.role === 'admin' || user?.role === 'Administrador';
 
   return (
-    <div className="view-animated">
+    <div className="view-animated operators-view">
 
       {/* ------------------------------------------------------------------ */}
       {/* CABECERA EN 2 LÍNEAS INDEPENDIENTES                               */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="operators-header" style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
 
         <div style={{ flex: '1 1 600px' }}>
           {/* LÍNEA 1: Icono + Título + Badge */}
@@ -215,7 +215,7 @@ export default function OperatorsView({ API_URL, token, user }) {
         <button
           type="button"
           onClick={() => handleOpenModal()}
-          className="btn"
+          className="btn operators-create-button"
           style={{
             width: 'auto',
             display: 'flex',
@@ -239,75 +239,43 @@ export default function OperatorsView({ API_URL, token, user }) {
 
       {/* FICHA DESTACADA SUPERIOR */}
       {selectedOperator ? (
-        <div style={{
-          backgroundColor: '#0f172a',
-          padding: '20px',
-          borderRadius: '10px',
-          border: '1px solid #1e293b',
-          borderLeft: '4px solid #38bdf8',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '20px',
-          flexWrap: 'wrap',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
-          marginBottom: '20px'
-        }}>
-          <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            backgroundColor: '#1e293b',
-            color: '#38bdf8',
-            border: '1px solid #38bdf8',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '22px',
-            fontWeight: 'bold'
-          }}>
+        <div className="operators-highlight-card">
+          <div className="operators-avatar">
             {selectedOperator.full_name.charAt(0).toUpperCase()}
           </div>
-          <div style={{ flex: 1 }}>
-            <h3 style={{ margin: '0 0 6px 0', color: '#ffffff', fontSize: '18px' }}>
+          <div className="operators-highlight-content">
+            <h3 className="operators-highlight-name">
               {selectedOperator.full_name}
             </h3>
-            <p style={{ margin: 0, fontSize: '14px', color: '#cbd5e1' }}>
-              Turno: <strong style={{ color: '#38bdf8' }}>{selectedOperator.shift}</strong> |
-              Campaña: <strong style={{ color: '#f8fafc' }}>{selectedOperator.campaign || 'Sin asignar'}</strong> |
-              Equipo: <strong style={{ color: '#38bdf8' }}>{selectedOperator.team || 'Sin asignar'}</strong>
-            </p>
-            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <Smartphone size={16} color="#94a3b8" />
-              <span style={{ fontSize: '13px', color: '#94a3b8' }}>Dispositivos vinculados:</span>
+            <div className="operators-info-tags">
+              <span className="operators-info-chip">Turno <strong>{selectedOperator.shift}</strong></span>
+              <span className="operators-info-chip">Campaña <strong>{selectedOperator.campaign || 'Sin asignar'}</strong></span>
+              <span className="operators-info-chip">Equipo <strong>{selectedOperator.team || 'Sin asignar'}</strong></span>
+            </div>
+            <div className="operators-device-tags">
+              <Smartphone size={16} />
+              <span className="operators-device-label">Dispositivos vinculados:</span>
               {selectedOperator.assigned_devices ? (
                 selectedOperator.assigned_devices.split(', ').map((dev, idx) => (
-                  <span key={idx} style={{
-                    backgroundColor: '#1e293b',
-                    color: '#38bdf8',
-                    padding: '3px 10px',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    border: '1px solid #334155',
-                    fontWeight: '500'
-                  }}>
+                  <span key={idx} className="operators-device-chip">
                     {dev}
                   </span>
                 ))
               ) : (
-                <em style={{ fontSize: '12px', color: '#64748b' }}>Sin dispositivos asignados</em>
+                <em className="operators-no-devices">Sin dispositivos asignados</em>
               )}
             </div>
           </div>
         </div>
       ) : (
-        <div style={{ padding: '16px', backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#94a3b8', marginBottom: '20px' }}>
+        <div className="operators-empty-highlight">
           Selecciona un operador de la lista para ver sus detalles.
         </div>
       )}
 
       {/* TABLA DE OPERADORES */}
-      <div className="table-container">
-        <table>
+      <div className="table-container operators-table-panel">
+        <table className="operators-table">
           <thead>
             <tr>
               <th>OPERADOR</th>
@@ -331,27 +299,23 @@ export default function OperatorsView({ API_URL, token, user }) {
                     transition: 'background-color 0.15s ease'
                   }}
                 >
-                  <td style={{ fontWeight: '600', color: '#f8fafc' }}>
+                  <td className="operators-name-cell">
                     {op.full_name}
                   </td>
-                  <td style={{ color: '#cbd5e1' }}>{op.shift}</td>
-                  <td style={{ color: '#cbd5e1' }}>{op.campaign || '-'}</td>
+                  <td>
+                    <span className={`operators-shift-badge ${op.shift === 'Mañana' ? 'is-morning' : op.shift === 'Tarde' ? 'is-afternoon' : 'is-other'}`}>
+                      {op.shift}
+                    </span>
+                  </td>
+                  <td>{op.campaign || '-'}</td>
                   {isAdmin && (
-                    <td style={{ color: '#38bdf8', fontWeight: '500' }}>
+                    <td className="operators-team-cell">
                       {op.team || '-'}
                     </td>
                   )}
                   <td>
                     {op.assigned_devices ? (
-                      <span style={{
-                        backgroundColor: 'rgba(56, 189, 248, 0.15)',
-                        color: '#38bdf8',
-                        padding: '3px 10px',
-                        borderRadius: '12px',
-                        fontSize: '12px',
-                        border: '1px solid rgba(56, 189, 248, 0.3)',
-                        fontWeight: '600'
-                      }}>
+                      <span className="operators-device-count">
                         {op.assigned_devices.split(', ').length} equipo(s)
                       </span>
                     ) : (
@@ -362,7 +326,7 @@ export default function OperatorsView({ API_URL, token, user }) {
                     <button
                       type="button"
                       onClick={() => handleOpenModal(op)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#38bdf8', marginRight: '8px', padding: '4px' }}
+                      className="operators-action-button operators-edit-button"
                       title="Editar Operador"
                     >
                       <Edit size={16} />
@@ -370,7 +334,7 @@ export default function OperatorsView({ API_URL, token, user }) {
                     <button
                       type="button"
                       onClick={() => handleDelete(op)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#f87171', padding: '4px' }}
+                      className="operators-action-button operators-delete-button"
                       title="Eliminar Operador"
                     >
                       <Trash2 size={16} />
