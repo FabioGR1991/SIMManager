@@ -206,9 +206,9 @@ export default function DashboardView({
   };
 
   return (
-    <div>
+    <div className="sim-inventory-view">
       {/* HEADER FUTURISTA / NEÓN */}
-      <div style={{
+      <div className="sim-inventory-header" style={{
         position: 'relative',
         marginBottom: '28px',
         padding: '24px 28px',
@@ -240,7 +240,7 @@ export default function DashboardView({
           pointerEvents: 'none'
         }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
+        <div className="sim-header-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {/* Contenedor del Icono Neón */}
             <div style={{
@@ -258,7 +258,7 @@ export default function DashboardView({
             </div>
 
             {/* Título y Subtítulo */}
-            <div>
+            <div className="sim-header-title">
               <h1 style={{
                 margin: 0,
                 fontSize: '26px',
@@ -284,7 +284,7 @@ export default function DashboardView({
           </div>
 
           {/* Badge Indicador de Red */}
-          <div style={{
+          <div className="sim-network-badge" style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
@@ -310,47 +310,47 @@ export default function DashboardView({
       </div>
 
       {/* Tarjetas de Métricas */}
-      <div className="card-grid" style={{ marginBottom: '25px' }}>
-        <div className="card">
+      <div className="card-grid sim-kpi-grid" style={{ marginBottom: '25px' }}>
+        <div className="card sim-kpi-card sim-kpi-total">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Smartphone color="#2563eb" size={20} />
+            <Smartphone size={20} />
             <h3>Total Líneas</h3>
           </div>
-          <div className="number">{metrics.total}</div>
+          <div className="number sim-kpi-value">{metrics.total}</div>
         </div>
 
-        <div className="card">
+        <div className="card sim-kpi-card sim-kpi-active">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <CheckCircle color="#16a34a" size={20} />
+            <CheckCircle size={20} />
             <h3>Activas</h3>
           </div>
-          <div className="number" style={{ color: '#16a34a' }}>{metrics.activos}</div>
+          <div className="number sim-kpi-value">{metrics.activos}</div>
         </div>
 
-        <div className="card">
+        <div className="card sim-kpi-card sim-kpi-blocked">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <AlertTriangle color="#d97706" size={20} />
+            <AlertTriangle size={20} />
             <h3>Bloqueadas</h3>
           </div>
-          <div className="number" style={{ color: '#d97706' }}>{metrics.bloqueados}</div>
+          <div className="number sim-kpi-value">{metrics.bloqueados}</div>
         </div>
 
-        <div className="card">
+        <div className="card sim-kpi-card sim-kpi-burned">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <ShieldAlert color="#dc2626" size={20} />
+            <ShieldAlert size={20} />
             <h3>Quemadas</h3>
           </div>
-          <div className="number" style={{ color: '#dc2626' }}>{metrics.quemados}</div>
+          <div className="number sim-kpi-value">{metrics.quemados}</div>
         </div>
       </div>
 
       {/* Formulario Alta SIM */}
-      <div className="table-container" style={{ marginBottom: '20px' }}>
-        <h3 style={{ margin: '0 0 15px 0' }}>Registrar Nueva SIMCard</h3>
+      <div className="table-container sim-register-panel" style={{ marginBottom: '20px' }}>
+        <h3 className="sim-panel-title" style={{ margin: '0 0 15px 0' }}>Registrar Nueva SIMCard</h3>
         <form onSubmit={onSubmitSim} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
           <input
             type="text"
-            className="form-control"
+            className="form-control sim-form-input"
             placeholder="11 3830 - 3333"
             value={newPhone}
             onChange={handlePhoneChange}
@@ -359,28 +359,28 @@ export default function DashboardView({
           />
           <input
             type="text"
-            className="form-control"
+            className="form-control sim-form-input"
             placeholder={`Entidad / Área (por defecto: ${user?.entity || user?.campaign || 'General'})`}
             value={newEntity}
             onChange={(e) => setNewEntity(e.target.value)}
             style={{ flex: 1, minWidth: '200px' }}
           />
-          <button type="submit" className="btn" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button type="submit" className="btn sim-add-button" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Plus size={16} /> Agregar Chip
           </button>
         </form>
       </div>
 
       {/* BARRA DE BÚSQUEDA Y FILTROS */}
-      <div className="table-container" style={{ marginBottom: '20px', padding: '15px 20px' }}>
+      <div className="table-container sim-filter-panel" style={{ marginBottom: '20px', padding: '15px 20px' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
 
           {/* Campo de búsqueda libre */}
-          <div style={{ position: 'relative', flex: 1, minWidth: '240px', display: 'flex', alignItems: 'center' }}>
+          <div className="sim-search-wrapper" style={{ position: 'relative', flex: 1, minWidth: '240px', display: 'flex', alignItems: 'center' }}>
             <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px' }} />
             <input
               type="text"
-              className="form-control"
+              className="form-control sim-search-input"
               placeholder="Buscar por número, entidad / área, equipo o WhatsApp..."
               value={searchTerm}
               onChange={handleSearchChange}
@@ -419,7 +419,7 @@ export default function DashboardView({
           <select
             value={statusFilter}
             onChange={handleStatusFilterChange}
-            className="form-control"
+            className="form-control sim-filter-select"
             style={{ width: 'auto', minWidth: '180px', fontSize: '14px' }}
           >
             <option value="TODOS">Todos los Estados</option>
@@ -435,7 +435,7 @@ export default function DashboardView({
           <select
             value={entityFilter}
             onChange={handleEntityFilterChange}
-            className="form-control"
+            className="form-control sim-filter-select"
             style={{ width: 'auto', minWidth: '170px', fontSize: '14px' }}
           >
             <option value="TODOS">Todas las Entidades</option>
@@ -472,6 +472,7 @@ export default function DashboardView({
           <button
             type="button"
             onClick={handleExportCSV}
+            className="sim-export-button"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -496,7 +497,7 @@ export default function DashboardView({
       </div>
 
       {/* Tabla de SIMCards + Paginación */}
-      <div className="table-container">
+      <div className="table-container sim-table-panel">
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -507,12 +508,12 @@ export default function DashboardView({
           flexWrap: 'wrap',
           gap: '10px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+          <div className="sim-pagination-size" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
             <span>Mostrar</span>
             <select
               value={itemsPerPage}
               onChange={handleItemsPerPageChange}
-              className="form-control"
+              className="form-control sim-page-size"
               style={{ width: 'auto', padding: '4px 8px', fontSize: '13px' }}
             >
               <option value={10}>10</option>
@@ -525,7 +526,7 @@ export default function DashboardView({
 
           {!isAll && totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '13px', opacity: 0.8 }}>
+              <span className="sim-page-indicator" style={{ fontSize: '13px', opacity: 0.8 }}>
                 Página <strong>{validCurrentPage}</strong> de <strong>{totalPages}</strong>
               </span>
               <div style={{ display: 'flex', gap: '4px' }}>
@@ -566,7 +567,7 @@ export default function DashboardView({
           )}
         </div>
 
-        <table>
+        <table className="sim-inventory-table">
           <thead>
             <tr>
               <th># ID</th>
@@ -592,25 +593,16 @@ export default function DashboardView({
                 const globalIndex = indexOfFirstItem + index + 1;
                 return (
                   <tr key={sim.id}>
-                    <td><strong>#{globalIndex}</strong></td>
-                    <td style={{ padding: '10px' }}>
+                    <td className="sim-table-id"><strong>#{globalIndex}</strong></td>
+                    <td className="sim-table-phone-cell">
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                        <span>{sim.phone_number}</span>
+                        <span className="sim-table-phone">{sim.phone_number}</span>
                         {sim.device_id && (
                           <button
                             type="button"
                             onClick={() => navigateToDevice && navigateToDevice(sim.device_id)}
                             title={sim.device_model ? `Asociado a: ${sim.device_model}` : "Ver dispositivo asignado"}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              padding: 0,
-                              margin: 0,
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              color: '#2563eb'
-                            }}
+                            className="sim-device-link"
                           >
                             <Smartphone size={16} />
                           </button>
@@ -620,7 +612,7 @@ export default function DashboardView({
                     <td>
                       {sim.wa_type ? (
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{
+                          <span className={`sim-wa-badge ${sim.wa_type === 'WA Business' ? 'is-business' : ''}`} style={{
                             fontSize: '12px',
                             fontWeight: '600',
                             padding: '2px 8px',
@@ -650,10 +642,10 @@ export default function DashboardView({
                         <span style={{ fontSize: '12px', opacity: 0.5 }}>-</span>
                       )}
                     </td>
-                    <td>{sim.entity || sim.campaign || 'N/A'}</td>
-                    {user?.role === 'admin' && <td>{sim.team || 'Sin Equipo'}</td>}
+                    <td className="sim-table-secondary">{sim.entity || sim.campaign || 'N/A'}</td>
+                    {user?.role === 'admin' && <td className="sim-table-secondary">{sim.team || 'Sin Equipo'}</td>}
                     <td>
-                      <span className={`status-badge ${getBadgeClass(sim.status)}`}>
+                      <span className={`status-badge sim-status-badge ${getBadgeClass(sim.status)}`}>
                         {sim.status}
                       </span>
                     </td>
@@ -664,17 +656,7 @@ export default function DashboardView({
                           type="button"
                           onClick={() => handleEditPhone(sim)}
                           title="Editar número"
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            padding: '4px',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            color: '#3b82f6',
-                            opacity: 0.9,
-                            transition: 'opacity 0.2s'
-                          }}
+                          className="sim-row-action sim-edit-action"
                         >
                           <SquarePen size={18} />
                         </button>
@@ -684,17 +666,7 @@ export default function DashboardView({
                           type="button"
                           onClick={() => handleViewHistory(sim)}
                           title="Ver Historial"
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            padding: '4px',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            color: '#38bdf8',
-                            opacity: 0.9,
-                            transition: 'opacity 0.2s'
-                          }}
+                          className="sim-row-action sim-history-action"
                         >
                           <ClipboardList size={18} />
                         </button>
@@ -705,17 +677,7 @@ export default function DashboardView({
                             type="button"
                             onClick={() => handleDeleteSim(sim)}
                             title="Eliminar número"
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              padding: '4px',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              color: '#f87171',
-                              opacity: 0.9,
-                              transition: 'opacity 0.2s'
-                            }}
+                            className="sim-row-action sim-delete-action"
                           >
                             <Trash2 size={18} />
                           </button>
@@ -725,7 +687,7 @@ export default function DashboardView({
                         <select
                           value={sim.status}
                           onChange={(e) => handleStatusChange(sim.id, e.target.value)}
-                          className="form-control"
+                          className="form-control sim-status-select"
                           style={{ padding: '4px 8px', fontSize: '13px', width: 'auto' }}
                           disabled={user?.role !== 'admin' && sim.status === 'Repuesto'}
                         >
@@ -746,7 +708,7 @@ export default function DashboardView({
         </table>
 
         {!isAll && totalPages > 1 && (
-          <div style={{
+          <div className="sim-pagination-footer" style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -754,7 +716,7 @@ export default function DashboardView({
             paddingTop: '10px',
             borderTop: '1px solid rgba(226, 232, 240, 0.1)'
           }}>
-            <span style={{ fontSize: '12px', opacity: 0.7 }}>
+            <span className="sim-pagination-summary" style={{ fontSize: '12px', opacity: 0.7 }}>
               Mostrando del {indexOfFirstItem + 1} al {Math.min(indexOfLastItem, totalItems)} de {totalItems} registros
             </span>
             <div style={{ display: 'flex', gap: '4px' }}>

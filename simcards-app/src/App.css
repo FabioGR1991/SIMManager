@@ -2629,6 +2629,932 @@ tr:hover {
     }
   }
 
+  /* Titanium device inventory */
+  .devices-view {
+    color: #e2e8f0 !important;
+  }
+
+  .devices-titanium-header {
+    border-color: rgba(56, 189, 248, 0.28) !important;
+    border-radius: 16px !important;
+    background:
+      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
+      linear-gradient(100deg, rgba(8, 47, 73, 0.36), rgba(17, 20, 29, 0.9) 46%, rgba(15, 23, 42, 0.88)) !important;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.07), 0 0 20px rgba(56, 189, 248, 0.08) !important;
+  }
+
+  .devices-titanium-header h1 {
+    background: linear-gradient(90deg, #fff 12%, #bae6fd 58%, #38bdf8) !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .devices-create-button {
+    border: 1px solid rgba(91, 211, 240, 0.48) !important;
+    border-radius: 10px !important;
+    background: linear-gradient(105deg, #08799c, #08729a 55%, #0d526c) !important;
+    box-shadow: 0 0 16px rgba(0, 180, 216, 0.3), inset 0 1px rgba(255, 255, 255, 0.16) !important;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .devices-create-button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(116, 229, 250, 0.78) !important;
+    box-shadow: 0 0 23px rgba(0, 180, 216, 0.42), inset 0 1px rgba(255, 255, 255, 0.22) !important;
+  }
+
+  .devices-highlight-card {
+    position: relative;
+    overflow: hidden !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 17px !important;
+    background:
+      radial-gradient(ellipse at 5% 50%, rgba(14, 165, 233, 0.1), transparent 45%),
+      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
+      linear-gradient(100deg, rgba(16, 19, 28, 0.94), rgba(13, 15, 23, 0.95) 52%, rgba(18, 22, 34, 0.94)) !important;
+    box-shadow: 0 20px 42px rgba(0, 0, 0, 0.38), inset 0 1px rgba(255, 255, 255, 0.07) !important;
+    backdrop-filter: blur(20px);
+  }
+
+  .devices-highlight-card::after {
+    position: absolute;
+    right: -70px;
+    bottom: -120px;
+    width: 330px;
+    height: 230px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(56, 189, 248, 0.09), transparent 70%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .devices-highlight-layout {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .devices-phone-frame {
+    border-color: rgba(125, 211, 252, 0.28) !important;
+    border-radius: 17px !important;
+    background: linear-gradient(145deg, rgba(8, 14, 24, 0.98), rgba(14, 24, 38, 0.94)) !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.12), inset 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .devices-phone-frame img {
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.3));
+  }
+
+  .devices-id-chip {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px !important;
+    background: rgba(15, 23, 42, 0.85) !important;
+    color: #7dd3fc !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  }
+
+  .devices-highlight-model {
+    color: #e0f2fe !important;
+  }
+
+  .devices-entity-chip {
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    border-radius: 8px !important;
+    background: rgba(14, 165, 233, 0.13) !important;
+    color: #bae6fd !important;
+  }
+
+  .devices-highlight-sim-row {
+    min-height: 27px;
+  }
+
+  .devices-highlight-sim-row > strong {
+    width: 48px;
+    color: #94a3b8 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px;
+  }
+
+  .devices-highlight-phone {
+    color: #f1f5f9 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace !important;
+    font-size: 12px;
+    font-weight: 650 !important;
+  }
+
+  .devices-highlight-phone.is-empty {
+    color: #718096 !important;
+    font-size: 11px;
+    font-weight: 400 !important;
+  }
+
+  .devices-operator-chip {
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 999px !important;
+    background: rgba(14, 165, 233, 0.15) !important;
+    color: #bae6fd !important;
+  }
+
+  .devices-operator-chip.is-secondary {
+    border-color: rgba(129, 140, 248, 0.3);
+    background: rgba(99, 102, 241, 0.14) !important;
+    color: #c7d2fe !important;
+  }
+
+  .devices-info-button {
+    border: 1px solid rgba(56, 189, 248, 0.5) !important;
+    border-radius: 11px !important;
+    background: rgba(14, 165, 233, 0.18) !important;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
+    color: #bae6fd !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  }
+
+  .devices-info-button:hover {
+    transform: translateY(-1px);
+    background: rgba(14, 165, 233, 0.28) !important;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.17);
+  }
+
+  .devices-filter-bar {
+    gap: 10px !important;
+    padding: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 13px !important;
+    background: rgba(15, 18, 26, 0.88) !important;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.2), inset 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .devices-search-input,
+  .devices-filter-select {
+    min-height: 37px;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 10px !important;
+    background: rgba(10, 16, 27, 0.9) !important;
+    color: #e2e8f0 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 11px !important;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .devices-search-input {
+    padding-right: 12px !important;
+    padding-left: 34px !important;
+  }
+
+  .devices-search-input::placeholder {
+    color: #647184;
+  }
+
+  .devices-search-input:focus,
+  .devices-filter-select:focus {
+    border-color: rgba(56, 189, 248, 0.75) !important;
+    outline: none;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.2), 0 0 12px rgba(56, 189, 248, 0.12);
+  }
+
+  .devices-filter-select option {
+    background: #111722;
+    color: #e2e8f0;
+  }
+
+  .devices-search-icon {
+    pointer-events: none;
+  }
+
+  .devices-clear-button,
+  .devices-export-button {
+    min-height: 37px;
+    border: 1px solid rgba(148, 163, 184, 0.28) !important;
+    border-radius: 10px !important;
+    background: rgba(30, 41, 59, 0.76) !important;
+    color: #cbd5e1 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px !important;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .devices-clear-button:hover,
+  .devices-export-button:hover {
+    border-color: rgba(56, 189, 248, 0.62) !important;
+    background: rgba(30, 48, 65, 0.92) !important;
+    color: #e0f2fe !important;
+  }
+
+  .devices-export-button {
+    border-color: rgba(148, 163, 184, 0.3) !important;
+    color: #dbe4ed !important;
+  }
+
+  .devices-export-button svg {
+    color: #7dd3fc !important;
+  }
+
+  .devices-table-panel {
+    overflow: auto !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    background:
+      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.01) 0 1px, transparent 1px 5px),
+      linear-gradient(145deg, rgba(20, 24, 32, 0.97), rgba(10, 13, 19, 0.98)) !important;
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.055) !important;
+  }
+
+  .devices-table {
+    min-width: 900px;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    font-size: 12px !important;
+  }
+
+  .devices-table thead tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(19, 23, 34, 0.94) !important;
+  }
+
+  .devices-table thead th {
+    padding: 12px 14px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: transparent !important;
+    color: #9ba8b8 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 9px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.11em;
+  }
+
+  .devices-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055) !important;
+    transition: background-color 150ms ease;
+  }
+
+  .devices-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+  }
+
+  .devices-table tbody tr:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .devices-table tbody td {
+    padding: 12px 14px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+    color: #cbd5e1;
+    font-size: 11px;
+  }
+
+  .devices-table-id {
+    color: rgba(125, 211, 252, 0.9) !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 11px !important;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .devices-table-model {
+    color: #7dd3fc;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 650;
+    transition: color 140ms ease;
+  }
+
+  .devices-table-model:hover {
+    color: #bae6fd;
+    text-decoration: underline;
+  }
+
+  .devices-table-details > div + div {
+    color: #8491a3 !important;
+  }
+
+  .devices-table-details > div + div strong {
+    color: #cbd5e1 !important;
+  }
+
+  .devices-table-details > div + div span:last-child {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 5px !important;
+    background: rgba(30, 41, 59, 0.72) !important;
+    color: #cbd5e1 !important;
+  }
+
+  .devices-table-phone {
+    color: #f1f5f9;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .devices-table-operator {
+    margin-top: 3px;
+    color: rgba(56, 189, 248, 0.82);
+    font-size: 10px;
+  }
+
+  .devices-no-sim {
+    display: inline-block;
+    padding: 3px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
+    background: rgba(15, 23, 42, 0.5);
+    color: #64748b;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+
+  .devices-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.1);
+    color: #aab6c5;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+  }
+
+  .devices-status-badge.is-active {
+    border-color: rgba(52, 211, 153, 0.4);
+    background: rgba(16, 185, 129, 0.14);
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+  }
+
+  .devices-table-actions > div {
+    gap: 5px !important;
+  }
+
+  .devices-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 7px !important;
+    background: rgba(15, 23, 42, 0.65) !important;
+    cursor: pointer;
+    transform-origin: center;
+    transition: color 150ms ease, border-color 150ms ease, background 150ms ease, transform 150ms ease;
+  }
+
+  .devices-action-button:hover {
+    transform: scale(1.08);
+    background: rgba(30, 41, 59, 0.9) !important;
+  }
+
+  .devices-edit-action {
+    color: #38bdf8;
+  }
+
+  .devices-edit-action:hover {
+    border-color: rgba(56, 189, 248, 0.42) !important;
+    color: #7dd3fc;
+  }
+
+  .devices-history-action {
+    color: #818cf8;
+  }
+
+  .devices-history-action:hover {
+    border-color: rgba(129, 140, 248, 0.42) !important;
+    color: #a5b4fc;
+  }
+
+  .devices-delete-action {
+    color: rgba(251, 113, 133, 0.82);
+  }
+
+  .devices-delete-action:hover {
+    border-color: rgba(244, 63, 94, 0.38) !important;
+    color: #fb7185;
+  }
+
+  @media (max-width: 760px) {
+    .devices-view {
+      padding: 10px !important;
+    }
+
+    .devices-titanium-header {
+      align-items: flex-start !important;
+      padding: 16px !important;
+    }
+
+    .devices-titanium-header > div:first-child {
+      flex-basis: 100% !important;
+      gap: 12px !important;
+    }
+
+    .devices-titanium-header h1 {
+      font-size: 21px !important;
+    }
+
+    .devices-filter-bar > div:first-child {
+      flex-basis: 100% !important;
+    }
+
+    .devices-highlight-main {
+      align-items: flex-start !important;
+      width: 100%;
+    }
+
+    .devices-phone-frame {
+      width: 86px !important;
+      height: 110px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .devices-highlight-main {
+      gap: 10px !important;
+    }
+
+    .devices-phone-frame {
+      width: 68px !important;
+      height: 90px !important;
+    }
+
+    .devices-highlight-sim-row {
+      flex-wrap: wrap;
+    }
+  }
+
+  /* Titanium SIM card inventory */
+  .sim-inventory-view {
+    color: #e2e8f0;
+  }
+
+  .sim-inventory-header {
+    border-color: rgba(56, 189, 248, 0.28) !important;
+    background:
+      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
+      linear-gradient(100deg, rgba(8, 47, 73, 0.34), rgba(17, 20, 29, 0.9) 46%, rgba(15, 23, 42, 0.88)) !important;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.07), 0 0 20px rgba(56, 189, 248, 0.08) !important;
+  }
+
+  .sim-header-content h1 {
+    background: linear-gradient(90deg, #fff 12%, #cbd5e1 54%, #38bdf8) !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .sim-network-badge {
+    border-color: rgba(56, 189, 248, 0.3) !important;
+    border-radius: 999px !important;
+    background: rgba(15, 23, 42, 0.72) !important;
+    color: #7dd3fc !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px !important;
+    letter-spacing: 0.035em;
+  }
+
+  .sim-kpi-grid {
+    gap: 14px !important;
+  }
+
+  .sim-kpi-card {
+    min-height: 106px;
+    padding: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 15px !important;
+    background:
+      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
+      linear-gradient(145deg, rgba(19, 23, 31, 0.96), rgba(11, 14, 20, 0.95) 72%) !important;
+    box-shadow: 0 15px 32px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.055) !important;
+    transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+  }
+
+  .sim-kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(56, 189, 248, 0.35) !important;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.32), 0 0 16px rgba(56, 189, 248, 0.08);
+  }
+
+  .sim-kpi-card h3 {
+    color: #aab6c5 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .sim-kpi-card > div:first-child svg {
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  .sim-kpi-total > div:first-child svg,
+  .sim-kpi-total .sim-kpi-value {
+    color: #38bdf8 !important;
+  }
+
+  .sim-kpi-active > div:first-child svg,
+  .sim-kpi-active .sim-kpi-value {
+    color: #34d399 !important;
+    filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.3));
+  }
+
+  .sim-kpi-blocked > div:first-child svg,
+  .sim-kpi-blocked .sim-kpi-value {
+    color: #fbbf24 !important;
+    filter: drop-shadow(0 0 7px rgba(251, 191, 36, 0.23));
+  }
+
+  .sim-kpi-burned > div:first-child svg,
+  .sim-kpi-burned .sim-kpi-value {
+    color: #fb7185 !important;
+    filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.3));
+  }
+
+  .sim-kpi-value {
+    margin-top: 7px !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 25px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.035em;
+  }
+
+  .sim-register-panel,
+  .sim-filter-panel {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 15px !important;
+    background:
+      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.01) 0 1px, transparent 1px 5px),
+      linear-gradient(145deg, rgba(20, 24, 32, 0.95), rgba(10, 13, 19, 0.96)) !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25), inset 0 1px rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .sim-panel-title {
+    color: #edf4fa;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+  }
+
+  .sim-form-input,
+  .sim-search-input,
+  .sim-filter-select,
+  .sim-page-size,
+  .sim-status-select {
+    min-height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 10px !important;
+    background: rgba(10, 16, 27, 0.9) !important;
+    color: #e2e8f0 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 11px !important;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .sim-form-input,
+  .sim-search-input {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .sim-form-input::placeholder,
+  .sim-search-input::placeholder {
+    color: #647184;
+  }
+
+  .sim-form-input:focus,
+  .sim-search-input:focus,
+  .sim-filter-select:focus,
+  .sim-page-size:focus,
+  .sim-status-select:focus {
+    border-color: rgba(56, 189, 248, 0.75) !important;
+    outline: none;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.2), 0 0 12px rgba(56, 189, 248, 0.13) !important;
+  }
+
+  .sim-filter-select option,
+  .sim-page-size option,
+  .sim-status-select option {
+    background: #111722;
+    color: #e2e8f0;
+  }
+
+  .sim-add-button {
+    min-height: 37px;
+    border: 1px solid rgba(91, 211, 240, 0.48) !important;
+    border-radius: 10px !important;
+    background: linear-gradient(105deg, #08799c, #08729a 55%, #0d526c) !important;
+    box-shadow: 0 0 16px rgba(0, 180, 216, 0.28), inset 0 1px rgba(255, 255, 255, 0.16) !important;
+    color: #f4fcff !important;
+    font-size: 11px !important;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .sim-add-button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(116, 229, 250, 0.78) !important;
+    box-shadow: 0 0 22px rgba(0, 180, 216, 0.4), inset 0 1px rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .sim-export-button {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px !important;
+    border: 1px solid rgba(148, 163, 184, 0.32) !important;
+    border-radius: 10px !important;
+    background: rgba(30, 41, 59, 0.8) !important;
+    color: #dbe4ed !important;
+    cursor: pointer;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px !important;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .sim-export-button:hover {
+    border-color: rgba(56, 189, 248, 0.65) !important;
+    background: rgba(30, 48, 65, 0.92) !important;
+    color: #e0f2fe !important;
+  }
+
+  .sim-export-button svg {
+    color: #7dd3fc !important;
+  }
+
+  .sim-table-panel {
+    overflow: auto !important;
+    padding: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    background:
+      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.01) 0 1px, transparent 1px 5px),
+      linear-gradient(145deg, rgba(20, 24, 32, 0.97), rgba(10, 13, 19, 0.98)) !important;
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.055) !important;
+  }
+
+  .sim-inventory-table {
+    min-width: 940px;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  .sim-inventory-table thead th {
+    padding: 12px 14px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(19, 23, 34, 0.92) !important;
+    color: #9ba8b8 !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 9px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sim-inventory-table tbody tr {
+    transition: background-color 150ms ease;
+  }
+
+  .sim-inventory-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+  }
+
+  .sim-inventory-table tbody td {
+    padding: 11px 14px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055) !important;
+    color: #cbd5e1;
+    font-size: 11px;
+  }
+
+  .sim-inventory-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+  }
+
+  .sim-table-id,
+  .sim-table-id strong {
+    color: rgba(125, 211, 252, 0.9) !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .sim-table-phone {
+    color: #f1f5f9;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.035em;
+    white-space: nowrap;
+  }
+
+  .sim-device-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #7dd3fc;
+    cursor: pointer;
+    transition: color 150ms ease, filter 150ms ease;
+  }
+
+  .sim-device-link:hover {
+    color: #bae6fd;
+    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.5));
+  }
+
+  .sim-wa-badge {
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 999px !important;
+    background: rgba(14, 165, 233, 0.12) !important;
+    color: #7dd3fc !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 9px !important;
+  }
+
+  .sim-wa-badge.is-business {
+    border-color: rgba(74, 222, 128, 0.28);
+    background: rgba(34, 197, 94, 0.12) !important;
+    color: #86efac !important;
+  }
+
+  .sim-table-secondary {
+    color: #cbd5e1 !important;
+    font-size: 11px !important;
+    font-weight: 500;
+  }
+
+  .sim-status-badge {
+    padding: 4px 9px !important;
+    border-radius: 999px !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 9px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.035em;
+    white-space: nowrap;
+  }
+
+  .sim-status-badge.badge-activo {
+    border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    background: rgba(16, 185, 129, 0.14) !important;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.18);
+    color: #6ee7b7 !important;
+  }
+
+  .sim-status-badge.badge-quemado {
+    border: 1px solid rgba(244, 63, 94, 0.4) !important;
+    background: rgba(244, 63, 94, 0.14) !important;
+    box-shadow: 0 0 8px rgba(244, 63, 94, 0.17);
+    color: #fda4af !important;
+  }
+
+  .sim-status-badge.badge-bloqueado {
+    border: 1px solid rgba(251, 191, 36, 0.4) !important;
+    background: rgba(245, 158, 11, 0.14) !important;
+    color: #fcd34d !important;
+  }
+
+  .sim-status-select {
+    min-height: 30px;
+    padding: 4px 24px 4px 8px !important;
+    border-radius: 8px !important;
+    font-size: 10px !important;
+  }
+
+  .sim-row-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px !important;
+    border: 0 !important;
+    background: transparent !important;
+    cursor: pointer;
+    transform-origin: center;
+    transition: color 150ms ease, transform 150ms ease, filter 150ms ease;
+  }
+
+  .sim-row-action:hover {
+    transform: scale(1.1);
+  }
+
+  .sim-edit-action {
+    color: #38bdf8;
+  }
+
+  .sim-edit-action:hover {
+    color: #7dd3fc;
+    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.45));
+  }
+
+  .sim-history-action {
+    color: #818cf8;
+  }
+
+  .sim-history-action:hover {
+    color: #a5b4fc;
+    filter: drop-shadow(0 0 5px rgba(129, 140, 248, 0.45));
+  }
+
+  .sim-delete-action {
+    color: rgba(251, 113, 133, 0.82);
+  }
+
+  .sim-delete-action:hover {
+    color: #fb7185;
+    filter: drop-shadow(0 0 5px rgba(244, 63, 94, 0.4));
+  }
+
+  .sim-pagination-size,
+  .sim-pagination-footer {
+    color: #aab6c5;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px !important;
+  }
+
+  .sim-page-indicator,
+  .sim-pagination-summary {
+    color: #94a3b8;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px !important;
+  }
+
+  .sim-page-indicator strong {
+    color: #e2e8f0;
+  }
+
+  .sim-page-size {
+    min-height: 29px;
+  }
+
+  .sim-inventory-view .btn-pagination {
+    min-height: 31px;
+    padding: 5px 11px !important;
+    border: 1px solid rgba(148, 163, 184, 0.32) !important;
+    border-radius: 9px !important;
+    background: rgba(30, 41, 59, 0.8) !important;
+    color: #dbe4ed !important;
+    cursor: pointer;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 10px;
+    transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+  }
+
+  .sim-inventory-view .btn-pagination:not(:disabled):hover {
+    border-color: rgba(56, 189, 248, 0.65) !important;
+    background: rgba(30, 48, 65, 0.94) !important;
+    color: #e0f2fe !important;
+  }
+
+  .sim-inventory-view .btn-pagination:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  @media (max-width: 760px) {
+    .sim-inventory-header {
+      padding: 18px !important;
+    }
+
+    .sim-header-content {
+      align-items: flex-start !important;
+    }
+
+    .sim-header-content h1 {
+      font-size: 21px !important;
+    }
+
+    .sim-kpi-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sim-table-panel {
+      padding: 10px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sim-kpi-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sim-inventory-header {
+      padding: 15px !important;
+    }
+
+    .sim-pagination-footer {
+      align-items: flex-start !important;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
 .users-delete-button {
   color: rgba(251, 113, 133, 0.8);
 }
