@@ -1,39 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Lock, LogIn, Mail } from 'lucide-react';
 
 export default function LoginView({ handleLogin, loginError }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const simCardRef = useRef(null);
 
-  useEffect(() => {
-    const card = simCardRef.current;
+  const handleCardMouseMove = (event) => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    if (!card || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return undefined;
-    }
+    const card = event.currentTarget;
+    const bounds = card.getBoundingClientRect();
+    const xOffset = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const yOffset = (event.clientY - bounds.top) / bounds.height - 0.5;
+    const rotateY = xOffset * 13;
+    const rotateX = yOffset * -9;
 
-    const handleMouseMove = (event) => {
-      const xOffset = (event.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
-      const yOffset = (event.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
-      const rotateY = xOffset * 6.5;
-      const rotateX = -yOffset * 4.5;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+  };
 
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
-    };
-
-    const resetTilt = () => {
-      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseleave', resetTilt);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', resetTilt);
-    };
-  }, []);
+  const resetCardTilt = (event) => {
+    event.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+  };
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -54,7 +41,12 @@ export default function LoginView({ handleLogin, loginError }) {
 
       <main className="login-stage">
         <div className="login-card-viewport">
-          <div className="login-sim-card" id="sim-card" ref={simCardRef}>
+          <div
+            className="login-sim-card"
+            id="sim-card"
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={resetCardTilt}
+          >
             <div className="login-sim-card-inner">
               <div className="login-card-highlight" aria-hidden="true" />
               <div className="login-card-glow login-card-glow-cyan" aria-hidden="true" />

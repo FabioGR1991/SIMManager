@@ -507,14 +507,14 @@ tr:hover {
   top: 9%;
   left: 8%;
   background: radial-gradient(circle, #38bdf8 0%, #0284c7 48%, transparent 75%);
-  animation: login-orb-drift-left 12s ease-in-out infinite;
+  animation: login-orb-float-pulse 12s ease-in-out infinite;
 }
 
 .login-orb-gold {
   top: 7%;
   right: 8%;
   background: radial-gradient(circle, #fde047 0%, #eab308 48%, transparent 75%);
-  animation: login-orb-drift-right 14s ease-in-out infinite;
+  animation: login-orb-float-pulse 14s ease-in-out infinite reverse;
 }
 
 .login-orb-blue {
@@ -522,7 +522,7 @@ tr:hover {
   bottom: 6%;
   width: clamp(160px, 23vw, 280px);
   background: radial-gradient(circle, #3b82f6 0%, #1d4ed8 48%, transparent 75%);
-  animation: login-orb-drift-right 16s ease-in-out infinite reverse;
+  animation: login-orb-float-pulse 15s ease-in-out infinite;
 }
 
 .login-orb-amber {
@@ -530,7 +530,7 @@ tr:hover {
   left: 12%;
   width: clamp(160px, 23vw, 280px);
   background: radial-gradient(circle, #f59e0b 0%, #d97706 48%, transparent 75%);
-  animation: login-orb-drift-left 15s ease-in-out infinite reverse;
+  animation: login-orb-float-pulse 11s ease-in-out infinite reverse;
 }
 
 .login-floor {
@@ -542,11 +542,36 @@ tr:hover {
   transform: perspective(800px) rotateX(67deg);
   transform-origin: center top;
   background:
-    radial-gradient(ellipse 48% 14% at 50% 18%, rgba(0, 180, 240, 0.24), transparent 75%),
+    radial-gradient(ellipse 32% 13% at 38% 18%, rgba(0, 180, 240, 0.24), transparent 75%),
+    radial-gradient(ellipse 30% 12% at 64% 21%, rgba(245, 166, 35, 0.19), transparent 75%),
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 4px),
     linear-gradient(180deg, rgba(23, 28, 40, 0.7), #05070a 75%);
   opacity: 0.78;
   pointer-events: none;
+}
+
+.login-floor::before,
+.login-floor::after {
+  position: absolute;
+  top: 10%;
+  width: 36%;
+  height: 28%;
+  border-radius: 50%;
+  content: '';
+  filter: blur(18px);
+  opacity: 0.66;
+}
+
+.login-floor::before {
+  left: 13%;
+  background: radial-gradient(ellipse, rgba(0, 180, 240, 0.3), transparent 72%);
+  animation: login-floor-sheen-left 12s ease-in-out infinite;
+}
+
+.login-floor::after {
+  right: 13%;
+  background: radial-gradient(ellipse, rgba(245, 166, 35, 0.25), transparent 72%);
+  animation: login-floor-sheen-right 14s ease-in-out infinite;
 }
 
 .login-stage {
@@ -571,7 +596,7 @@ tr:hover {
   padding: 1px;
   transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
   transform-style: preserve-3d;
-  transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 400ms ease-out;
   clip-path: polygon(0 0, calc(100% - 46px) 0, 100% 46px, 100% 100%, 0 100%);
   filter: drop-shadow(0 35px 35px rgba(0, 0, 0, 0.9)) drop-shadow(0 15px 15px rgba(0, 0, 0, 0.8));
   background: linear-gradient(145deg, #aeb5c3 0%, #343a47 22%, #14161b 52%, #596171 82%, #9ba3b4 100%);
@@ -683,10 +708,16 @@ tr:hover {
   display: flex;
   align-items: center;
   margin-top: 12px;
+  padding: 5px 2px 7px;
   font-size: 36px;
   font-weight: 800;
   letter-spacing: -0.055em;
-  line-height: 1;
+  line-height: 1.2;
+}
+
+.login-brand-title span {
+  display: block;
+  padding: 0 1px;
 }
 
 .login-brand-title span:first-child {
@@ -697,6 +728,7 @@ tr:hover {
 .login-brand-title span:last-child {
   background: linear-gradient(100deg, #38bdf8, #818cf8 60%, #c084fc);
   background-clip: text;
+  -webkit-background-clip: text;
   color: transparent;
 }
 
@@ -913,11 +945,12 @@ tr:hover {
 
 .login-card-shadow {
   width: 88%;
-  height: 12px;
-  margin: -1px auto 0;
+  height: 18px;
+  margin: -3px auto 0;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.8);
-  filter: blur(9px);
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.84) 20%, rgba(0, 0, 0, 0) 72%);
+  box-shadow: 0 -5px 24px rgba(14, 165, 233, 0.12), 0 3px 22px rgba(245, 166, 35, 0.1);
+  filter: blur(7px);
 }
 
 .login-card-reflection {
@@ -928,27 +961,39 @@ tr:hover {
   filter: blur(5px);
 }
 
-@keyframes login-orb-drift-left {
+@keyframes login-orb-float-pulse {
   0%, 100% {
     transform: translate3d(0, 0, 0) scale(1);
-    filter: drop-shadow(0 0 48px rgba(0, 168, 255, 0.55)) blur(56px);
+    opacity: 0.6;
   }
 
   50% {
-    transform: translate3d(24px, -18px, 0) scale(1.08);
-    filter: drop-shadow(0 0 60px rgba(0, 190, 255, 0.7)) blur(56px);
+    transform: translate3d(26px, -22px, 0) scale(1.15);
+    opacity: 0.85;
   }
 }
 
-@keyframes login-orb-drift-right {
+@keyframes login-floor-sheen-left {
   0%, 100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: drop-shadow(0 0 50px rgba(245, 166, 35, 0.55)) blur(56px);
+    transform: translate3d(0, 0, 0) scaleX(1);
+    opacity: 0.55;
   }
 
   50% {
-    transform: translate3d(-20px, 16px, 0) scale(1.09);
-    filter: drop-shadow(0 0 64px rgba(251, 191, 36, 0.7)) blur(56px);
+    transform: translate3d(25px, 4px, 0) scaleX(1.15);
+    opacity: 0.85;
+  }
+}
+
+@keyframes login-floor-sheen-right {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scaleX(1);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: translate3d(-24px, -4px, 0) scaleX(1.16);
+    opacity: 0.82;
   }
 }
 
@@ -973,5 +1018,10 @@ tr:hover {
   .login-sim-card {
     animation: none;
     transition: none;
+  }
+
+  .login-floor::before,
+  .login-floor::after {
+    animation: none;
   }
 }
