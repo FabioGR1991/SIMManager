@@ -214,8 +214,7 @@ const headerStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '16px 20px',
-  borderBottom: '1px solid #334155',
-  backgroundColor: '#0f172a'
+  borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
 };
 
 const iconBoxStyle = {
@@ -255,10 +254,11 @@ const labelStyle = {
 };
 
 const cardSectionStyle = {
-  padding: '10px 12px',
-  backgroundColor: '#0f172a',
-  borderRadius: '8px',
-  border: '1px solid #334155'
+  padding: '16px',
+  backgroundColor: 'rgba(15, 23, 42, 0.3)',
+  borderRadius: '16px',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(4px)'
 };
 
 const cardSubTitleStyle = {
@@ -350,8 +350,7 @@ const copyBtnStyle = {
 
 const footerStyle = {
   padding: '12px 20px',
-  borderTop: '1px solid #334155',
-  backgroundColor: '#0f172a',
+  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
   display: 'flex',
   justify: 'flex-end'
 };

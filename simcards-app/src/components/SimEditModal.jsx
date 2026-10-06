@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CreditCard, MessageCircle, X } from 'lucide-react';
+import SimModalPortal from './SimModalPortal';
 
 export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimEdit, teamsList = [] }) {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -84,13 +85,8 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
   };
 
   return (
-    <div
-      className="sim-glass-overlay"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !isSaving) setEditingSim(null);
-      }}
-    >
-      <section className="sim-glass-modal" role="dialog" aria-modal="true" aria-labelledby="sim-edit-title">
+    <SimModalPortal onBackdropMouseDown={() => !isSaving && setEditingSim(null)}>
+      <section className="sim-glass-modal sim-inventory-modal-card" role="dialog" aria-modal="true" aria-labelledby="sim-edit-title">
         <div className="sim-glass-glint" aria-hidden="true" />
         <header className="sim-glass-modal-header">
           <div className="sim-glass-modal-heading">
@@ -181,6 +177,6 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
           </footer>
         </form>
       </section>
-    </div>
+    </SimModalPortal>
   );
 }

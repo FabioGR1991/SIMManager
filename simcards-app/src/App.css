@@ -3798,6 +3798,8 @@ tr:hover {
   overflow-y: auto;
   padding: 16px;
   background: transparent !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   animation: sim-glass-fade-in 180ms ease-out;
 }
 
@@ -3805,11 +3807,11 @@ tr:hover {
   position: fixed;
   z-index: 0;
   inset: 0;
-  background: rgba(3, 6, 12, 0.72);
+  background: rgba(0, 0, 0, 0.6);
   content: '';
   pointer-events: none;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .sim-glass-overlay > * {
@@ -3818,20 +3820,23 @@ tr:hover {
 }
 
 .sim-glass-modal,
-.sim-glass-dialog {
+.sim-glass-dialog,
+.sim-glass-overlay > :not(.sim-glass-glint) {
   position: relative;
-  width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 24px;
-  background:
-    radial-gradient(ellipse at 8% 0%, rgba(14, 165, 233, 0.1), transparent 45%),
-    rgba(13, 17, 26, 0.88);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 24px !important;
+  background: rgba(11, 15, 25, 0.6) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), inset 0 1px rgba(255, 255, 255, 0.07) !important;
   color: #e2e8f0;
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+.sim-glass-modal,
+.sim-glass-dialog {
+  width: 100%;
 }
 
 .sim-glass-modal {
@@ -3854,6 +3859,41 @@ tr:hover {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
   pointer-events: none;
+}
+
+.sim-glass-overlay > :not(.sim-glass-glint):not(.sim-glass-modal):not(.sim-glass-dialog)::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
+  content: '';
+  pointer-events: none;
+}
+
+.sim-inventory-modal-overlay {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: sim-glass-fade-in 180ms ease-out;
+}
+
+.sim-inventory-modal-card {
+  background: rgba(11, 15, 23, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), inset 0 1px rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
 }
 
 .sim-glass-dialog.is-danger {
@@ -3956,9 +3996,11 @@ tr:hover {
   flex-direction: column;
   gap: 14px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .sim-glass-form-section h3 {
@@ -3992,7 +4034,7 @@ tr:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   outline: none;
-  background: rgba(2, 6, 23, 0.6);
+  background: rgba(2, 6, 23, 0.5);
   color: #f1f5f9;
   font: inherit;
   font-size: 14px;
@@ -4014,7 +4056,22 @@ tr:hover {
 .sim-glass-field select:focus,
 .sim-glass-field textarea:focus {
   border-color: #38bdf8;
+  background: rgba(2, 6, 23, 0.8);
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.55);
+}
+
+.sim-glass-overlay .form-control {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(2, 6, 23, 0.5);
+  color: #fff;
+  font-size: 14px;
+  transition: all 160ms ease;
+}
+
+.sim-glass-overlay .form-control:focus {
+  border-color: #38bdf8;
+  background: rgba(2, 6, 23, 0.8);
 }
 
 .sim-glass-modal-footer,
@@ -4149,10 +4206,12 @@ tr:hover {
   flex-direction: column;
   gap: 11px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.3);
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .sim-history-meta,

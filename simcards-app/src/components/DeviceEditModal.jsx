@@ -46,10 +46,10 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
       <div
         onClick={() => setIsOpen(!isOpen)}
         style={{
-          padding: '8px 10px',
-          borderRadius: '6px',
-          border: '1px solid #334155',
-          backgroundColor: '#0f172a',
+          padding: '10px 14px',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: 'rgba(15, 23, 42, 0.3)',
           cursor: 'pointer',
           display: 'flex',
           justifySpaceBetween: 'space-between',
@@ -88,9 +88,9 @@ function SearchableSimSelect({ name, value, onChange, options = [], placeholder 
           left: 0,
           right: 0,
           marginTop: '4px',
-          backgroundColor: '#0f172a',
-          border: '1px solid #334155',
-          borderRadius: '6px',
+          backgroundColor: 'rgba(15, 23, 42, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '12px',
           boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5), 0 8px 10px -6px rgba(0,0,0,0.5)',
           zIndex: 1050,
           maxHeight: '220px',
@@ -553,9 +553,9 @@ const sectionTitleStyle = { margin: '0 0 5px 0', fontSize: '13px', fontWeight: '
 const labelStyle = { fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block' };
 
 const inputStyle = {
-  padding: '8px 10px', borderRadius: '6px', border: '1px solid #334155',
-  width: '100%', boxSizing: 'border-box', marginTop: '4px', fontSize: '13px',
-  backgroundColor: '#0f172a', color: '#ffffff', outline: 'none'
+  padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)',
+  width: '100%', boxSizing: 'border-box', marginTop: '4px', fontSize: '14px',
+  backgroundColor: 'rgba(2, 6, 23, 0.5)', color: '#ffffff', outline: 'none'
 };
 
 const selectStyle = {
@@ -568,7 +568,8 @@ const optionStyle = {
 };
 
 const simBoxStyle = {
-  backgroundColor: '#0f172a', padding: '10px', borderRadius: '8px', border: '1px solid #334155'
+  backgroundColor: 'rgba(15, 23, 42, 0.3)', padding: '16px', borderRadius: '16px',
+  border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(4px)'
 };
 
 const checkboxLabelStyle = {

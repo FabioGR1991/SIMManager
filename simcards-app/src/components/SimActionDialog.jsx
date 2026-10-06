@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Info, MessageSquare, X } from 'lucide-react';
+import SimModalPortal from './SimModalPortal';
 
 export default function SimActionDialog({ dialog, onConfirm, onClose }) {
   const [observation, setObservation] = useState('');
@@ -27,14 +28,9 @@ export default function SimActionDialog({ dialog, onConfirm, onClose }) {
   };
 
   return (
-    <div
-      className="sim-glass-overlay"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !isSubmitting) onClose();
-      }}
-    >
+    <SimModalPortal onBackdropMouseDown={() => !isSubmitting && onClose()}>
       <section
-        className={`sim-glass-dialog${isDanger ? ' is-danger' : ''}`}
+        className={`sim-glass-dialog sim-inventory-modal-card${isDanger ? ' is-danger' : ''}`}
         role={isNotice ? 'alertdialog' : 'dialog'}
         aria-modal="true"
         aria-labelledby="sim-dialog-title"
@@ -79,7 +75,7 @@ export default function SimActionDialog({ dialog, onConfirm, onClose }) {
             )}
             <button
               type={isPrompt || !isNotice ? 'submit' : 'button'}
-              className={`sim-glass-button ${isDanger ? 'is-danger' : 'is-primary'}`}
+              className="sim-glass-button is-primary"
               onClick={isNotice ? onClose : undefined}
               disabled={isSubmitting}
             >
@@ -88,6 +84,6 @@ export default function SimActionDialog({ dialog, onConfirm, onClose }) {
           </footer>
         </form>
       </section>
-    </div>
+    </SimModalPortal>
   );
 }

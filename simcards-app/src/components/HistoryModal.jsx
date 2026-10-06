@@ -1,16 +1,12 @@
 import { X, History, Clock, User, MessageSquare } from 'lucide-react';
+import SimModalPortal from './SimModalPortal';
 
 export default function HistoryModal({ selectedLogs, selectedPhone, setSelectedLogs, getBadgeClass }) {
   if (!selectedLogs) return null;
 
   return (
-    <div
-      className="sim-glass-overlay"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) setSelectedLogs(null);
-      }}
-    >
-      <section className="sim-glass-modal sim-history-modal" role="dialog" aria-modal="true" aria-labelledby="sim-history-title">
+    <SimModalPortal onBackdropMouseDown={() => setSelectedLogs(null)}>
+      <section className="sim-glass-modal sim-history-modal sim-inventory-modal-card" role="dialog" aria-modal="true" aria-labelledby="sim-history-title">
         <div className="sim-glass-glint" aria-hidden="true" />
         <header className="sim-glass-modal-header">
           <div className="sim-glass-modal-heading">
@@ -66,6 +62,6 @@ export default function HistoryModal({ selectedLogs, selectedPhone, setSelectedL
           </button>
         </footer>
       </section>
-    </div>
+    </SimModalPortal>
   );
 }
