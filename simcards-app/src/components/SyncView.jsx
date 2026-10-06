@@ -162,7 +162,7 @@ export default function SyncView({ API_URL, token }) {
   const filteredResults = results.filter(r => filter === 'ALL' || r.status === filter);
 
   return (
-    <div className="view-animated sync-view">
+    <div className="app-view-root sync-view">
       <div className="sync-ambient" aria-hidden="true">
         <span className="sync-ambient-orb" />
       </div>

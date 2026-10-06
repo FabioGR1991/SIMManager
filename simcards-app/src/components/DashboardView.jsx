@@ -206,7 +206,7 @@ export default function DashboardView({
   };
 
   return (
-    <div className="sim-inventory-view">
+    <div className="app-view-root sim-inventory-view">
       <div className="titanium-module-header sim-inventory-header">
         <div className="titanium-header-glint" aria-hidden="true" />
         <div className="titanium-header-main">

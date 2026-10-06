@@ -163,7 +163,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
   };
 
   return (
-    <div className="view-animated teams-view">
+    <div className="app-view-root teams-view">
 
       <div className="titanium-module-header teams-header">
         <div className="titanium-header-glint" aria-hidden="true" />

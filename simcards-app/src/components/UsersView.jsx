@@ -49,7 +49,7 @@ export default function UsersView({
   };
 
   return (
-    <div className="view-animated users-view">
+    <div className="app-view-root users-view">
 
       <div className="titanium-module-header users-header">
         <div className="titanium-header-glint" aria-hidden="true" />

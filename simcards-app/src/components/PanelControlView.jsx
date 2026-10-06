@@ -168,7 +168,7 @@ export default function PanelControlView({
     const quickWaList = simcards.filter(s => s.wa_link || s.phone_number || s.phone).slice(0, 4);
 
     return (
-        <div className="control-dashboard">
+        <div className="app-view-root control-dashboard">
 
             {/* 1. CABECERA DE BIENVENIDA */}
             <div className="titanium-module-header control-welcome">

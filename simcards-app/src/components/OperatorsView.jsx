@@ -115,7 +115,7 @@ export default function OperatorsView({ API_URL, token, user }) {
   const isAdmin = user?.role === 'admin' || user?.role === 'Administrador';
 
   return (
-    <div className="view-animated operators-view">
+    <div className="app-view-root operators-view">
 
       <div className="titanium-module-header operators-header">
         <div className="titanium-header-glint" aria-hidden="true" />

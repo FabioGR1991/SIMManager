@@ -344,9 +344,9 @@ export default function App() {
       />
 
       {/* Contenido Principal */}
-      <main style={{ flex: 1, padding: '30px', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
+      <main className="app-main-content">
 
-        <div key={activeTab} className="view-animated">
+        <div key={activeTab} className="app-view-shell view-animated">
 
           {/* VISTA PANEL DE CONTROL */}
           {activeTab === 'panel' && (

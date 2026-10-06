@@ -196,7 +196,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
   };
 
   return (
-    <div className="devices-view" style={{ padding: '15px', color: '#f8fafc' }}>
+    <div className="app-view-root devices-view" style={{ color: '#f8fafc' }}>
 
       <div className="titanium-module-header devices-titanium-header">
         <div className="titanium-header-glint" aria-hidden="true" />
