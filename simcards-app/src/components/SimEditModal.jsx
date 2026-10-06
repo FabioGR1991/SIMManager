@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { CreditCard, MessageCircle, X } from 'lucide-react';
 
 export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimEdit, teamsList = [] }) {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -7,6 +7,7 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
   const [team, setTeam] = useState('');
   const [waType, setWaType] = useState('');
   const [waLink, setWaLink] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (editingSim) {
@@ -20,8 +21,8 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
 
   if (!editingSim) return null;
 
-  const handlePhoneChange = (e) => {
-    let rawValue = e.target.value.replace(/\D/g, '');
+  const handlePhoneChange = (event) => {
+    let rawValue = event.target.value.replace(/\D/g, '');
     if (rawValue.length > 10) rawValue = rawValue.slice(0, 10);
 
     let formattedValue = rawValue;
@@ -43,8 +44,8 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
     }
   };
 
-  const handleWaTypeChange = (e) => {
-    const newType = e.target.value;
+  const handleWaTypeChange = (event) => {
+    const newType = event.target.value;
     setWaType(newType);
 
     if (!newType) {
@@ -60,227 +61,126 @@ export default function SimEditModal({ editingSim, setEditingSim, handleSaveSimE
     }
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    handleSaveSimEdit({
-      id: editingSim.id,
-      phone_number: phoneNumber,
-      phoneNumber,
-      entity: entity || 'General',
-      campaign: entity || 'General',
-      team,
-      wa_type: waType,
-      waType,
-      wa_link: waLink,
-      waLink,
-    });
-    setEditingSim(null);
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    setIsSaving(true);
+    try {
+      const saved = await handleSaveSimEdit({
+        id: editingSim.id,
+        phone_number: phoneNumber,
+        phoneNumber,
+        entity: entity || 'General',
+        campaign: entity || 'General',
+        team,
+        wa_type: waType,
+        waType,
+        wa_link: waLink,
+        waLink
+      });
+      if (saved) setEditingSim(null);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(5, 10, 20, 0.75)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-        padding: '16px'
+      className="sim-glass-overlay"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !isSaving) setEditingSim(null);
       }}
-      onClick={() => setEditingSim(null)}
     >
-      <div
-        style={{
-          backgroundColor: '#17202e',
-          border: '1px solid #233147',
-          borderRadius: '12px',
-          width: '100%',
-          maxWidth: '480px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-          overflow: 'hidden',
-          color: '#f8fafc'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header Modal */}
-        <div
-          style={{
-            padding: '20px 24px 16px 24px',
-            borderBottom: '1px solid #233147',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '700', color: '#ffffff' }}>
-            Editar SIMCard
-          </h3>
+      <section className="sim-glass-modal" role="dialog" aria-modal="true" aria-labelledby="sim-edit-title">
+        <div className="sim-glass-glint" aria-hidden="true" />
+        <header className="sim-glass-modal-header">
+          <div className="sim-glass-modal-heading">
+            <span className="sim-glass-modal-icon"><CreditCard size={20} /></span>
+            <h2 id="sim-edit-title">Editar SIMCard</h2>
+          </div>
           <button
             type="button"
+            className="sim-glass-close"
             onClick={() => setEditingSim(null)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#94a3b8',
-              padding: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            title="Cerrar modal"
+            aria-label="Cerrar modal"
+            disabled={isSaving}
           >
-            <X size={18} />
+            <X size={20} />
           </button>
-        </div>
+        </header>
 
-        {/* Formulario */}
-        <form onSubmit={onSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-          {/* Subtítulo de Sección */}
-          <div style={{ fontSize: '12px', fontWeight: '700', color: '#38bdf8', letterSpacing: '0.5px' }}>
-            DATOS GENERALES
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>
-              Número de Línea *
+        <form onSubmit={onSubmit} className="sim-glass-form">
+          <section className="sim-glass-form-section">
+            <h3>Datos Generales</h3>
+            <label className="sim-glass-field">
+              <span>Número de Línea *</span>
+              <input
+                type="text"
+                value={phoneNumber}
+                onChange={handlePhoneChange}
+                placeholder="11 3830 - 3333"
+                required
+              />
             </label>
-            <input
-              type="text"
-              className="form-control"
-              value={phoneNumber}
-              onChange={handlePhoneChange}
-              placeholder="11 3830 - 3333"
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>
-              Entidad / Área
+            <label className="sim-glass-field">
+              <span>Entidad / Área</span>
+              <input
+                type="text"
+                value={entity}
+                onChange={(event) => setEntity(event.target.value)}
+                placeholder="Ej: Administración / Ventas"
+                required
+              />
             </label>
-            <input
-              type="text"
-              className="form-control"
-              value={entity}
-              onChange={(e) => setEntity(e.target.value)}
-              placeholder="Ej: Administración / Ventas"
-              required
-            />
-          </div>
-
-          {teamsList && teamsList.length > 0 && (
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>
-                Equipo / Sede Asignada
+            {teamsList.length > 0 && (
+              <label className="sim-glass-field">
+                <span>Equipo / Sede Asignada</span>
+                <select value={team} onChange={(event) => setTeam(event.target.value)}>
+                  <option value="">-- Seleccionar Equipo --</option>
+                  {teamsList.map((item, index) => {
+                    const teamName = typeof item === 'object' ? item.name : item;
+                    return <option key={index} value={teamName}>Equipo {teamName}</option>;
+                  })}
+                </select>
               </label>
-              <select
-                className="form-control"
-                value={team}
-                onChange={(e) => setTeam(e.target.value)}
-              >
-                <option value="">-- Seleccionar Equipo --</option>
-                {teamsList.map((t, idx) => {
-                  const tName = typeof t === 'object' ? t.name : t;
-                  return (
-                    <option key={idx} value={tName}>
-                      Equipo {tName}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-          )}
+            )}
+          </section>
 
-          {/* Sección WhatsApp estilo Slot de Imagen 2 */}
-          <div
-            style={{
-              backgroundColor: '#111827',
-              border: '1px solid #1f293d',
-              borderRadius: '8px',
-              padding: '14px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              marginTop: '4px'
-            }}
-          >
-            <div style={{ fontSize: '12px', fontWeight: '700', color: '#38bdf8', letterSpacing: '0.5px' }}>
-              CONFIGURACIÓN DE WHATSAPP
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
-                Tipo de WhatsApp
-              </label>
-              <select
-                className="form-control"
-                value={waType}
-                onChange={handleWaTypeChange}
-              >
+          <section className="sim-glass-form-section">
+            <h3><MessageCircle size={15} /> Configuración de WhatsApp</h3>
+            <label className="sim-glass-field">
+              <span>Tipo de WhatsApp</span>
+              <select value={waType} onChange={handleWaTypeChange}>
                 <option value="">Sin WhatsApp</option>
                 <option value="WA Normal">WA Normal</option>
                 <option value="WA Business">WA Business</option>
               </select>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>
-                Link Directo de WhatsApp
-              </label>
+            </label>
+            <label className="sim-glass-field">
+              <span>Link Directo de WhatsApp</span>
               <input
                 type="text"
-                className="form-control"
                 value={waLink}
-                onChange={(e) => setWaLink(e.target.value)}
+                onChange={(event) => setWaLink(event.target.value)}
                 placeholder="https://wa.me/54911..."
               />
-            </div>
-          </div>
+            </label>
+          </section>
 
-          {/* Botones estilo Imagen 2 */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+          <footer className="sim-glass-modal-footer">
             <button
               type="button"
+              className="sim-glass-button is-secondary"
               onClick={() => setEditingSim(null)}
-              style={{
-                padding: '9px 18px',
-                borderRadius: '8px',
-                border: 'none',
-                backgroundColor: '#334155',
-                color: '#ffffff',
-                cursor: 'pointer',
-                fontWeight: '600',
-                fontSize: '13px'
-              }}
+              disabled={isSaving}
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              style={{
-                padding: '9px 20px',
-                borderRadius: '8px',
-                border: 'none',
-                backgroundColor: '#0284c7',
-                color: '#ffffff',
-                cursor: 'pointer',
-                fontWeight: '600',
-                fontSize: '13px'
-              }}
-            >
-              Guardar Cambios
+            <button type="submit" className="sim-glass-button is-primary" disabled={isSaving}>
+              {isSaving ? 'Guardando…' : 'Guardar cambios'}
             </button>
-          </div>
+          </footer>
         </form>
-      </div>
+      </section>
     </div>
   );
 }

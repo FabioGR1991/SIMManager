@@ -18,6 +18,7 @@ import PanelControlView from './components/PanelControlView';
 import UserEditModal from './components/UserEditModal';
 import HistoryModal from './components/HistoryModal';
 import SimEditModal from './components/SimEditModal';
+import SimActionDialog from './components/SimActionDialog';
 
 import './App.css';
 
@@ -50,6 +51,7 @@ export default function App() {
   const [editingSim, setEditingSim] = useState(null);
   const [selectedLogs, setSelectedLogs] = useState(null);
   const [selectedPhone, setSelectedPhone] = useState('');
+  const [simDialog, setSimDialog] = useState(null);
 
   // Helper para verificar si es administrador sin importar minúsculas/mayúsculas
   const isAdmin = user?.role === 'admin' || user?.role === 'Administrador';
@@ -159,6 +161,14 @@ export default function App() {
     localStorage.removeItem('user');
   };
 
+  const notifySimInventory = (message) => {
+    setSimDialog({
+      type: 'notice',
+      title: 'Inventario de SIMCards',
+      messagePrefix: message
+    });
+  };
+
   const navigateToDevice = (deviceId) => {
     setTargetDeviceId(deviceId);
     setActiveTab('devices');
@@ -230,8 +240,14 @@ export default function App() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchSimcards();
+      return true;
     } catch (err) {
-      alert('Error al crear SIMCard');
+      setSimDialog({
+        type: 'notice',
+        title: 'No se pudo crear la SIMCard',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al crear la línea. Revisá los datos e intentá nuevamente.'
+      });
+      return false;
     }
   };
 
@@ -253,8 +269,14 @@ export default function App() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchSimcards();
+      return true;
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al actualizar la SIMCard.');
+      setSimDialog({
+        type: 'notice',
+        title: 'No se pudo guardar la SIMCard',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al actualizar la línea. Intentá nuevamente.'
+      });
+      return false;
     }
   };
 
@@ -266,29 +288,33 @@ export default function App() {
       setSelectedPhone(sim.phone_number);
       setSelectedLogs(res.data);
     } catch (err) {
-      alert('Error al cargar el historial.');
+      setSimDialog({
+        type: 'notice',
+        title: 'No se pudo cargar el historial',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al cargar los movimientos de esta línea. Intentá nuevamente.'
+      });
     }
   };
 
-  const handleDeleteSim = async (sim) => {
-    const confirmDelete = window.confirm(`¿Estás seguro que deseas eliminar el número ${sim.phone_number}?`);
-    if (!confirmDelete) return;
-
+  const executeDeleteSim = async (sim) => {
     try {
       await axios.delete(`${API_URL}/simcards/${sim.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchSimcards();
+      return true;
     } catch (err) {
-      alert('Error al eliminar la línea.');
+      setSimDialog({
+        type: 'notice',
+        title: 'No se pudo eliminar la SIMCard',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al eliminar la línea. Intentá nuevamente.'
+      });
+      return false;
     }
   };
 
-  const handleStatusChange = async (simId, newStatus) => {
+  const executeStatusChange = async (simId, newStatus, observation = '') => {
     if (newStatus === 'Repuesto') {
-      const confirmRepuesto = window.confirm('¿El Chip ha sido repuesto?');
-      if (!confirmRepuesto) return;
-
       try {
         await axios.put(
           `${API_URL}/simcards/${simId}`,
@@ -296,14 +322,17 @@ export default function App() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         fetchSimcards();
+        return true;
       } catch (err) {
-        alert('Error al actualizar el estado.');
+        setSimDialog({
+          type: 'notice',
+          title: 'No se pudo actualizar el estado',
+          messagePrefix: err.response?.data?.error || 'Ocurrió un error al actualizar la línea. Intentá nuevamente.'
+        });
+        return false;
       }
       return;
     }
-
-    const observation = prompt(`Cambiar estado a "${newStatus}". Ingresa una observación (opcional):`);
-    if (observation === null) return;
 
     try {
       await axios.put(
@@ -312,9 +341,61 @@ export default function App() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchSimcards();
+      return true;
     } catch (err) {
-      alert('Error al actualizar el estado');
+      setSimDialog({
+        type: 'notice',
+        title: 'No se pudo actualizar el estado',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al actualizar la línea. Intentá nuevamente.'
+      });
+      return false;
     }
+  };
+
+  const handleDeleteSim = (sim) => {
+    setSimDialog({
+      type: 'confirm',
+      action: 'delete',
+      sim,
+      title: '¿Eliminar SIMCard?',
+      messagePrefix: 'Se eliminará la línea ',
+      highlighted: sim.phone_number,
+      messageSuffix: '. Esta acción no se puede deshacer.',
+      confirmLabel: 'Eliminar SIMCard',
+      tone: 'danger'
+    });
+  };
+
+  const handleStatusChange = (simId, newStatus) => {
+    setSimDialog({
+      type: newStatus === 'Repuesto' ? 'confirm' : 'prompt',
+      action: 'status',
+      simId,
+      newStatus,
+      title: newStatus === 'Repuesto' ? 'Confirmar reposición' : `Cambiar estado a ${newStatus}`,
+      messagePrefix: newStatus === 'Repuesto'
+        ? '¿El chip fue repuesto y está listo para actualizar su estado?'
+        : 'Podés agregar una observación para dejar constancia del cambio.',
+      confirmLabel: newStatus === 'Repuesto' ? 'Confirmar reposición' : 'Actualizar estado'
+    });
+  };
+
+  const handleSimDialogConfirm = async (observation) => {
+    const dialog = simDialog;
+    if (!dialog) return;
+
+    if (dialog.action === 'delete') {
+      const succeeded = await executeDeleteSim(dialog.sim);
+      if (succeeded) setSimDialog(null);
+      return;
+    }
+
+    const succeeded = await executeStatusChange(
+      dialog.simId,
+      dialog.newStatus,
+      dialog.newStatus === 'Repuesto' ? 'Línea reemplazada por la empresa' : observation
+    );
+    if (succeeded) setSimDialog(null);
   };
 
   const getBadgeClass = (status) => {
@@ -371,6 +452,7 @@ export default function App() {
               handleStatusChange={handleStatusChange}
               getBadgeClass={getBadgeClass}
               navigateToDevice={navigateToDevice}
+              notify={notifySimInventory}
             />
           )}
 
@@ -432,6 +514,7 @@ export default function App() {
         editingSim={editingSim}
         setEditingSim={setEditingSim}
         handleSaveSimEdit={handleSaveSimEdit}
+        teamsList={teamsList}
       />
 
       <HistoryModal
@@ -439,6 +522,12 @@ export default function App() {
         selectedPhone={selectedPhone}
         setSelectedLogs={setSelectedLogs}
         getBadgeClass={getBadgeClass}
+      />
+
+      <SimActionDialog
+        dialog={simDialog}
+        onConfirm={handleSimDialogConfirm}
+        onClose={() => setSimDialog(null)}
       />
     </div>
   );

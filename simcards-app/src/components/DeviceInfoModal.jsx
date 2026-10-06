@@ -36,7 +36,7 @@ export default function DeviceInfoModal({ device, onClose }) {
   const statusStyle = getStatusStyle(device.status);
 
   return (
-    <div style={overlayStyle}>
+    <div className="sim-glass-overlay" style={overlayStyle}>
       <div style={modalStyle}>
 
         {/* Cabecera */}

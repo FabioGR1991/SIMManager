@@ -318,7 +318,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
 
       {/* MODAL PARA CREAR EQUIPO */}
       {isModalOpen && (
-        <div style={{
+        <div className="sim-glass-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
           display: 'flex', justifyContent: 'center', alignItems: 'center',
@@ -392,7 +392,7 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
 
       {/* MODAL PARA EDITAR / RENOMBRAR EQUIPO */}
       {isEditModalOpen && (
-        <div style={{
+        <div className="sim-glass-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(0, 0, 0, 0.75)',
           display: 'flex', justifyContent: 'center', alignItems: 'center',

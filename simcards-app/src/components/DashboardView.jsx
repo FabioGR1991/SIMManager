@@ -29,7 +29,8 @@ export default function DashboardView({
   handleDeleteSim,
   handleStatusChange,
   getBadgeClass,
-  navigateToDevice
+  navigateToDevice,
+  notify
 }) {
   const [newPhone, setNewPhone] = useState('');
   const [newEntity, setNewEntity] = useState('');
@@ -81,9 +82,12 @@ export default function DashboardView({
   const onSubmitSim = (e) => {
     e.preventDefault();
     if (!newPhone) return;
-    handleCreateSim(newPhone, newEntity);
-    setNewPhone('');
-    setNewEntity('');
+    Promise.resolve(handleCreateSim(newPhone, newEntity)).then((created) => {
+      if (created) {
+        setNewPhone('');
+        setNewEntity('');
+      }
+    });
   };
 
   const handleResetFilters = () => {
@@ -129,7 +133,7 @@ export default function DashboardView({
   // EXPORTAR A CSV (Con escape de comillas dobles)
   const handleExportCSV = () => {
     if (!filteredSimcards || filteredSimcards.length === 0) {
-      alert('No hay registros para exportar con los filtros actuales.');
+      notify('No hay registros para exportar con los filtros actuales.');
       return;
     }
 

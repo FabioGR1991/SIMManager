@@ -533,7 +533,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
 
       {/* MODAL DE HISTORIAL ESTILIZADO */}
       {showHistoryModal && (
-        <div style={modalOverlayStyle}>
+        <div className="sim-glass-overlay" style={modalOverlayStyle}>
           <div style={{ ...modalContentStyle, width: '520px' }}>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #334155', paddingBottom: '12px' }}>

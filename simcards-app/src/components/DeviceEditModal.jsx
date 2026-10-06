@@ -301,7 +301,7 @@ export default function DeviceEditModal({
   };
 
   return (
-    <div style={modalOverlayStyle}>
+    <div className="sim-glass-overlay" style={modalOverlayStyle}>
       <div style={modalContentStyle}>
 
         {/* CABECERA */}
