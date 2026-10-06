@@ -2634,35 +2634,6 @@ tr:hover {
     color: #e2e8f0 !important;
   }
 
-  .devices-titanium-header {
-    border-color: rgba(56, 189, 248, 0.28) !important;
-    border-radius: 16px !important;
-    background:
-      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
-      linear-gradient(100deg, rgba(8, 47, 73, 0.36), rgba(17, 20, 29, 0.9) 46%, rgba(15, 23, 42, 0.88)) !important;
-    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.07), 0 0 20px rgba(56, 189, 248, 0.08) !important;
-  }
-
-  .devices-titanium-header h1 {
-    background: linear-gradient(90deg, #fff 12%, #bae6fd 58%, #38bdf8) !important;
-    background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-  }
-
-  .devices-create-button {
-    border: 1px solid rgba(91, 211, 240, 0.48) !important;
-    border-radius: 10px !important;
-    background: linear-gradient(105deg, #08799c, #08729a 55%, #0d526c) !important;
-    box-shadow: 0 0 16px rgba(0, 180, 216, 0.3), inset 0 1px rgba(255, 255, 255, 0.16) !important;
-    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-  }
-
-  .devices-create-button:hover {
-    transform: translateY(-1px);
-    border-color: rgba(116, 229, 250, 0.78) !important;
-    box-shadow: 0 0 23px rgba(0, 180, 216, 0.42), inset 0 1px rgba(255, 255, 255, 0.22) !important;
-  }
-
   .devices-highlight-card {
     position: relative;
     overflow: hidden !important;
@@ -3044,20 +3015,6 @@ tr:hover {
       padding: 10px !important;
     }
 
-    .devices-titanium-header {
-      align-items: flex-start !important;
-      padding: 16px !important;
-    }
-
-    .devices-titanium-header > div:first-child {
-      flex-basis: 100% !important;
-      gap: 12px !important;
-    }
-
-    .devices-titanium-header h1 {
-      font-size: 21px !important;
-    }
-
     .devices-filter-bar > div:first-child {
       flex-basis: 100% !important;
     }
@@ -3091,30 +3048,6 @@ tr:hover {
   /* Titanium SIM card inventory */
   .sim-inventory-view {
     color: #e2e8f0;
-  }
-
-  .sim-inventory-header {
-    border-color: rgba(56, 189, 248, 0.28) !important;
-    background:
-      repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
-      linear-gradient(100deg, rgba(8, 47, 73, 0.34), rgba(17, 20, 29, 0.9) 46%, rgba(15, 23, 42, 0.88)) !important;
-    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.07), 0 0 20px rgba(56, 189, 248, 0.08) !important;
-  }
-
-  .sim-header-content h1 {
-    background: linear-gradient(90deg, #fff 12%, #cbd5e1 54%, #38bdf8) !important;
-    background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-  }
-
-  .sim-network-badge {
-    border-color: rgba(56, 189, 248, 0.3) !important;
-    border-radius: 999px !important;
-    background: rgba(15, 23, 42, 0.72) !important;
-    color: #7dd3fc !important;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
-    font-size: 10px !important;
-    letter-spacing: 0.035em;
   }
 
   .sim-kpi-grid {
@@ -3518,18 +3451,6 @@ tr:hover {
   }
 
   @media (max-width: 760px) {
-    .sim-inventory-header {
-      padding: 18px !important;
-    }
-
-    .sim-header-content {
-      align-items: flex-start !important;
-    }
-
-    .sim-header-content h1 {
-      font-size: 21px !important;
-    }
-
     .sim-kpi-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -3542,10 +3463,6 @@ tr:hover {
   @media (max-width: 480px) {
     .sim-kpi-grid {
       grid-template-columns: 1fr;
-    }
-
-    .sim-inventory-header {
-      padding: 15px !important;
     }
 
     .sim-pagination-footer {
@@ -3576,5 +3493,202 @@ tr:hover {
 
   .users-table-panel {
     padding: 18px 14px;
+  }
+}
+
+.titanium-module-header {
+  position: relative;
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 16px;
+  background:
+    repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
+    linear-gradient(100deg, rgba(13, 16, 23, 0.94), rgba(16, 20, 31, 0.94) 50%, rgba(13, 16, 23, 0.94));
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.titanium-header-glint {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.45), transparent);
+  pointer-events: none;
+}
+
+.titanium-header-main,
+.titanium-header-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.titanium-header-main {
+  min-width: 0;
+  flex: 1 1 auto;
+  gap: 16px;
+}
+
+.titanium-header-icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(56, 189, 248, 0.36);
+  border-radius: 12px;
+  background: rgba(14, 165, 233, 0.1);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+}
+
+.titanium-header-copy {
+  min-width: 0;
+}
+
+.titanium-header-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+
+.titanium-header-copy h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 23px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.titanium-header-copy p {
+  margin: 5px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.titanium-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.1);
+  color: #7dd3fc;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.titanium-header-actions {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.titanium-header-actions > button,
+.teams-create-button,
+.operators-create-button,
+.devices-create-button {
+  display: inline-flex;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.92), rgba(2, 132, 199, 0.9));
+  box-shadow: 0 0 15px rgba(0, 180, 216, 0.28);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.titanium-header-actions > button:hover,
+.teams-create-button:hover,
+.operators-create-button:hover,
+.devices-create-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(125, 211, 252, 0.9);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
+}
+
+.sim-network-status {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.control-welcome {
+  margin-bottom: 22px;
+}
+
+.control-welcome-quote {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+  .titanium-module-header {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .titanium-header-main {
+    width: 100%;
+    flex-basis: 100%;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .titanium-header-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+
+  .titanium-header-copy h1 {
+    font-size: 23px;
+  }
+
+  .titanium-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 54px;
+  }
+
+  .titanium-header-actions > button {
+    max-width: 100%;
+    white-space: normal;
   }
 }

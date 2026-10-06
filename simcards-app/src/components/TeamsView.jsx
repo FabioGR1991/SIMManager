@@ -165,124 +165,23 @@ export default function TeamsView({ API_URL, token, onTeamsChange }) {
   return (
     <div className="view-animated teams-view">
 
-      {/* ------------------------------------------------------------------ */}
-      {/* CABECERA EN 2 LÍNEAS INDEPENDIENTES                               */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="teams-header" style={{ marginBottom: '28px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-
-        <div style={{ flex: '1 1 600px' }}>
-          {/* LÍNEA 1: Icono + Título + Badge */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-            width: '100%',
-            flexWrap: 'nowrap'
-          }}>
-
-            {/* Icono Neón */}
-            <div style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(14, 165, 233, 0.12)',
-              border: '1.5px solid rgba(56, 189, 248, 0.6)',
-              boxShadow: '0 0 16px rgba(56, 189, 248, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#38bdf8',
-              flexShrink: 0
-            }}>
-              <Users size={24} />
+      <div className="titanium-module-header teams-header">
+        <div className="titanium-header-glint" aria-hidden="true" />
+        <div className="titanium-header-main">
+          <div className="titanium-header-icon"><Users size={24} /></div>
+          <div className="titanium-header-copy">
+            <div className="titanium-header-title-row">
+              <h1>Gestión de Equipos</h1>
+              <span className="titanium-header-badge"><Shield size={13} /> Estructura & Ciudades</span>
             </div>
-
-            {/* Título */}
-            <h1 style={{
-              margin: 0,
-              fontSize: '30px',
-              fontWeight: '800',
-              letterSpacing: '-0.5px',
-              whiteSpace: 'nowrap',
-              background: 'linear-gradient(180deg, #ffffff 30%, #38bdf8 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.35))'
-            }}>
-              Gestión de Equipos
-            </h1>
-
-            {/* Badge Píldora */}
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '5px 14px',
-              borderRadius: '20px',
-              backgroundColor: 'rgba(15, 23, 42, 0.6)',
-              border: '1px solid rgba(56, 189, 248, 0.4)',
-              color: '#38bdf8',
-              fontSize: '13px',
-              fontWeight: '500',
-              whiteSpace: 'nowrap',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}>
-              <Shield size={14} />
-              <span>Estructura & Ciudades</span>
-            </div>
-
-          </div>
-
-          {/* LÍNEA 2: Subtítulo */}
-          <div style={{
-            marginTop: '12px',
-            padding: '10px 16px',
-            borderRadius: '10px',
-            backgroundColor: 'rgba(15, 23, 42, 0.45)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}>
-            <p style={{
-              margin: 0,
-              fontSize: '14px',
-              color: '#94a3b8',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}>
-              Organizá a los Team Leaders por ciudades. La información de SIMs y Dispositivos permanecerá vinculada al equipo.
-            </p>
+            <p>Organizá a los Team Leaders por ciudades. La información de SIMs y Dispositivos permanecerá vinculada al equipo.</p>
           </div>
         </div>
-
-        {/* BOTÓN CREAR EQUIPO */}
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="btn teams-create-button"
-          style={{
-            width: 'auto',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: '#2563eb',
-            color: '#ffffff',
-            padding: '10px 18px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: '600',
-            cursor: 'pointer',
-            marginTop: '4px',
-            boxShadow: '0 0 12px rgba(37, 99, 235, 0.3)'
-          }}
-        >
-          <Plus size={18} /> Crear Equipo
-        </button>
-
+        <div className="titanium-header-actions">
+          <button type="button" onClick={() => setIsModalOpen(true)} className="btn teams-create-button">
+            <Plus size={18} /> Crear Equipo
+          </button>
+        </div>
       </div>
 
       {/* SELECTOR DE EQUIPOS (BADGES EN TEMA OSCURO) */}

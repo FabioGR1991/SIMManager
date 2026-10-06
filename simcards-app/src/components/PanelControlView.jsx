@@ -171,13 +171,18 @@ export default function PanelControlView({
         <div className="control-dashboard">
 
             {/* 1. CABECERA DE BIENVENIDA */}
-            <div className="control-welcome">
-                <h2>
-                    {getWelcomePrefix(user.gender)}, {user.name || 'Usuario'}! 👋
-                </h2>
-                <p>
-                    💬 "{randomQuote}"
-                </p>
+            <div className="titanium-module-header control-welcome">
+                <div className="titanium-header-glint" aria-hidden="true" />
+                <div className="titanium-header-main">
+                    <div className="titanium-header-icon"><Activity size={24} /></div>
+                    <div className="titanium-header-copy">
+                        <div className="titanium-header-title-row">
+                            <h1>{getWelcomePrefix(user.gender)}, {user.name || 'Usuario'}!</h1>
+                        </div>
+                        <p>Paso a paso, cada detalle suma para mantener la flota impecable.</p>
+                        <span className="control-welcome-quote">“{randomQuote}”</span>
+                    </div>
+                </div>
             </div>
 
             {/* 2. KPIS SUPERIORES (FILA DE TARJETAS) */}

@@ -167,40 +167,20 @@ export default function SyncView({ API_URL, token }) {
         <span className="sync-ambient-orb" />
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* CABECERA ESTRICTA EN 2 LÍNEAS INDEPENDIENTES                      */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="sync-header">
-
-        {/* LÍNEA 1: Icono + Título (1 sola línea) + Píldora */}
-        <div className="sync-title-row">
-
-          {/* Icono Neón */}
-          <div className="sync-title-icon">
-            <GitCompare size={24} />
+      <div className="titanium-module-header sync-header">
+        <div className="titanium-header-glint" aria-hidden="true" />
+        <div className="titanium-header-main">
+          <div className="titanium-header-icon"><GitCompare size={24} /></div>
+          <div className="titanium-header-copy">
+            <div className="titanium-header-title-row">
+              <h1>Conciliación Masiva</h1>
+              <span className="titanium-header-badge">
+                Movistar <ArrowRight size={13} /> Base App
+              </span>
+            </div>
+            <p>Realizá un crosscheck en tiempo real entre el listado exportado del operador y la base de datos interna.</p>
           </div>
-
-          {/* Título (forzado a 1 sola línea continua con degradé) */}
-          <h1 className="sync-title">
-            Conciliación Masiva
-          </h1>
-
-          {/* Badge Píldora */}
-          <div className="sync-route-badge">
-            <span>Movistar</span>
-            <ArrowRight size={13} />
-            <span>Base App</span>
-          </div>
-
         </div>
-
-        {/* LÍNEA 2: Subtítulo (texto exacto original, 1 sola línea en su caja) */}
-        <div className="sync-description">
-          <p>
-            Realizá un crosscheck en tiempo real entre el listado exportado del operador y la base de datos interna.
-          </p>
-        </div>
-
       </div>
 
       {/* ------------------------------------------------------------------ */}

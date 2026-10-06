@@ -198,122 +198,30 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
   return (
     <div className="devices-view" style={{ padding: '15px', color: '#f8fafc' }}>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* CABECERA FUTURISTA UNIFICADA (NUEVO ESTILO CARD - IMAGEN 2)         */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="devices-titanium-header" style={{
-        marginBottom: '24px',
-        width: '100%',
-        backgroundColor: 'rgba(15, 23, 42, 0.65)',
-        border: '1px solid rgba(56, 189, 248, 0.25)',
-        borderRadius: '16px',
-        padding: '20px 24px',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '20px',
-        boxSizing: 'border-box'
-      }}>
-
-        {/* LADO IZQUIERDO: Icono Neón + Título y Subtítulo apilados */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flex: '1 1 500px' }}>
-
-          {/* Icono Neón */}
-          <div style={{
-            width: '52px',
-            height: '52px',
-            borderRadius: '14px',
-            backgroundColor: 'rgba(14, 165, 233, 0.12)',
-            border: '1.5px solid rgba(56, 189, 248, 0.5)',
-            boxShadow: '0 0 20px rgba(56, 189, 248, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#38bdf8',
-            flexShrink: 0
-          }}>
-            <Smartphone size={26} />
-          </div>
-
-          {/* Bloque Textos */}
-          <div>
-            <h1 style={{
-              margin: 0,
-              fontSize: '26px',
-              fontWeight: '800',
-              letterSpacing: '-0.5px',
-              color: '#ffffff',
-              background: 'linear-gradient(180deg, #ffffff 30%, #e0f2fe 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 0 10px rgba(56, 189, 248, 0.25))'
-            }}>
-              Dispositivos Inventariados
-            </h1>
-            <p style={{
-              margin: '4px 0 0 0',
-              fontSize: '13.5px',
-              color: '#94a3b8',
-              fontWeight: '400',
-              lineHeight: '1.4'
-            }}>
-              Administrá el parque de terminales, vinculación de líneas SIM y el estado operativo general del equipamiento.
-            </p>
+      <div className="titanium-module-header devices-titanium-header">
+        <div className="titanium-header-glint" aria-hidden="true" />
+        <div className="titanium-header-main">
+          <div className="titanium-header-icon"><Smartphone size={24} /></div>
+          <div className="titanium-header-copy">
+            <div className="titanium-header-title-row">
+              <h1>Dispositivos Inventariados</h1>
+              <span className="titanium-header-badge"><Cpu size={13} /> Control de Hardware</span>
+            </div>
+            <p>Administrá el parque de terminales, vinculación de líneas SIM y el estado operativo general del equipamiento.</p>
           </div>
         </div>
-
-        {/* LADO DERECHO: Badge Píldora + Botón de Acción Principal */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-
-          {/* Badge Píldora */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '6px 16px',
-            borderRadius: '20px',
-            backgroundColor: 'rgba(15, 23, 42, 0.8)',
-            border: '1px solid rgba(56, 189, 248, 0.4)',
-            color: '#38bdf8',
-            fontSize: '13px',
-            fontWeight: '500',
-            whiteSpace: 'nowrap'
-          }}>
-            <Cpu size={14} />
-            <span>Control de Hardware</span>
-          </div>
-
-          {/* Botón Acción Principal */}
+        <div className="titanium-header-actions">
           <button
             type="button"
             onClick={() => {
               setEditingDevice(null);
               setShowModal(true);
             }}
-            className="devices-create-button"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: '#0284c7',
-              color: '#ffffff',
-              padding: '10px 18px',
-              borderRadius: '10px',
-              border: 'none',
-              fontWeight: '600',
-              fontSize: '14px',
-              cursor: 'pointer',
-              boxShadow: '0 0 16px rgba(2, 132, 199, 0.4)'
-            }}
+            className="btn teams-create-button devices-create-button"
           >
             <Plus size={18} /> Nuevo Dispositivo
           </button>
         </div>
-
       </div>
 
       {/* FICHA DESTACADA SUPERIOR */}
