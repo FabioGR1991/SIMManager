@@ -362,7 +362,7 @@ export default function SyncView({ API_URL, token }) {
             </button>
           </div>
 
-          <table>
+          <table className="conciliation-results-table">
             <thead>
               <tr>
                 <th>Número de Línea</th>

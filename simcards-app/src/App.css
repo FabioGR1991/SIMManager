@@ -3692,3 +3692,141 @@ tr:hover {
     white-space: normal;
   }
 }
+
+/* Readable table, form, and metadata typography across data-management views. */
+.sim-inventory-view .sim-inventory-table thead th,
+.devices-view .devices-table thead th,
+.operators-view .operators-table thead th,
+.users-view .users-table thead th,
+.teams-view .teams-table thead th,
+.sync-view .conciliation-results-table thead th {
+  padding: 14px 16px !important;
+  color: #cbd5e1 !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.sim-inventory-view .sim-inventory-table tbody td,
+.devices-view .devices-table tbody td,
+.operators-view .operators-table tbody td,
+.users-view .users-table tbody td,
+.teams-view .teams-table tbody td,
+.sync-view .conciliation-results-table tbody td {
+  padding: 14px 16px !important;
+  color: #e2e8f0;
+  font-size: 14px !important;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.sim-inventory-view .sim-table-id,
+.sim-inventory-view .sim-table-id strong,
+.users-view .users-id-cell,
+.teams-view .teams-id-cell,
+.devices-view .devices-table-id {
+  color: #38bdf8 !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.sim-inventory-view .sim-table-phone,
+.devices-view .devices-table-phone,
+.sync-view .conciliation-results-table tbody td:first-child {
+  color: #f1f5f9 !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.035em;
+}
+
+.devices-view .devices-table-model,
+.users-view .users-table tbody td,
+.teams-view .teams-table tbody td,
+.operators-view .operators-table tbody td,
+.sim-inventory-view .sim-table-secondary {
+  font-size: 14px !important;
+}
+
+.devices-view .devices-table-operator,
+.devices-view .devices-no-sim,
+.sim-inventory-view .sim-wa-badge {
+  font-size: 12px !important;
+}
+
+.sim-inventory-view .sim-status-badge,
+.devices-view .devices-status-badge,
+.operators-view .operators-shift-badge,
+.operators-view .operators-device-count,
+.users-view .users-role-badge,
+.teams-view .teams-role-badge,
+.sync-view .conciliation-results-table .status-badge {
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1.4;
+}
+
+.sim-inventory-view input:not([type="file"]),
+.sim-inventory-view select,
+.devices-view input:not([type="file"]),
+.devices-view select,
+.operators-view input:not([type="file"]),
+.operators-view select,
+.users-view input:not([type="file"]),
+.users-view select,
+.teams-view input:not([type="file"]),
+.teams-view select {
+  min-height: 40px;
+  padding: 8px 14px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  line-height: 1.4;
+}
+
+.sim-inventory-view .sim-search-input {
+  padding-left: 38px !important;
+}
+
+.devices-view .devices-search-input {
+  padding-left: 34px !important;
+}
+
+.sim-inventory-view input:not([type="file"]):focus,
+.sim-inventory-view select:focus,
+.devices-view input:not([type="file"]):focus,
+.devices-view select:focus,
+.operators-view input:not([type="file"]):focus,
+.operators-view select:focus,
+.users-view input:not([type="file"]):focus,
+.users-view select:focus,
+.teams-view input:not([type="file"]):focus,
+.teams-view select:focus {
+  border-color: #38bdf8 !important;
+  outline: 2px solid rgba(56, 189, 248, 0.2);
+  outline-offset: 1px;
+}
+
+.sim-inventory-view .sim-pagination-size,
+.sim-inventory-view .sim-pagination-footer,
+.sim-inventory-view .sim-page-indicator,
+.sim-inventory-view .sim-pagination-summary,
+.sim-inventory-view .sim-pagination-summary[style],
+.teams-view .teams-table-header,
+.users-view .users-panel-title {
+  color: #cbd5e1 !important;
+  font-size: 12px !important;
+  font-weight: 500;
+}
+
+.sim-inventory-view .sim-page-size,
+.sim-inventory-view .sim-status-select,
+.teams-view .teams-reassign-select {
+  font-size: 14px !important;
+}
