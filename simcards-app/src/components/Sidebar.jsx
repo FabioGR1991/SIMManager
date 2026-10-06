@@ -215,7 +215,7 @@ export default function Sidebar({
           {/* Opciones Admin */}
           {isAdmin && (
             <>
-              <div style={{ margin: '14px 0 4px 0', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div className="sidebar-section-heading" style={{ margin: '14px 0 4px 0', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
                 <span style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '700', color: '#64748b', letterSpacing: '0.8px', paddingLeft: '8px' }}>
                   Gestión Admin
                 </span>
@@ -289,8 +289,8 @@ export default function Sidebar({
       </div>
 
       {/* Footer (Usuario y Logout) */}
-      <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '16px', marginTop: '12px' }}>
-        <div style={{
+      <div className="sidebar-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '16px', marginTop: '12px' }}>
+        <div className="sidebar-user-panel" style={{
           fontSize: '12px',
           marginBottom: '10px',
           color: '#94a3b8',
@@ -299,8 +299,14 @@ export default function Sidebar({
           padding: '10px 12px',
           borderRadius: '12px'
         }}>
-          <span style={{ color: '#64748b', display: 'block', fontSize: '10px', marginBottom: '2px', fontWeight: '500' }}>Conectado como:</span>
-          <strong style={{ color: '#f8fafc', fontSize: '13px' }}>{user?.name || 'Usuario'}</strong>
+          <span className="sidebar-connected-label" style={{ color: '#64748b', display: 'block', fontSize: '10px', marginBottom: '2px', fontWeight: '500' }}>Conectado como:</span>
+          <div className="sidebar-user-status">
+            <span className="sidebar-online-indicator" aria-label="En línea" />
+            <strong style={{ color: '#f8fafc', fontSize: '13px' }}>{user?.name || 'Usuario'}</strong>
+          </div>
+          <span className="sidebar-user-role">
+            {isAdmin ? 'Administrador' : user?.role === 'pl' || user?.role === 'Planificador' ? 'Planificador' : 'Team Leader'}
+          </span>
         </div>
 
         <button
