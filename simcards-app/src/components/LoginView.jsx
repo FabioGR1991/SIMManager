@@ -1,346 +1,161 @@
-import { useState } from 'react';
-import { Mail, Lock, LogIn } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Lock, LogIn, Mail } from 'lucide-react';
 
 export default function LoginView({ handleLogin, loginError }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const simCardRef = useRef(null);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const card = simCardRef.current;
+
+    if (!card || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return undefined;
+    }
+
+    const handleMouseMove = (event) => {
+      const xOffset = (event.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+      const yOffset = (event.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+      const rotateY = xOffset * 6.5;
+      const rotateX = -yOffset * 4.5;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+    };
+
+    const resetTilt = () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', resetTilt);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', resetTilt);
+    };
+  }, []);
+
+  const onSubmit = (event) => {
+    event.preventDefault();
     handleLogin(email, password);
   };
 
   return (
-    <div style={styles.pageBackground}>
-      {/* Importación de Google Fonts & Animaciones CSS inyectadas */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600&display=swap');
-
-        @keyframes floatPulse1 {
-          0% { transform: translate(0px, 0px) scale(1); opacity: 0.6; }
-          50% { transform: translate(40px, -30px) scale(1.25); opacity: 0.9; }
-          100% { transform: translate(0px, 0px) scale(1); opacity: 0.6; }
-        }
-        @keyframes floatPulse2 {
-          0% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
-          50% { transform: translate(-50px, 40px) scale(1.3); opacity: 0.85; }
-          100% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
-        }
-        @keyframes floatPulse3 {
-          0% { transform: translate(0px, 0px) scale(0.9); opacity: 0.4; }
-          50% { transform: translate(30px, 50px) scale(1.2); opacity: 0.8; }
-          100% { transform: translate(0px, 0px) scale(0.9); opacity: 0.4; }
-        }
-        @keyframes glowBtn {
-          0%, 100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
-          50% { box-shadow: 0 0 25px rgba(37, 99, 235, 0.85); }
-        }
-      `}</style>
-
-      {/* Esferas de luz animadas en el fondo */}
-      <div style={{ ...styles.orb, ...styles.orb1 }} />
-      <div style={{ ...styles.orb, ...styles.orb2 }} />
-      <div style={{ ...styles.orb, ...styles.orb3 }} />
-      <div style={{ ...styles.orb, ...styles.orb4 }} />
-
-      {/* Tarjeta SIM de Vidrio */}
-      <div style={styles.simCardContainer}>
-        
-        {/* CABECERA CON CHIP Y TIPOGRAFÍA DE ALTO IMPACTO */}
-        <div style={styles.headerGroup}>
-          <div style={styles.chipHeader}>
-            <div style={styles.simChip}>
-              <div style={styles.chipLineHorizontal} />
-              <div style={styles.chipLineVertical} />
-              <div style={styles.chipInnerBox} />
-            </div>
-          </div>
-
-          <h1 style={styles.brandTitle}>
-            <span style={styles.brandPrimary}>SIM</span>
-            <span style={styles.brandSecondary}>finity</span>
-          </h1>
-
-          <div style={styles.taglineWrapper}>
-            <span style={styles.brandSubtitle}>Conectividad sin límites.</span>
-          </div>
-        </div>
-
-        {/* Alerta de Error original */}
-        {loginError && (
-          <div style={styles.errorAlert} className="error-alert">
-            {loginError}
-          </div>
-        )}
-
-        {/* Formulario */}
-        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label htmlFor="email" style={styles.label}>Correo Electrónico</label>
-            <div style={styles.inputWrapper}>
-              <Mail size={18} color="#94a3b8" style={styles.inputIcon} />
-              <input
-                type="email"
-                id="email"
-                style={styles.input}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="usuario@tandemtech.com.ar"
-                required
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label htmlFor="password" style={styles.label}>Contraseña</label>
-            <div style={styles.inputWrapper}>
-              <Lock size={18} color="#94a3b8" style={styles.inputIcon} />
-              <input
-                type="password"
-                id="password"
-                style={styles.input}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="********"
-                required
-              />
-            </div>
-          </div>
-
-          <button type="submit" style={styles.submitButton}>
-            <LogIn size={18} />
-            <span>Ingresar al Sistema</span>
-          </button>
-        </form>
-
+    <div className="login-page">
+      <div className="login-scene" aria-hidden="true">
+        <div className="login-scene-glow" />
+        <div className="login-grid" />
+        <div className="login-orb login-orb-cyan" />
+        <div className="login-orb login-orb-gold" />
+        <div className="login-orb login-orb-blue" />
+        <div className="login-orb login-orb-amber" />
+        <div className="login-floor" />
       </div>
+
+      <main className="login-stage">
+        <div className="login-card-viewport">
+          <div className="login-sim-card" id="sim-card" ref={simCardRef}>
+            <div className="login-sim-card-inner">
+              <div className="login-card-highlight" aria-hidden="true" />
+              <div className="login-card-glow login-card-glow-cyan" aria-hidden="true" />
+              <div className="login-card-glow login-card-glow-gold" aria-hidden="true" />
+
+              <header className="login-brand">
+                <div className="login-chip" aria-hidden="true">
+                  <div className="login-chip-grid">
+                    <span />
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                  <div className="login-chip-center"><span /></div>
+                  <div className="login-chip-grid">
+                    <span />
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <h1 className="login-brand-title">
+                  <span>SIM</span><span>finity</span>
+                </h1>
+                <p className="login-tagline">Conectividad sin límites.</p>
+                <div className="login-card-id">
+                  <span>[ SIM CARD IDENTIFIER ]</span>
+                  <strong>SIMFINITY · ENTERPRISE</strong>
+                </div>
+              </header>
+
+              <section className="login-auth" aria-labelledby="login-form-title">
+                <h2 className="login-section-label" id="login-form-title">[ SERVICE CREDENTIALS ]</h2>
+
+                {loginError && (
+                  <div className="login-error" role="alert" aria-live="polite">
+                    {loginError}
+                  </div>
+                )}
+
+                <form className="login-form" onSubmit={onSubmit}>
+                  <div className="login-field">
+                    <label htmlFor="email">Correo Electrónico</label>
+                    <div className="login-input-wrap">
+                      <Mail size={18} aria-hidden="true" />
+                      <input
+                        autoComplete="username"
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="usuario@tandemtech.com.ar"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="login-field">
+                    <label htmlFor="password">Contraseña</label>
+                    <div className="login-input-wrap">
+                      <Lock size={18} aria-hidden="true" />
+                      <input
+                        autoComplete="current-password"
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        placeholder="••••••••"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="login-submit-area">
+                    <span className="login-section-label">[ SERVICE ACCESS ]</span>
+                    <button className="login-submit" type="submit">
+                      <LogIn size={17} aria-hidden="true" />
+                      <span>Ingresar al Sistema</span>
+                    </button>
+                  </div>
+                </form>
+              </section>
+
+              <div className="login-card-status" aria-label="Estado del servicio">
+                <span className="login-status-label">[ STATUS ]</span>
+                <strong><i /> Conexión segura</strong>
+                <span className="login-status-label">[ NETWORK ]</span>
+                <strong>SIMFINITY ENTERPRISE</strong>
+              </div>
+            </div>
+          </div>
+          <div className="login-card-shadow" aria-hidden="true" />
+          <div className="login-card-reflection" aria-hidden="true" />
+        </div>
+      </main>
+
+      <footer className="login-footer">
+        SIMFINITY™ ENTERPRISE CLOUD · SECURE TELECOM NODE · ENCRYPTED
+      </footer>
     </div>
   );
 }
-
-// ESTILOS GLASSMORPHISM Y TIPOGRAFÍA AVANZADA
-const styles = {
-  pageBackground: {
-    position: 'relative',
-    minHeight: '100vh',
-    width: '100vw',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#070c1a',
-    backgroundImage: `
-      radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.5) 0%, rgba(7, 12, 26, 1) 100%),
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
-    `,
-    backgroundSize: '100% 100%, 40px 40px, 40px 40px',
-    overflow: 'hidden',
-    padding: '20px',
-    boxSizing: 'border-box',
-    fontFamily: "'Inter', sans-serif",
-  },
-
-  // Esferas Flotantes
-  orb: {
-    position: 'absolute',
-    borderRadius: '50%',
-    filter: 'blur(50px)',
-    pointerEvents: 'none',
-  },
-  orb1: {
-    top: '20%',
-    left: '18%',
-    width: '180px',
-    height: '180px',
-    background: 'radial-gradient(circle, #38bdf8 0%, #0284c7 100%)',
-    animation: 'floatPulse1 12s ease-in-out infinite',
-  },
-  orb2: {
-    top: '15%',
-    right: '20%',
-    width: '160px',
-    height: '160px',
-    background: 'radial-gradient(circle, #fde047 0%, #ca8a04 100%)',
-    animation: 'floatPulse2 10s ease-in-out infinite',
-  },
-  orb3: {
-    bottom: '25%',
-    right: '32%',
-    width: '130px',
-    height: '130px',
-    background: 'radial-gradient(circle, #60a5fa 0%, #1d4ed8 100%)',
-    animation: 'floatPulse3 14s ease-in-out infinite',
-  },
-  orb4: {
-    bottom: '18%',
-    left: '25%',
-    width: '100px',
-    height: '100px',
-    background: 'radial-gradient(circle, #fef08a 0%, #eab308 100%)',
-    animation: 'floatPulse1 9s ease-in-out infinite reverse',
-  },
-
-  // Contenedor SIM Card en Vidrio
-  simCardContainer: {
-    position: 'relative',
-    zIndex: 10,
-    width: '100%',
-    maxWidth: '390px',
-    padding: '40px 32px 36px 32px',
-    borderRadius: '28px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    border: '1px solid rgba(255, 255, 255, 0.18)',
-    clipPath: 'polygon(0 0, calc(100% - 42px) 0, 100% 42px, 100% 100%, 0 100%)',
-    boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.25)',
-    boxSizing: 'border-box',
-  },
-
-  // Detalle Chip SIM
-  chipHeader: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '16px',
-  },
-  simChip: {
-    width: '54px',
-    height: '42px',
-    borderRadius: '8px',
-    background: 'linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%)',
-    border: '1px solid rgba(255, 255, 255, 0.5)',
-    position: 'relative',
-    boxShadow: '0 4px 16px rgba(234, 179, 8, 0.4), inset 0 1px 2px rgba(255,255,255,0.8)',
-  },
-  chipLineHorizontal: {
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    right: 0,
-    height: '1px',
-    backgroundColor: '#854d0e',
-    opacity: 0.6,
-  },
-  chipLineVertical: {
-    position: 'absolute',
-    left: '50%',
-    top: 0,
-    bottom: 0,
-    width: '1px',
-    backgroundColor: '#854d0e',
-    opacity: 0.6,
-  },
-  chipInnerBox: {
-    position: 'absolute',
-    top: '20%',
-    left: '20%',
-    right: '20%',
-    bottom: '20%',
-    border: '1px solid #854d0e',
-    borderRadius: '3px',
-    opacity: 0.5,
-  },
-
-  // Grupo de Título Avanzado
-  headerGroup: {
-    textAlign: 'center',
-    marginBottom: '28px',
-  },
-  brandTitle: {
-    margin: '10px 0 4px 0',
-    fontSize: '34px',
-    fontWeight: '800',
-    fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
-    letterSpacing: '-0.035em',
-    lineHeight: '1.1',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandPrimary: {
-    color: '#ffffff',
-    textShadow: '0 0 20px rgba(56, 189, 248, 0.45), 0 0 40px rgba(37, 99, 235, 0.25)',
-  },
-  brandSecondary: {
-    background: 'linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    fontWeight: '800',
-    filter: 'drop-shadow(0 0 12px rgba(168, 85, 247, 0.35))',
-  },
-  taglineWrapper: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '2px',
-  },
-  brandSubtitle: {
-    fontSize: '13px',
-    fontWeight: '500',
-    color: '#94a3b8',
-    letterSpacing: '0.04em',
-    fontFamily: "'Inter', sans-serif",
-    textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
-  },
-
-  // Alerta de Error
-  errorAlert: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    border: '1px solid rgba(239, 68, 68, 0.4)',
-    color: '#fca5a5',
-    padding: '10px 14px',
-    borderRadius: '8px',
-    fontSize: '13px',
-    marginBottom: '16px',
-    textAlign: 'center',
-    backdropFilter: 'blur(5px)',
-  },
-
-  label: {
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#cbd5e1',
-  },
-
-  inputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  inputIcon: {
-    position: 'absolute',
-    left: '14px',
-    pointerEvents: 'none',
-  },
-  input: {
-    width: '100%',
-    padding: '12px 14px 12px 42px',
-    borderRadius: '10px',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    backgroundColor: 'rgba(15, 23, 42, 0.65)',
-    color: '#ffffff',
-    fontSize: '14px',
-    outline: 'none',
-    boxSizing: 'border-box',
-    backdropFilter: 'blur(5px)',
-  },
-
-  submitButton: {
-    marginTop: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    padding: '13px',
-    borderRadius: '10px',
-    border: 'none',
-    backgroundColor: '#2563eb',
-    color: '#ffffff',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    animation: 'glowBtn 4s infinite ease-in-out',
-  },
-};
