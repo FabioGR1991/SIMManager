@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, Copy, Check, Smartphone, ExternalLink, User } from 'lucide-react';
 
 export default function DeviceInfoModal({ device, onClose }) {
@@ -36,8 +36,8 @@ export default function DeviceInfoModal({ device, onClose }) {
   const statusStyle = getStatusStyle(device.status);
 
   return (
-    <div className="sim-glass-overlay" style={overlayStyle}>
-      <div style={modalStyle}>
+    <div className="sim-glass-overlay" style={overlayStyle} role="presentation">
+      <div style={modalStyle} role="dialog" aria-modal="true" aria-labelledby="device-info-title">
 
         {/* Cabecera */}
         <div style={headerStyle}>
@@ -46,13 +46,13 @@ export default function DeviceInfoModal({ device, onClose }) {
               <Smartphone size={20} color="#38bdf8" />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#ffffff' }}>
+              <h3 id="device-info-title" style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#ffffff' }}>
                 Información del Dispositivo
               </h3>
               <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>Ficha de solo lectura</p>
             </div>
           </div>
-          <button onClick={onClose} style={closeIconBtnStyle}>
+          <button type="button" onClick={onClose} style={closeIconBtnStyle} aria-label="Cerrar información del dispositivo">
             <X size={18} color="#94a3b8" />
           </button>
         </div>
@@ -95,7 +95,7 @@ export default function DeviceInfoModal({ device, onClose }) {
                     <ExternalLink size={13} color="#4ade80" />
                     <span style={truncateStyle}>{waLink1}</span>
                   </a>
-                  <button onClick={() => handleCopy(waLink1, 'sim1')} style={copyBtnStyle}>
+                  <button type="button" onClick={() => handleCopy(waLink1, 'sim1')} style={copyBtnStyle} aria-label="Copiar enlace de WhatsApp de SIM 1">
                     {copiedKey === 'sim1' ? <Check size={14} color="#4ade80" /> : <Copy size={14} color="#94a3b8" />}
                   </button>
                 </div>
@@ -117,7 +117,7 @@ export default function DeviceInfoModal({ device, onClose }) {
                     <ExternalLink size={13} color="#4ade80" />
                     <span style={truncateStyle}>{waLink2}</span>
                   </a>
-                  <button onClick={() => handleCopy(waLink2, 'sim2')} style={copyBtnStyle}>
+                  <button type="button" onClick={() => handleCopy(waLink2, 'sim2')} style={copyBtnStyle} aria-label="Copiar enlace de WhatsApp de SIM 2">
                     {copiedKey === 'sim2' ? <Check size={14} color="#4ade80" /> : <Copy size={14} color="#94a3b8" />}
                   </button>
                 </div>
@@ -175,7 +175,7 @@ export default function DeviceInfoModal({ device, onClose }) {
 
         {/* Pie de modal */}
         <div style={footerStyle}>
-          <button onClick={onClose} style={closeBtnStyle}>
+          <button type="button" onClick={onClose} style={closeBtnStyle}>
             Cerrar
           </button>
         </div>

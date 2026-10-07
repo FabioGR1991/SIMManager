@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { UserCheck, Plus, Edit, Trash2, Smartphone, Shield, X } from 'lucide-react';
+import SimActionDialog from './SimActionDialog';
 
 const DEFAULT_TEAMS = ['Tokio', 'Roma', 'Madrid', 'Berlín', 'Buenos Aires'];
 
@@ -10,6 +11,7 @@ export default function OperatorsView({ API_URL, token, user }) {
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingOperator, setEditingOperator] = useState(null);
+  const [operatorDialog, setOperatorDialog] = useState(null);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -94,12 +96,29 @@ export default function OperatorsView({ API_URL, token, user }) {
       setIsModalOpen(false);
       fetchOperators();
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al guardar el operador');
+      setOperatorDialog({
+        type: 'notice',
+        title: 'No se pudo guardar el operador',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al guardar los cambios. Intentá nuevamente.'
+      });
     }
   };
 
   const handleDelete = async (operator) => {
-    if (!window.confirm(`¿Estás seguro de eliminar al operador ${operator.full_name}?`)) return;
+    if (operatorDialog?.action !== 'delete' || operatorDialog.operatorId !== operator.id) {
+      setOperatorDialog({
+        type: 'confirm',
+        tone: 'danger',
+        action: 'delete',
+        operatorId: operator.id,
+        title: '¿Eliminar operador?',
+        messagePrefix: 'Se eliminará a ',
+        highlighted: operator.full_name,
+        messageSuffix: '. Esta acción no se puede deshacer.',
+        confirmLabel: 'Eliminar operador'
+      });
+      return;
+    }
 
     try {
       await axios.delete(`${API_URL}/operators/${operator.id}`, {
@@ -107,9 +126,22 @@ export default function OperatorsView({ API_URL, token, user }) {
       });
       if (selectedOperator?.id === operator.id) setSelectedOperator(null);
       fetchOperators();
+      setOperatorDialog(null);
     } catch (err) {
-      alert('Error al eliminar el operador');
+      setOperatorDialog({
+        type: 'notice',
+        title: 'No se pudo eliminar el operador',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al eliminarlo. Intentá nuevamente.'
+      });
     }
+  };
+
+  const handleOperatorDialogConfirm = () => {
+    if (operatorDialog?.action === 'delete') {
+      const operator = operators.find((item) => item.id === operatorDialog.operatorId);
+      if (operator) return handleDelete(operator);
+    }
+    setOperatorDialog(null);
   };
 
   const isAdmin = user?.role === 'admin' || user?.role === 'Administrador';
@@ -191,15 +223,20 @@ export default function OperatorsView({ API_URL, token, user }) {
               return (
                 <tr
                   key={op.id}
-                  onClick={() => setSelectedOperator(op)}
                   style={{
-                    cursor: 'pointer',
                     backgroundColor: isSelected ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
                     transition: 'background-color 0.15s ease'
                   }}
                 >
                   <td className="operators-name-cell">
-                    {op.full_name}
+                    <button
+                      type="button"
+                      className="operators-select-button"
+                      onClick={() => setSelectedOperator(op)}
+                      aria-pressed={isSelected}
+                    >
+                      {op.full_name}
+                    </button>
                   </td>
                   <td>
                     <span className={`operators-shift-badge ${op.shift === 'Mañana' ? 'is-morning' : op.shift === 'Tarde' ? 'is-afternoon' : 'is-other'}`}>
@@ -227,6 +264,7 @@ export default function OperatorsView({ API_URL, token, user }) {
                       onClick={() => handleOpenModal(op)}
                       className="operators-action-button operators-edit-button"
                       title="Editar Operador"
+                      aria-label={`Editar operador ${op.full_name}`}
                     >
                       <Edit size={16} />
                     </button>
@@ -235,6 +273,7 @@ export default function OperatorsView({ API_URL, token, user }) {
                       onClick={() => handleDelete(op)}
                       className="operators-action-button operators-delete-button"
                       title="Eliminar Operador"
+                      aria-label={`Eliminar operador ${op.full_name}`}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -255,30 +294,22 @@ export default function OperatorsView({ API_URL, token, user }) {
 
       {/* MODAL CREAR / EDITAR */}
       {isModalOpen && (
-        <div className="sim-glass-overlay" style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: '#0f172a',
-            border: '1px solid #1e293b',
-            padding: '24px',
-            borderRadius: '12px',
-            width: '90%',
-            maxWidth: '420px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
-            position: 'relative'
-          }}>
+        <div className="sim-glass-overlay" role="presentation">
+          <div
+            className="sim-glass-operator-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="operator-modal-title"
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-              <h3 style={{ margin: 0, color: '#ffffff', fontSize: '18px' }}>
+              <h3 id="operator-modal-title" style={{ margin: 0, color: '#ffffff', fontSize: '18px' }}>
                 {editingOperator ? 'Editar Operador' : 'Nuevo Operador'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
+                aria-label="Cerrar formulario de operador"
               >
                 <X size={20} />
               </button>
@@ -351,22 +382,13 @@ export default function OperatorsView({ API_URL, token, user }) {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    border: '1px solid #334155',
-                    background: '#1e293b',
-                    color: '#f8fafc',
-                    fontSize: '14px',
-                    cursor: 'pointer'
-                  }}
+                  className="sim-glass-button is-secondary"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="btn"
-                  style={{ width: 'auto', padding: '8px 18px', fontSize: '14px', backgroundColor: '#0284c7' }}
+                  className="sim-glass-button is-primary"
                 >
                   Guardar
                 </button>
@@ -375,6 +397,12 @@ export default function OperatorsView({ API_URL, token, user }) {
           </div>
         </div>
       )}
+
+      <SimActionDialog
+        dialog={operatorDialog}
+        onClose={() => setOperatorDialog(null)}
+        onConfirm={handleOperatorDialogConfirm}
+      />
 
     </div>
   );

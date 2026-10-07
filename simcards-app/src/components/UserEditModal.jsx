@@ -34,26 +34,18 @@ export default function UserEditModal({
   };
 
   return (
-    <div className="sim-glass-overlay" style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(4px)',
-      display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
-    }}>
-      <div style={{
-        background: '#0f172a',
-        border: '1px solid #1e293b',
-        padding: '24px',
-        borderRadius: '12px',
-        maxWidth: '500px',
-        width: '90%',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
-        position: 'relative'
-      }}>
+    <div className="sim-glass-overlay" role="presentation">
+      <div
+        className="sim-glass-user-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="user-edit-title"
+      >
         {/* Botón X de Cierre */}
         <button
           type="button"
           onClick={() => setEditingUser(null)}
+          aria-label="Cerrar edición de usuario"
           style={{
             position: 'absolute', top: '16px', right: '16px',
             background: 'transparent', border: 'none', color: '#94a3b8',
@@ -64,7 +56,7 @@ export default function UserEditModal({
         </button>
 
         {/* Titulo del Modal */}
-        <h3 style={{
+        <h3 id="user-edit-title" style={{
           marginTop: 0,
           borderBottom: '1px solid #1e293b',
           paddingBottom: '12px',

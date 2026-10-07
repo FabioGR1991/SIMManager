@@ -229,7 +229,7 @@ export default function DashboardView({
       </div>
 
       {/* Tarjetas de Métricas */}
-      <div className="card-grid sim-kpi-grid" style={{ marginBottom: '25px' }}>
+      <div className="card-grid sim-kpi-grid">
         <div className="card sim-kpi-card sim-kpi-total">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Smartphone size={20} />
@@ -264,16 +264,16 @@ export default function DashboardView({
       </div>
 
       {/* Formulario Alta SIM */}
-      <div className="table-container sim-register-panel" style={{ marginBottom: '20px' }}>
-        <h3 className="sim-panel-title" style={{ margin: '0 0 15px 0' }}>Registrar Nueva SIMCard</h3>
-        <form onSubmit={onSubmitSim} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+      <div className="table-container sim-register-panel">
+        <h3 className="sim-panel-title">Registrar Nueva SIMCard</h3>
+        <form className="sim-register-form" onSubmit={onSubmitSim}>
           <input
             type="text"
             className="form-control sim-form-input"
             placeholder="11 3830 - 3333"
             value={newPhone}
             onChange={handlePhoneChange}
-            style={{ flex: 1, minWidth: '200px' }}
+            aria-label="Número de línea de la nueva SIMCard"
             required
           />
           <input
@@ -282,20 +282,20 @@ export default function DashboardView({
             placeholder={`Entidad / Área (por defecto: ${user?.entity || user?.campaign || 'General'})`}
             value={newEntity}
             onChange={(e) => setNewEntity(e.target.value)}
-            style={{ flex: 1, minWidth: '200px' }}
+            aria-label="Entidad o área de la nueva SIMCard"
           />
-          <button type="submit" className="btn sim-add-button" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button type="submit" className="btn sim-add-button">
             <Plus size={16} /> Agregar Chip
           </button>
         </form>
       </div>
 
       {/* BARRA DE BÚSQUEDA Y FILTROS */}
-      <div className="table-container sim-filter-panel" style={{ marginBottom: '20px', padding: '15px 20px' }}>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="table-container sim-filter-panel">
+        <div className="sim-filter-controls">
 
           {/* Campo de búsqueda libre */}
-          <div className="sim-search-wrapper" style={{ position: 'relative', flex: 1, minWidth: '240px', display: 'flex', alignItems: 'center' }}>
+          <div className="sim-search-wrapper">
             <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px' }} />
             <input
               type="text"
@@ -303,29 +303,15 @@ export default function DashboardView({
               placeholder="Buscar por número, entidad / área, equipo o WhatsApp..."
               value={searchTerm}
               onChange={handleSearchChange}
-              style={{
-                paddingLeft: '38px',
-                paddingRight: searchTerm ? '38px' : '12px',
-                width: '100%',
-                fontSize: '14px'
-              }}
+              aria-label="Buscar por número, entidad, equipo o WhatsApp"
             />
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => { setSearchTerm(''); setCurrentPage(1); }}
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  color: '#64748b'
-                }}
+                className="sim-clear-search"
                 title="Limpiar búsqueda"
+                aria-label="Limpiar búsqueda"
               >
                 <X size={16} />
               </button>
@@ -339,7 +325,7 @@ export default function DashboardView({
             value={statusFilter}
             onChange={handleStatusFilterChange}
             className="form-control sim-filter-select"
-            style={{ width: 'auto', minWidth: '180px', fontSize: '14px' }}
+            aria-label="Filtrar SIMCards por estado"
           >
             <option value="TODOS">Todos los Estados</option>
             <option value="En stock/Sin uso">En stock/Sin uso</option>
@@ -355,7 +341,7 @@ export default function DashboardView({
             value={entityFilter}
             onChange={handleEntityFilterChange}
             className="form-control sim-filter-select"
-            style={{ width: 'auto', minWidth: '170px', fontSize: '14px' }}
+            aria-label="Filtrar SIMCards por entidad"
           >
             <option value="TODOS">Todas las Entidades</option>
             {uniqueEntities.map((ent) => (
@@ -371,15 +357,6 @@ export default function DashboardView({
               type="button"
               className="btn-secondary"
               onClick={handleResetFilters}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 14px',
-                fontSize: '14px',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}
               title="Restablecer todos los filtros"
             >
               <RotateCcw size={15} />
@@ -392,20 +369,6 @@ export default function DashboardView({
             type="button"
             onClick={handleExportCSV}
             className="sim-export-button"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#0284c7',
-              backgroundColor: 'rgba(2, 132, 199, 0.1)',
-              border: '1px solid #0284c7',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap'
-            }}
             title="Exportar resultados a un archivo CSV"
           >
             <Download size={16} color="#0284c7" />
@@ -417,23 +380,14 @@ export default function DashboardView({
 
       {/* Tabla de SIMCards + Paginación */}
       <div className="table-container sim-table-panel">
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '15px',
-          paddingBottom: '10px',
-          borderBottom: '1px solid rgba(226, 232, 240, 0.1)',
-          flexWrap: 'wrap',
-          gap: '10px'
-        }}>
-          <div className="sim-pagination-size" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+        <div className="sim-table-pagination-header">
+          <div className="sim-pagination-size">
             <span>Mostrar</span>
             <select
               value={itemsPerPage}
               onChange={handleItemsPerPageChange}
               className="form-control sim-page-size"
-              style={{ width: 'auto', padding: '4px 8px', fontSize: '13px' }}
+              aria-label="Cantidad de SIMCards por página"
             >
               <option value={10}>10</option>
               <option value={20}>20</option>
@@ -444,24 +398,17 @@ export default function DashboardView({
           </div>
 
           {!isAll && totalPages > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span className="sim-page-indicator" style={{ fontSize: '13px', opacity: 0.8 }}>
+            <div className="sim-pagination-controls">
+              <span className="sim-page-indicator">
                 Página <strong>{validCurrentPage}</strong> de <strong>{totalPages}</strong>
               </span>
-              <div style={{ display: 'flex', gap: '4px' }}>
+              <div className="sim-pagination-buttons">
                 <button
                   type="button"
                   className="btn-pagination"
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   disabled={validCurrentPage === 1}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '4px',
-                    cursor: validCurrentPage === 1 ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    opacity: validCurrentPage === 1 ? 0.4 : 1
-                  }}
+                  aria-label="Página anterior"
                 >
                   <ChevronLeft size={16} />
                 </button>
@@ -470,14 +417,7 @@ export default function DashboardView({
                   className="btn-pagination"
                   onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                   disabled={validCurrentPage === totalPages}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '4px',
-                    cursor: validCurrentPage === totalPages ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    opacity: validCurrentPage === totalPages ? 0.4 : 1
-                  }}
+                  aria-label="Página siguiente"
                 >
                   <ChevronRight size={16} />
                 </button>
@@ -522,6 +462,7 @@ export default function DashboardView({
                             onClick={() => navigateToDevice && navigateToDevice(sim.device_id)}
                             title={sim.device_model ? `Asociado a: ${sim.device_model}` : "Ver dispositivo asignado"}
                             className="sim-device-link"
+                            aria-label={sim.device_model ? `Ver dispositivo ${sim.device_model}` : 'Ver dispositivo asignado'}
                           >
                             <Smartphone size={16} />
                           </button>
@@ -551,6 +492,7 @@ export default function DashboardView({
                               target="_blank"
                               rel="noopener noreferrer"
                               title="Abrir chat de WhatsApp"
+                              aria-label={`Abrir WhatsApp de ${sim.phone_number}`}
                               style={{ color: '#16a34a', display: 'inline-flex', alignItems: 'center' }}
                             >
                               <ExternalLink size={14} />
@@ -575,6 +517,7 @@ export default function DashboardView({
                           type="button"
                           onClick={() => handleEditPhone(sim)}
                           title="Editar número"
+                          aria-label={`Editar SIMCard ${sim.phone_number}`}
                           className="sim-row-action sim-edit-action"
                         >
                           <SquarePen size={18} />
@@ -585,6 +528,7 @@ export default function DashboardView({
                           type="button"
                           onClick={() => handleViewHistory(sim)}
                           title="Ver Historial"
+                          aria-label={`Ver historial de SIMCard ${sim.phone_number}`}
                           className="sim-row-action sim-history-action"
                         >
                           <ClipboardList size={18} />
@@ -596,6 +540,7 @@ export default function DashboardView({
                             type="button"
                             onClick={() => handleDeleteSim(sim)}
                             title="Eliminar número"
+                            aria-label={`Eliminar SIMCard ${sim.phone_number}`}
                             className="sim-row-action sim-delete-action"
                           >
                             <Trash2 size={18} />
@@ -644,6 +589,7 @@ export default function DashboardView({
                 className="btn-pagination"
                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                 disabled={validCurrentPage === 1}
+                aria-label="Página anterior"
                 style={{
                   padding: '4px 8px',
                   borderRadius: '4px',
@@ -658,6 +604,7 @@ export default function DashboardView({
                 className="btn-pagination"
                 onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                 disabled={validCurrentPage === totalPages}
+                aria-label="Página siguiente"
                 style={{
                   padding: '4px 8px',
                   borderRadius: '4px',

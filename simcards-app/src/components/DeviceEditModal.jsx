@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Copy, Check, X, Search, ChevronDown } from 'lucide-react';
 
 // Componente de desplegable con buscador integrado (Dark Theme)
@@ -202,6 +202,7 @@ export default function DeviceEditModal({
 
   const [copiedSim1, setCopiedSim1] = useState(false);
   const [copiedSim2, setCopiedSim2] = useState(false);
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
     if (device) {
@@ -287,9 +288,10 @@ export default function DeviceEditModal({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.sim1_id && formData.sim2_id && String(formData.sim1_id) === String(formData.sim2_id)) {
-      alert('No puedes asignar la misma SIM Card en ambos slots.');
+      setFormError('No se puede asignar la misma SIMCard en ambos slots.');
       return;
     }
+    setFormError('');
     if (typeof onSave === 'function') {
       onSave({
         ...formData,
@@ -301,20 +303,26 @@ export default function DeviceEditModal({
   };
 
   return (
-    <div className="sim-glass-overlay" style={modalOverlayStyle}>
-      <div style={modalContentStyle}>
+    <div className="sim-glass-overlay" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div
+        style={modalContentStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="device-edit-title"
+      >
 
         {/* CABECERA */}
         <div style={headerStyle}>
-          <h3 style={{ margin: 0, color: '#ffffff', fontSize: '16px', fontWeight: '700' }}>
+          <h3 id="device-edit-title" style={{ margin: 0, color: '#ffffff', fontSize: '16px', fontWeight: '700' }}>
             {formData.id ? `Editar Dispositivo #${formData.id}` : 'Nuevo Dispositivo'}
           </h3>
-          <button type="button" onClick={onClose} style={closeBtnStyle}>
+          <button type="button" onClick={onClose} style={closeBtnStyle} aria-label="Cerrar formulario de dispositivo">
             <X size={20} color="#94a3b8" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
+          {formError && <p className="modal-form-error" role="alert">{formError}</p>}
           {/* GRID DE 2 COLUMNAS */}
           <div style={gridStyle}>
 
@@ -524,12 +532,6 @@ export default function DeviceEditModal({
 }
 
 // Estilos Nativos adaptados a Tema Oscuro (Slate Dark Theme)
-const modalOverlayStyle = {
-  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
-  display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-};
-
 const modalContentStyle = {
   backgroundColor: '#1e293b', padding: '24px', borderRadius: '12px',
   width: '720px', maxWidth: '95vw', maxHeight: '90vh', overflowY: 'auto',

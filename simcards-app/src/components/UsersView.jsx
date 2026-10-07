@@ -154,6 +154,7 @@ export default function UsersView({
                       type="button"
                       onClick={() => setEditingUser({ ...u, password: '' })}
                       title="Editar usuario"
+                      aria-label={`Editar usuario ${u.name}`}
                       className="users-action-button users-edit-button"
                       style={actionButtonStyle}
                     >
@@ -165,6 +166,7 @@ export default function UsersView({
                       type="button"
                       onClick={() => handleDeleteUser(u)}
                       title="Eliminar usuario"
+                      aria-label={`Eliminar usuario ${u.name}`}
                       className="users-action-button users-delete-button"
                       style={actionButtonStyle}
                     >

@@ -18,6 +18,7 @@ import {
 import movilTandemImg from '../assets/moviltandem.png';
 import DeviceEditModal from './DeviceEditModal';
 import DeviceInfoModal from './DeviceInfoModal';
+import SimActionDialog from './SimActionDialog';
 
 export default function DevicesView({ API_URL, token, simcards = [] }) {
   const [devices, setDevices] = useState([]);
@@ -28,6 +29,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [deviceHistory, setDeviceHistory] = useState([]);
+  const [deviceDialog, setDeviceDialog] = useState(null);
 
   // Estados de Filtros y Búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,7 +86,11 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
 
   const handleExportCSV = () => {
     if (!devices || devices.length === 0) {
-      alert('No hay registros para exportar con los filtros actuales.');
+      setDeviceDialog({
+        type: 'notice',
+        title: 'No hay dispositivos para exportar',
+        messagePrefix: 'No se encontraron registros con los filtros actuales.'
+      });
       return;
     }
 
@@ -161,12 +167,30 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
     } catch (err) {
       console.error('Error en la petición de dispositivo:', err.response?.data || err);
       const serverMessage = err.response?.data?.error || err.response?.data?.message;
-      alert(serverMessage ? `Error: ${serverMessage}` : 'Error al guardar el dispositivo.');
+      setDeviceDialog({
+        type: 'notice',
+        title: 'No se pudo guardar el dispositivo',
+        messagePrefix: serverMessage || 'Ocurrió un error al guardar los cambios. Intentá nuevamente.'
+      });
     }
   };
 
   const handleDeleteDevice = async (id) => {
-    if (!window.confirm('¿Deseas eliminar este dispositivo del inventario?')) return;
+    if (deviceDialog?.action !== 'delete') {
+      const device = devices.find((item) => item.id === id);
+      setDeviceDialog({
+        type: 'confirm',
+        tone: 'danger',
+        action: 'delete',
+        deviceId: id,
+        title: '¿Eliminar dispositivo?',
+        messagePrefix: 'Se quitará del inventario ',
+        highlighted: device?.model || `el dispositivo #${id}`,
+        messageSuffix: '. Esta acción no se puede deshacer.',
+        confirmLabel: 'Eliminar dispositivo'
+      });
+      return;
+    }
     try {
       await axios.delete(`${API_URL}/devices/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -175,8 +199,13 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
       if (selectedDevice?.id === id) {
         setSelectedDevice(null);
       }
+      setDeviceDialog(null);
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al eliminar el dispositivo');
+      setDeviceDialog({
+        type: 'notice',
+        title: 'No se pudo eliminar el dispositivo',
+        messagePrefix: err.response?.data?.error || 'Ocurrió un error al eliminarlo. Intentá nuevamente.'
+      });
     }
   };
 
@@ -195,8 +224,15 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
     });
   };
 
+  const handleDeviceDialogConfirm = () => {
+    if (deviceDialog?.action === 'delete') {
+      return handleDeleteDevice(deviceDialog.deviceId);
+    }
+    setDeviceDialog(null);
+  };
+
   return (
-    <div className="app-view-root devices-view" style={{ color: '#f8fafc' }}>
+    <div className="app-view-root devices-view">
 
       <div className="titanium-module-header devices-titanium-header">
         <div className="titanium-header-glint" aria-hidden="true" />
@@ -225,7 +261,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
       </div>
 
       {/* FICHA DESTACADA SUPERIOR */}
-      <div className="device-card devices-highlight-card" style={{ backgroundColor: '#1e293b', padding: '18px 20px', borderRadius: '10px', border: '1px solid #334155', marginBottom: '20px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.3)' }}>
+      <div className="device-card devices-highlight-card">
         {selectedDevice ? (
           (() => {
             const op1 = selectedDevice.operator1_name || selectedDevice.assigned_operator_name || selectedDevice.operator_1_name || selectedDevice.operator1 || selectedDevice.assigned_operator_1_name || null;
@@ -237,54 +273,54 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
             const isSameOperator = hasOp1 && hasOp2 && op1 === op2;
 
             return (
-              <div className="devices-highlight-layout" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div className="devices-highlight-layout">
 
-                <div className="devices-highlight-main" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <div className="devices-phone-frame" style={{ width: '130px', height: '130px', borderRadius: '16px', backgroundColor: '#0f172a', border: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: '8px' }}>
+              <div className="devices-highlight-main">
+                <div className="devices-phone-frame">
                     <img
                       src={movilTandemImg}
                       alt="Móvil Tandem"
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    className="devices-phone-image"
                     />
                   </div>
 
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
-                      <span className="devices-id-chip" style={{ backgroundColor: '#334155', color: '#cbd5e1', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
+                  <div className="devices-highlight-title-row">
+                    <span className="devices-id-chip">
                         #{selectedDevice.id}
                       </span>
-                      <h3 className="devices-highlight-model" style={{ margin: 0, fontSize: '20px', color: '#ffffff', fontWeight: 'bold' }}>{selectedDevice.model}</h3>
+                    <h3 className="devices-highlight-model">{selectedDevice.model}</h3>
                       {selectedDevice.internal_name && (
-                        <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: '500' }}>({selectedDevice.internal_name})</span>
+                      <span className="devices-highlight-internal-name">({selectedDevice.internal_name})</span>
                       )}
                       {selectedDevice.entity && (
-                        <span className="devices-entity-chip" style={{ backgroundColor: '#0369a1', color: '#e0f2fe', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600' }}>
+                      <span className="devices-entity-chip">
                           {selectedDevice.entity}
                         </span>
                       )}
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px' }}>
-                      <div className="devices-highlight-sim-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <strong style={{ color: '#94a3b8', width: '48px' }}>SIM 1:</strong>
-                        <span className={`devices-highlight-phone ${selectedDevice.sim1_phone ? '' : 'is-empty'}`} style={{ color: selectedDevice.sim1_phone ? '#4ade80' : '#64748b', fontFamily: 'monospace', fontWeight: 'bold' }}>
+                  <div className="devices-highlight-sim-list">
+                    <div className="devices-highlight-sim-row">
+                      <strong>SIM 1:</strong>
+                      <span className={`devices-highlight-phone ${selectedDevice.sim1_phone ? '' : 'is-empty'}`}>
                           {selectedDevice.sim1_phone || 'Sin Asignar'}
                         </span>
                         {hasOp1 && !isSameOperator && (
-                          <span className="devices-operator-chip" style={{ backgroundColor: '#0369a1', color: '#e0f2fe', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            <User size={12} color="#e0f2fe" /> {op1}
+                          <span className="devices-operator-chip">
+                            <User size={12} aria-hidden="true" /> {op1}
                           </span>
                         )}
                       </div>
 
-                      <div className="devices-highlight-sim-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <strong style={{ color: '#94a3b8', width: '48px' }}>SIM 2:</strong>
-                        <span className={`devices-highlight-phone ${selectedDevice.sim2_phone ? '' : 'is-empty'}`} style={{ color: selectedDevice.sim2_phone ? '#4ade80' : '#64748b', fontFamily: 'monospace', fontWeight: 'bold' }}>
+                      <div className="devices-highlight-sim-row">
+                        <strong>SIM 2:</strong>
+                        <span className={`devices-highlight-phone ${selectedDevice.sim2_phone ? '' : 'is-empty'}`}>
                           {selectedDevice.sim2_phone || 'Sin Asignar'}
                         </span>
                         {hasOp2 && !isSameOperator && (
-                          <span className="devices-operator-chip is-secondary" style={{ backgroundColor: '#6b21a8', color: '#f3e8ff', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            <User size={12} color="#f3e8ff" /> {op2}
+                          <span className="devices-operator-chip is-secondary">
+                            <User size={12} aria-hidden="true" /> {op2}
                           </span>
                         )}
                       </div>
@@ -292,17 +328,17 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                <div className="devices-highlight-meta">
                   {isSameOperator && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 14px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
+                    <div className="devices-highlight-operator">
+                      <div className="devices-highlight-operator-avatar">
                         {op1.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <span style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', display: 'block', letterSpacing: '0.5px' }}>
+                        <span className="devices-highlight-operator-label">
                           Operador Asignado
                         </span>
-                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#f8fafc' }}>
+                        <span className="devices-highlight-operator-name">
                           {op1}
                         </span>
                       </div>
@@ -310,7 +346,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                   )}
 
                   {!hasOp1 && !hasOp2 && (
-                    <div style={{ padding: '6px 12px', backgroundColor: '#0f172a', borderRadius: '6px', border: '1px solid #334155', fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>
+                    <div className="devices-no-operator">
                       Sin operador asignado
                     </div>
                   )}
@@ -318,9 +354,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                   <button
                     onClick={() => setShowInfoModal(true)}
                     className="devices-info-button"
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px'
-                    }}
+                    aria-label={`Ver información de ${selectedDevice.model}`}
                   >
                     <Info size={16} /> + Info
                   </button>
@@ -337,44 +371,44 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
       </div>
 
       {/* BARRA DE BÚSQUEDA Y FILTROS */}
-      <div className="devices-filter-bar" style={{ backgroundColor: '#1e293b', padding: '12px 16px', borderRadius: '8px', border: '1px solid #334155', marginBottom: '15px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ flex: '1 1 250px', position: 'relative' }}>
-          <Search className="devices-search-icon" size={16} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+      <div className="devices-filter-bar">
+        <div className="devices-search-wrap">
+          <Search className="devices-search-icon" size={16} aria-hidden="true" />
           <input
             type="text"
             placeholder="Buscar por modelo, nombre interno, entidad, línea u operador..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="devices-search-input"
-            style={{ width: '100%', padding: '8px 10px 8px 32px', borderRadius: '6px', border: '1px solid #334155', backgroundColor: '#0f172a', color: '#f8fafc', fontSize: '13px', boxSizing: 'border-box' }}
+            aria-label="Buscar dispositivos por modelo, nombre interno, entidad, línea u operador"
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Filter size={15} color="#94a3b8" />
+        <div className="devices-filter-group">
+          <Filter size={15} aria-hidden="true" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="devices-filter-select"
-            style={{ padding: '8px 10px', borderRadius: '6px', border: '1px solid #334155', fontSize: '13px', backgroundColor: '#0f172a', color: '#f8fafc' }}
+            aria-label="Filtrar dispositivos por estado"
           >
-            <option value="TODOS" style={{ backgroundColor: '#0f172a' }}>Todos los Estados</option>
-            <option value="ACTIVO" style={{ backgroundColor: '#0f172a' }}>ACTIVO</option>
-            <option value="INACTIVO" style={{ backgroundColor: '#0f172a' }}>INACTIVO / REPUESTO</option>
-            <option value="REPARACION" style={{ backgroundColor: '#0f172a' }}>EN REPARACIÓN</option>
-            <option value="RESERVA" style={{ backgroundColor: '#0f172a' }}>EN RESERVA</option>
+            <option value="TODOS">Todos los Estados</option>
+            <option value="ACTIVO">ACTIVO</option>
+            <option value="INACTIVO">INACTIVO / REPUESTO</option>
+            <option value="REPARACION">EN REPARACIÓN</option>
+            <option value="RESERVA">EN RESERVA</option>
           </select>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div className="devices-filter-group">
           <select
             value={entityFilter}
             onChange={(e) => setEntityFilter(e.target.value)}
             className="devices-filter-select"
-            style={{ padding: '8px 10px', borderRadius: '6px', border: '1px solid #334155', fontSize: '13px', backgroundColor: '#0f172a', color: '#f8fafc' }}
+            aria-label="Filtrar dispositivos por entidad"
           >
             {uniqueEntities.map((ent, idx) => (
-              <option key={idx} value={ent} style={{ backgroundColor: '#0f172a' }}>
+              <option key={idx} value={ent}>
                 {ent === 'TODAS' ? 'Todas las Entidades' : ent}
               </option>
             ))}
@@ -385,8 +419,8 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           <button
             onClick={handleClearFilters}
             className="devices-clear-button"
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', borderRadius: '6px', border: '1px solid #334155', backgroundColor: '#0f172a', color: '#cbd5e1', fontSize: '12px', cursor: 'pointer', fontWeight: '500' }}
             title="Restablecer filtros"
+            aria-label="Restablecer filtros de dispositivos"
           >
             <RotateCcw size={14} /> Limpiar
           </button>
@@ -396,9 +430,6 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           type="button"
           onClick={handleExportCSV}
           className="devices-export-button"
-          style={{
-            display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', fontSize: '13px', fontWeight: '500', color: '#38bdf8', backgroundColor: 'rgba(2, 132, 199, 0.15)', border: '1px solid #0284c7', borderRadius: '6px', cursor: 'pointer', whiteSpace: 'nowrap'
-          }}
           title="Exportar resultados a un archivo CSV"
         >
           <Download size={15} color="#38bdf8" />
@@ -407,16 +438,16 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
       </div>
 
       {/* TABLA DE DISPOSITIVOS */}
-      <div className="table-container devices-table-panel" style={{ backgroundColor: '#1e293b', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
-        <table className="devices-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+      <div className="table-container devices-table-panel">
+        <table className="devices-table">
           <thead>
             <tr>
-              <th style={{ padding: '12px' }}>ID</th>
-              <th style={{ padding: '12px' }}>DISPOSITIVO / DETALLE</th>
-              <th style={{ padding: '12px' }}>SIM CARD 1</th>
-              <th style={{ padding: '12px' }}>SIM CARD 2</th>
-              <th style={{ padding: '12px' }}>ESTADO</th>
-              <th style={{ padding: '12px', textAlign: 'center' }}>ACCIONES</th>
+              <th>ID</th>
+              <th>DISPOSITIVO / DETALLE</th>
+              <th>SIM CARD 1</th>
+              <th>SIM CARD 2</th>
+              <th>ESTADO</th>
+              <th className="devices-actions-heading">ACCIONES</th>
             </tr>
           </thead>
           <tbody>
@@ -426,12 +457,14 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                 <td className="devices-table-id">#{device.id}</td>
 
                 <td className="devices-table-details">
-                    <div
-                      onClick={() => setSelectedDevice(device)}
+                    <button
+                    type="button"
+                    onClick={() => setSelectedDevice(device)}
                     className="devices-table-model"
+                    aria-label={`Ver detalles de ${device.model}`}
                     >
-                      {device.model}
-                    </div>
+                    {device.model}
+                    </button>
                     <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px', display: 'flex', gap: '8px', alignItems: 'center' }}>
                       {device.internal_name && <span>Interno: <strong style={{ color: '#cbd5e1' }}>{device.internal_name}</strong></span>}
                       {device.entity && (
@@ -483,6 +516,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                         }}
                         className="devices-action-button devices-edit-action"
                         title="Editar"
+                        aria-label={`Editar dispositivo ${device.model}`}
                       >
                         <Edit2 size={15} />
                       </button>
@@ -490,6 +524,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                         onClick={() => handleOpenHistory(device)}
                         className="devices-action-button devices-history-action"
                         title="Historial"
+                        aria-label={`Ver historial de ${device.model}`}
                       >
                         <History size={15} />
                       </button>
@@ -497,6 +532,7 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
                         onClick={() => handleDeleteDevice(device.id)}
                         className="devices-action-button devices-delete-action"
                         title="Eliminar"
+                        aria-label={`Eliminar dispositivo ${device.model}`}
                       >
                         <Trash2 size={15} />
                       </button>
@@ -533,16 +569,17 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
 
       {/* MODAL DE HISTORIAL ESTILIZADO */}
       {showHistoryModal && (
-        <div className="sim-glass-overlay" style={modalOverlayStyle}>
-          <div style={{ ...modalContentStyle, width: '520px' }}>
+        <div className="sim-glass-overlay" style={modalOverlayStyle} role="presentation">
+          <div style={{ ...modalContentStyle, width: '520px' }} role="dialog" aria-modal="true" aria-labelledby="device-history-title">
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #334155', paddingBottom: '12px' }}>
-              <h3 style={{ color: '#ffffff', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
+              <h3 id="device-history-title" style={{ color: '#ffffff', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
                 Historial de Dispositivo: <span style={{ color: '#38bdf8' }}>{selectedDevice?.model} (#{selectedDevice?.id})</span>
               </h3>
               <button
                 onClick={() => setShowHistoryModal(false)}
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px' }}
+                aria-label="Cerrar historial del dispositivo"
               >
                 <X size={20} color="#94a3b8" />
               </button>
@@ -626,6 +663,12 @@ export default function DevicesView({ API_URL, token, simcards = [] }) {
           </div>
         </div>
       )}
+
+      <SimActionDialog
+        dialog={deviceDialog}
+        onClose={() => setDeviceDialog(null)}
+        onConfirm={handleDeviceDialogConfirm}
+      />
 
     </div>
   );
