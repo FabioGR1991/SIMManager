@@ -1,137 +1,29 @@
-import React, { useMemo } from 'react';
 import {
     Smartphone,
-    ShieldCheck,
+    CheckCircle2,
+    AlertTriangle,
     CreditCard,
     Users,
-    AlertTriangle,
-    MessageSquare,
+    MessageCircle,
     ExternalLink,
     Activity,
-    ArrowRight
+    ArrowRight,
+    CircleCheck
 } from 'lucide-react';
 
-// Batch de frases motivacionales/positivas (31 opciones)
-const MOTIVATIONAL_QUOTES = [
-    // --- Tono cercano / Informal argentino ---
-    "¡Buenas! Todo listo por acá, a meterle con todo hoy.",
-    "Mate en mano y la flota ordenada. ¡A romperla!",
-    "Control de flota al día y cero drama. ¡A darle para adelante!",
-    "Organización impecable, día resuelto. ¡Que sea una jornada genial!",
-    "¡Qué bueno verte de nuevo! Todo bajo control para arrancar.",
-    "Sistemas OK y equipo en marcha. Hoy se avanza fuerte.",
-    "Todo en regla por acá. Te espera una jornada bien productiva.",
-    "Revisión al día, alertas bajo control. ¡Metele garra!",
-    "Un día ordenado es un día tranquilo. ¡A meterle ritmo!",
-    "Flota operativa sin sobresaltos. ¡Buen día!",
-
-    // --- Steve Jobs ---
-    "«La única forma de hacer un gran trabajo es amar lo que hacés.» — Steve Jobs",
-    "«El diseño no es solo cómo se ve o cómo se siente, es cómo funciona.» — Steve Jobs",
-    "«Mantente hambriento, mantente curioso.» — Steve Jobs",
-
-    // --- Albert Einstein ---
-    "«En medio de la dificultad y el caos reside la oportunidad.» — Albert Einstein",
-    "«Si querés resultados distintos, no hagas siempre lo mismo.» — Albert Einstein",
-    "«La medida de la inteligencia es la capacidad de cambiar.» — Albert Einstein",
-
-    // --- Tony Robbins ---
-    "«Donde va tu enfoque, fluye tu energía.» — Tony Robbins",
-    "«Establecer metas es el primer paso para volver lo invisible visible.» — Tony Robbins",
-    "«Tu destino se moldea en tus momentos de decisión.» — Tony Robbins",
-
-    // --- Madre Teresa de Calcuta ---
-    "«A veces sentimos que lo que hacemos es solo una gota en el mar, pero el mar sería menos sin esa gota.» — Madre Teresa",
-    "«No todos podemos hacer grandes cosas, pero sí pequeñas cosas con gran amor.» — Madre Teresa",
-
-    // --- Inspiración de Cierre / Trabajo en equipo ---
-    "«La simplicidad es la máxima sofisticación.» — Leonardo da Vinci",
-    "«El éxito es la suma de pequeños esfuerzos repetidos día tras día.» — Robert Collier",
-    "La constancia y el orden siempre pagan. ¡Que tengas un excelente día!",
-    "Paso a paso, cada detalle suma para mantener la flota impecable.",
-
-    // --- Fabio Gómez Ramírez (Sin límites) ---
-    "«Los límites son solo un reflejo de aquello que todavía no te atreves a enfrentar.» — Fabio Gómez Ramírez (Sin límites)",
-    "«Tener personas con quienes compartir tu éxito es lo que realmente lo hace valioso.» — Fabio Gómez Ramírez (Sin límites)",
-    "«Hay una diferencia entre trabajar para sobrevivir y trabajar para prosperar. Todo empieza en la mente.» — Fabio Gómez Ramírez (Sin límites)",
-    "«La riqueza no solo se mide en términos monetarios, sino también en conocimiento, oportunidades y conexiones.» — Fabio Gómez Ramírez (Sin límites)",
-    "«Tu mejor versión no solo iluminará tu propio camino, sino que también será la luz que guíe a otros hacia sus propios destinos.» — Fabio Gómez Ramírez (Sin límites)"
-];
-
-// Helper para determinar el prefijo de bienvenida por género
-const getWelcomePrefix = (gender) => {
-    if (!gender) return 'Bienvenido/a';
-    const g = String(gender).toLowerCase();
-    if (g === 'm' || g === 'masculino' || g === 'hombre') return 'Bienvenido';
-    if (g === 'f' || g === 'femenino' || g === 'mujer') return 'Bienvenida';
-    return 'Bienvenido/a';
-};
-
-// Componente visual para gráficos de Dona en SVG nativo (Modo Oscuro)
-function DonutChart({ percentage, color = '#38bdf8', label, sublabel }) {
-    const radius = 36;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
-    return (
-        <div className="control-donut">
-            <div className="control-donut-visual">
-                <svg className="control-donut-chart" width="90" height="90" viewBox="0 0 90 90">
-                    <circle
-                        cx="45"
-                        cy="45"
-                        r={radius}
-                        fill="transparent"
-                        stroke="#233147"
-                        strokeWidth="10"
-                    />
-                    <circle
-                        cx="45"
-                        cy="45"
-                        r={radius}
-                        fill="transparent"
-                        stroke={color}
-                        strokeWidth="10"
-                        strokeDasharray={circumference}
-                        strokeDashoffset={strokeDashoffset}
-                        strokeLinecap="round"
-                        transform="rotate(-90 45 45)"
-                        style={{ transition: 'stroke-dashoffset 0.5s ease' }}
-                    />
-                </svg>
-                <div className="control-donut-value">
-                    {percentage}%
-                </div>
-            </div>
-            <div className="control-donut-label">
-                <div>{label}</div>
-                {sublabel && <div>{sublabel}</div>}
-            </div>
-        </div>
-    );
-}
-
 export default function PanelControlView({
-    user = { name: 'Usuario', gender: 'M' },
+    user = { name: 'Usuario', role: 'tl' },
     devices = [],
     simcards = [],
     operators = [],
-    onNavigate // Función opcional para cambiar de pestaña al hacer clic en accesos directos
+    onNavigate
 }) {
-    // Frase aleatoria calculada al montar el componente
-    const randomQuote = useMemo(() => {
-        return MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
-    }, []);
-
-    // --- CÁLCULOS Y MÉTRICAS EN TIEMPO REAL ---
     const totalDevices = devices.length;
     const activeDevices = devices.filter(d => (d.status || 'ACTIVO').toUpperCase() === 'ACTIVO').length;
     const repairDevices = devices.filter(d => (d.status || '').toUpperCase() === 'REPARACION').length;
     const reserveDevices = devices.filter(d => (d.status || '').toUpperCase() === 'RESERVA').length;
-
     const activeDevicePct = totalDevices > 0 ? Math.round((activeDevices / totalDevices) * 100) : 0;
 
-    // SIM Cards asignadas vs libres
     const assignedSimIds = new Set();
     devices.forEach(d => {
         if (d.sim1_id) assignedSimIds.add(String(d.sim1_id));
@@ -143,262 +35,196 @@ export default function PanelControlView({
     const freeSimsCount = totalSims - assignedSimsCount;
     const simOccupancyPct = totalSims > 0 ? Math.round((assignedSimsCount / totalSims) * 100) : 0;
 
-    // Líneas oficiales
-    const officialSimsCount = simcards.filter(s => s.is_official || s.sim1_is_official).length;
-    const officialPct = totalSims > 0 ? Math.round((officialSimsCount / totalSims) * 100) : 0;
-
-    // WhatsApp Types (Estándar vs Business)
-    const waBusinessCount = simcards.filter(s => String(s.wa_type || '').toLowerCase().includes('business')).length;
-    const waBusinessPct = totalSims > 0 ? Math.round((waBusinessCount / totalSims) * 100) : 0;
-
-    // Operadores
-    const totalOperators = operators.length;
     const assignedOperatorIds = new Set();
     devices.forEach(d => {
         if (d.assigned_operator_id) assignedOperatorIds.add(String(d.assigned_operator_id));
         if (d.assigned_operator2_id) assignedOperatorIds.add(String(d.assigned_operator2_id));
     });
+    const totalOperators = operators.length;
     const activeOperatorsCount = assignedOperatorIds.size;
+    const assignedOperatorPct = totalOperators > 0
+        ? Math.min(100, Math.round((activeOperatorsCount / totalOperators) * 100))
+        : 0;
 
-    // --- DETECTOR DE INCONSISTENCIAS / AUDITORÍA ---
-    const unassignedSims = simcards.filter(s => !assignedSimIds.has(String(s.id)));
+    const unassignedSims = simcards.filter(
+        sim => sim.status === 'Activo' && !assignedSimIds.has(String(sim.id))
+    );
     const dualSimMissingOp = devices.filter(d => d.sim2_id && !d.assigned_operator2_id);
-
-    // Lista de WhatsApps rápidos (primeras 4 SIMs con link de WhatsApp)
     const quickWaList = simcards.filter(s => s.wa_link || s.phone_number || s.phone).slice(0, 4);
+    const isAdmin = user.role === 'admin' || user.role === 'Administrador';
+    const roleLabel = isAdmin
+        ? 'Admin General'
+        : user.role === 'pl' || user.role === 'Planificador'
+            ? 'Planificador'
+            : 'Team Leader';
 
     return (
         <div className="app-view-root control-dashboard">
-
-            {/* 1. CABECERA DE BIENVENIDA */}
-            <div className="titanium-module-header control-welcome">
-                <div className="titanium-header-glint" aria-hidden="true" />
-                <div className="titanium-header-main">
-                    <div className="titanium-header-icon"><Activity size={24} /></div>
-                    <div className="titanium-header-copy">
-                        <div className="titanium-header-title-row">
-                            <h1>{getWelcomePrefix(user.gender)}, {user.name || 'Usuario'}!</h1>
-                        </div>
-                        <p>Paso a paso, cada detalle suma para mantener la flota impecable.</p>
-                        <span className="control-welcome-quote">“{randomQuote}”</span>
-                    </div>
+            <header className="control-dashboard-header">
+                <h1>Panel de Control</h1>
+                <div className="control-dashboard-context" aria-label={`Rol: ${roleLabel}; alcance: ${isAdmin ? 'Flota Global' : user.team || 'Sin equipo'}`}>
+                    <span>{roleLabel}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{isAdmin ? 'Flota Global' : user.team || 'Sin equipo'}</span>
                 </div>
-            </div>
+            </header>
 
-            {/* 2. KPIS SUPERIORES (FILA DE TARJETAS) */}
-            <div className="control-kpi-grid">
-
-                {/* Tarjeta Dispositivos */}
-                <div className="control-kpi-card control-kpi-devices">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                            <span className="control-kpi-title">DISPOSITIVOS TOTALES</span>
-                            <div className="control-kpi-value">{activeDevices} <span>/ {totalDevices}</span></div>
-                        </div>
-                        <div className="control-kpi-icon">
-                            <Smartphone size={20} />
-                        </div>
+            <section
+                className={`control-attention-panel${unassignedSims.length > 0 ? ' has-critical' : ''}`}
+                aria-labelledby="control-attention-title"
+            >
+                <div className="control-attention-copy">
+                    <div className="control-attention-heading">
+                        {unassignedSims.length > 0
+                            ? <AlertTriangle size={19} aria-hidden="true" />
+                            : <CircleCheck size={19} aria-hidden="true" />}
+                        <h2 id="control-attention-title">Atención requerida</h2>
                     </div>
-                    <div className="control-kpi-subtext">
-                        <span style={{ color: '#4ade80', fontWeight: 'bold' }}>{activeDevicePct}% Activos</span>
-                        {repairDevices > 0 && <span> • 🛠️ {repairDevices} Reparación</span>}
-                        {reserveDevices > 0 && <span> • 📦 {reserveDevices} Reserva</span>}
-                    </div>
+                    {unassignedSims.length > 0 ? (
+                        <p>
+                            <strong>{unassignedSims.length} SIM {unassignedSims.length === 1 ? 'activa' : 'activas'}</strong>
+                            {' '}sin dispositivo asignado en Slot 1 o Slot 2.
+                        </p>
+                    ) : (
+                        <p>No hay SIMs activas sin dispositivo asignado.</p>
+                    )}
+                    {(repairDevices > 0 || dualSimMissingOp.length > 0) && (
+                        <ul className="control-attention-secondary">
+                            {repairDevices > 0 && (
+                                <li>{repairDevices} {repairDevices === 1 ? 'dispositivo en reparación' : 'dispositivos en reparación'}</li>
+                            )}
+                            {dualSimMissingOp.length > 0 && (
+                                <li>{dualSimMissingOp.length} {dualSimMissingOp.length === 1 ? 'dispositivo Dual-SIM sin operador 2' : 'dispositivos Dual-SIM sin operador 2'}</li>
+                            )}
+                        </ul>
+                    )}
                 </div>
+                {unassignedSims.length > 0 && typeof onNavigate === 'function' && (
+                    <button
+                        type="button"
+                        onClick={() => onNavigate('devices')}
+                        className="control-attention-action"
+                    >
+                        Gestionar Dispositivos <ArrowRight size={16} aria-hidden="true" />
+                    </button>
+                )}
+            </section>
 
-                {/* Tarjeta Líneas Oficiales */}
-                <div className="control-kpi-card control-kpi-lines">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                            <span className="control-kpi-title">LÍNEAS OFICIALES</span>
-                            <div className="control-kpi-value">{officialPct}%</div>
+            <section className="control-metrics-section" aria-labelledby="control-metrics-title">
+                <h2 id="control-metrics-title" className="control-section-title">Métricas clave de la flota</h2>
+                <div className="control-kpi-grid">
+                    <article className="control-kpi-card control-kpi-devices">
+                        <div className="control-kpi-heading">
+                            <Smartphone size={18} aria-hidden="true" />
+                            <span className="control-kpi-title">Dispositivos</span>
                         </div>
-                        <div className="control-kpi-icon">
-                            <ShieldCheck size={20} />
+                        <div className="control-kpi-value">{activeDevices} <span>/ {totalDevices}</span></div>
+                        <div
+                            className="control-kpi-progress"
+                            role="progressbar"
+                            aria-label="Porcentaje de dispositivos activos"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            aria-valuenow={activeDevicePct}
+                        >
+                            <span style={{ width: `${activeDevicePct}%` }} />
                         </div>
-                    </div>
-                    <div className="control-kpi-subtext">
-                        <span>{officialSimsCount} de {totalSims} SIMs oficiales</span>
-                    </div>
+                        <p className={`control-kpi-footnote${activeDevicePct === 100 && repairDevices === 0 ? ' is-healthy' : ''}`}>
+                            {activeDevicePct === 100 && repairDevices === 0
+                                ? <><CheckCircle2 size={14} aria-hidden="true" /> Saludable · {activeDevicePct}%</>
+                                : <>{repairDevices > 0 ? `${repairDevices} en reparación` : `${activeDevicePct}% activos`}{reserveDevices > 0 ? ` · ${reserveDevices} en reserva` : ''}</>}
+                        </p>
+                    </article>
+
+                    <article className="control-kpi-card control-kpi-sims">
+                        <div className="control-kpi-heading">
+                            <CreditCard size={18} aria-hidden="true" />
+                            <span className="control-kpi-title">Ocupación SIMs</span>
+                        </div>
+                        <div className="control-kpi-value">{simOccupancyPct}% <span>({assignedSimsCount}/{totalSims})</span></div>
+                        <div
+                            className="control-kpi-progress"
+                            role="progressbar"
+                            aria-label="Porcentaje de SIMs asignadas"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            aria-valuenow={simOccupancyPct}
+                        >
+                            <span style={{ width: `${simOccupancyPct}%` }} />
+                        </div>
+                        <p className="control-kpi-footnote">{freeSimsCount} libres</p>
+                    </article>
+
+                    <article className="control-kpi-card control-kpi-operators">
+                        <div className="control-kpi-heading">
+                            <Users size={18} aria-hidden="true" />
+                            <span className="control-kpi-title">Operadores activos</span>
+                        </div>
+                        <div className="control-kpi-value">{activeOperatorsCount} <span>/ {totalOperators}</span></div>
+                        <div
+                            className="control-kpi-progress"
+                            role="progressbar"
+                            aria-label="Porcentaje de operadores asignados"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            aria-valuenow={assignedOperatorPct}
+                        >
+                            <span style={{ width: `${assignedOperatorPct}%` }} />
+                        </div>
+                        <p className="control-kpi-footnote">{Math.max(0, totalOperators - activeOperatorsCount)} sin asignar</p>
+                    </article>
                 </div>
+            </section>
 
-                {/* Tarjeta Ocupación SIMs */}
-                <div className="control-kpi-card control-kpi-sims">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                            <span className="control-kpi-title">OCUPACIÓN DE SIMS</span>
-                            <div className="control-kpi-value">{simOccupancyPct}%</div>
-                        </div>
-                        <div className="control-kpi-icon">
-                            <CreditCard size={20} />
-                        </div>
-                    </div>
-                    <div className="control-kpi-subtext">
-                        <span>{assignedSimsCount} Asignadas</span> • <span style={{ color: freeSimsCount > 0 ? '#fbbf24' : '#94a3b8', fontWeight: 'bold' }}>{freeSimsCount} Libres</span>
-                    </div>
-                </div>
-
-                {/* Tarjeta Operadores */}
-                <div className="control-kpi-card control-kpi-operators">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                            <span className="control-kpi-title">OPERADORES ACTIVOS</span>
-                            <div className="control-kpi-value">{activeOperatorsCount} <span>/ {totalOperators}</span></div>
-                        </div>
-                        <div className="control-kpi-icon">
-                            <Users size={20} />
-                        </div>
-                    </div>
-                    <div className="control-kpi-subtext">
-                        <span>{totalOperators - activeOperatorsCount} sin dispositivo asignado</span>
-                    </div>
-                </div>
-
-            </div>
-
-            {/* 3. FILA CENTRAL: GRÁFICOS Y AUDITORÍA */}
-            <div className="control-content-grid">
-
-                {/* Métrica Visual (Donas) */}
-                <div className="control-panel control-fleet-panel">
-                    <h4 className="control-panel-title">📊 Distribución y Salud de Flota</h4>
-                    <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '10px 0' }}>
-                        <DonutChart
-                            percentage={activeDevicePct}
-                            color="#38bdf8"
-                            label="Dispositivos Activos"
-                            sublabel={`${activeDevices} de ${totalDevices} equipos`}
-                        />
-                        <DonutChart
-                            percentage={simOccupancyPct}
-                            color="#34d399"
-                            label="Ocupación de SIMs"
-                            sublabel={`${assignedSimsCount} de ${totalSims} instaladas`}
-                        />
-                        <DonutChart
-                            percentage={waBusinessPct}
-                            color="#a855f7"
-                            label="WhatsApp Business"
-                            sublabel={`${waBusinessCount} líneas corporativas`}
-                        />
-                    </div>
-                </div>
-
-                {/* Panel de Auditoría / Alertas */}
-                <div className="control-panel control-audit-panel">
-                    <h4 className="control-panel-title control-audit-title">
-                        <AlertTriangle className="control-audit-icon" size={16} /> Auditoría e Inconsistencias
-                    </h4>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {unassignedSims.length > 0 ? (
-                            <div className="control-audit-alert">
-                                <span className="control-audit-alert-title"><span className="control-alert-pulse">●</span> {unassignedSims.length} SIM Cards activas sin dispositivo</span>
-                                <span style={{ fontSize: '11px', color: '#f87171' }}>Tienen número pero no figuran en ningún Slot 1 o Slot 2.</span>
-                            </div>
-                        ) : (
-                            <div className="control-audit-ok">
-                                <span className="control-audit-alert-title">Todas las SIMs están correctamente asignadas.</span>
-                            </div>
-                        )}
-
-                        {repairDevices > 0 && (
-                            <div className="control-audit-warning">
-                                <span className="control-audit-alert-title">{repairDevices} Dispositivos en estado "EN REPARACIÓN"</span>
-                                <span style={{ fontSize: '11px', color: '#fbbf24' }}>Verifica si requieren devolución o reasignación de SIM.</span>
-                            </div>
-                        )}
-
-                        {dualSimMissingOp.length > 0 && (
-                            <div className="control-audit-info">
-                                <span className="control-audit-alert-title">{dualSimMissingOp.length} Dispositivos Dual-SIM sin Operador 2</span>
-                                <span style={{ fontSize: '11px', color: '#60a5fa' }}>El Slot 2 tiene SIM pero no tiene un operador vinculado.</span>
-                            </div>
-                        )}
-
-                        {typeof onNavigate === 'function' && (
-                            <button
-                                onClick={() => onNavigate('devices')}
-                                className="control-audit-link"
-                            >
-                                Ir a gestionar dispositivos <ArrowRight size={14} />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-            </div>
-
-            {/* 4. FILA INFERIOR: ACCESOS RÁPIDOS & ACTIVIDAD */}
-            <div className="control-content-grid">
-
-                {/* Accesos Rápidos a WhatsApp */}
-                <div className="control-panel control-quick-panel">
-                    <h4 className="control-panel-title">📲 Enlaces Express a WhatsApp</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {quickWaList.length > 0 ? (
-                            quickWaList.map((sim) => (
-                                <div
-                                    key={sim.id}
-                                    className="control-quick-row"
-                                >
-                                    <div>
-                                        <span className="control-quick-phone">
-                                            {sim.phone_number || sim.phone}
-                                        </span>
-                                        <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
-                                            ({sim.entity || sim.campaign || 'General'})
-                                        </span>
+            <section className="control-lower-section" aria-labelledby="control-lower-title">
+                <h2 id="control-lower-title" className="control-section-title">Gestión rápida y actividad</h2>
+                <div className="control-content-grid">
+                    <article className="control-panel control-quick-panel">
+                        <h3 className="control-panel-title">Enlaces express a WhatsApp</h3>
+                        <div className="control-quick-list">
+                            {quickWaList.length > 0 ? quickWaList.map(sim => (
+                                <div key={sim.id} className="control-quick-row">
+                                    <div className="control-quick-copy">
+                                        <span className="control-quick-phone">{sim.phone_number || sim.phone}</span>
+                                        <span className="control-quick-entity">{sim.entity || sim.campaign || 'General'}</span>
                                     </div>
-
                                     {sim.wa_link ? (
                                         <a
                                             href={sim.wa_link}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="control-quick-link"
+                                            aria-label={`Abrir WhatsApp para ${sim.phone_number || sim.phone}`}
                                         >
-                                            <MessageSquare size={12} /> Chat <ExternalLink size={10} />
+                                            <MessageCircle size={14} aria-hidden="true" /> Abrir chat <ExternalLink size={12} aria-hidden="true" />
                                         </a>
-                                    ) : (
-                                        <span style={{ fontSize: '11px', color: '#64748b' }}>Sin Link WA</span>
-                                    )}
+                                    ) : <span className="control-quick-empty">Sin enlace</span>}
                                 </div>
-                            ))
-                        ) : (
-                            <span style={{ fontSize: '12px', color: '#64748b' }}>No hay líneas registradas con WhatsApp.</span>
-                        )}
-                    </div>
-                </div>
+                            )) : <p className="control-empty-state">No hay líneas registradas.</p>}
+                        </div>
+                    </article>
 
-                {/* Registro de Actividad Reciente */}
-                <div className="control-panel control-activity-panel">
-                    <h4 className="control-panel-title">⏱️ Actividad del Sistema</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div className="control-activity-row">
-                            <Activity size={16} color="#38bdf8" style={{ marginTop: '2px' }} />
-                            <div>
-                                <div className="control-activity-message">
-                                    Panel de Control cargado correctamente
+                    <article className="control-panel control-activity-panel">
+                        <h3 className="control-panel-title">Actividad reciente del sistema</h3>
+                        <div className="control-activity-list">
+                            <div className="control-activity-row">
+                                <CheckCircle2 size={17} aria-hidden="true" />
+                                <div>
+                                    <p className="control-activity-message">Panel de Control cargado correctamente</p>
+                                    <span className="control-activity-time">Estado actual</span>
                                 </div>
-                                <div style={{ fontSize: '10px', color: '#64748b' }}>Hace un momento</div>
+                            </div>
+                            <div className="control-activity-row">
+                                <Activity size={17} aria-hidden="true" />
+                                <div>
+                                    <p className="control-activity-message">Métricas sincronizadas</p>
+                                    <span className="control-activity-time">{totalDevices} dispositivos · {totalSims} SIMs</span>
+                                </div>
                             </div>
                         </div>
-
-                        <div className="control-activity-row is-success">
-                            <Activity size={16} color="#34d399" style={{ marginTop: '2px' }} />
-                            <div>
-                                <div className="control-activity-message">
-                                    Métricas sincronizadas ({totalDevices} dispositivos / {totalSims} SIMs)
-                                </div>
-                                <div style={{ fontSize: '10px', color: '#64748b' }}>Hace un momento</div>
-                            </div>
-                        </div>
-                    </div>
+                    </article>
                 </div>
-
-            </div>
-
+            </section>
         </div>
     );
 }
